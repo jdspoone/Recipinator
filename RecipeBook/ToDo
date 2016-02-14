@@ -1,0 +1,38 @@
+TagsViewController:
+  -delete button doesn't look great...
+
+RecipeViewController:
+  -image view
+    -give clear indication that you can select a photo when in editting mode
+      -when editing, display label above view with text "tap to select photo"?
+    -add ability to delete photo without selecting a new one
+      -when it editing, display delete button in top right corner?
+
+  -table view add/collapse buttons should have images...
+
+  -the component textfields of the ingredientTableViewCells should have dynamic lengths
+
+  -as ingredients table view shrinks, steps table view should smoothly follow it up..
+    -will require unbinding some layout constraints and animating the frame of the steps table view
+
+  -do we disable scrolling when editting a textfield???
+
+  -add method to create custom square buttons
+    -lots of repitition for add/collapse ingredient/step buttons currently...
+
+  -implement ingredient/step reordering...
+
+
+ScrollingViewController
+  -smoother scrolling transition when keyboard appears
+
+
+AppDelegate:
+  -attempt to convert data store before just deleting it...
+
+
+CoreData:
+  -do we really need to override initWithEntity:insertIntoManagedObjectContext for every subclass of NSManagedObject?
+
+
+implement willGoIntoBackground stuff...
