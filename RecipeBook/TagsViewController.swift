@@ -33,20 +33,42 @@ class TagsViewController: UIViewController
       }
 
 
+    func shouldCreateTagWithName(name: String) -> Bool
+      {
+        let request = NSFetchRequest(entityName: "Tag")
+        request.predicate = NSPredicate(format: "name = %@", name)
+
+        var results: [Tag] = []
+        do { results = try managedObjectContext.executeFetchRequest(request) as! [Tag] }
+        catch let e { fatalError("error: \(e)") }
+
+        if results.count == 0 {
+          return true
+        }
+        else {
+          assert(results.count == 1, "unexpected state - multiple tags with name: \(name)")
+          return false
+        }
+      }
+
+
     func addTagWithName(name: String)
       {
-        let tag = Tag(name: name, context: managedObjectContext)
+        // Prevent multiple tags with the same name being created
+        if shouldCreateTagWithName(name) {
+          let tag = Tag(name: name, context: managedObjectContext)
 
-        willChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
-        tags.insert(tag)
-        didChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
+          willChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
+          tags.insert(tag)
+          didChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
 
-        let tagView = TagView(tag: tag, controller: self)
-        view.addSubview(tagView)
+          let tagView = TagView(tag: tag, controller: self)
+          view.addSubview(tagView)
 
-        tagViewDictionary[tag] = tagView
+          tagViewDictionary[tag] = tagView
 
-        updateSubviewConstraints()
+          updateSubviewConstraints()
+        }
       }
 
 
