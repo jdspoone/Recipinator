@@ -15,9 +15,9 @@ class Ingredient : BaseObject
     @NSManaged var name: String
 
 
-    init(name: String, context: NSManagedObjectContext)
+    init(name: String, context: NSManagedObjectContext, insert: Bool = true)
       {
-        super.init(name: "Ingredient", context: context)
+        super.init(name: "Ingredient", context: context, insert: insert)
 
         self.name = name
       }
@@ -51,9 +51,9 @@ class IngredientAmount : BaseObject
     @NSManaged var amount: String
     @NSManaged var number: Int16
 
-    init(ingredient: Ingredient, amount: String, number: Int16, context: NSManagedObjectContext)
+    init(ingredient: Ingredient, amount: String, number: Int16, context: NSManagedObjectContext, insert: Bool = true)
       {
-        super.init(name: "IngredientAmount", context: context)
+        super.init(name: "IngredientAmount", context: context, insert: insert)
 
         self.ingredient = ingredient
         self.amount = amount

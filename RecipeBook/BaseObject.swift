@@ -19,11 +19,11 @@ class BaseObject: NSManagedObject
       }
 
 
-    init(name: String, context: NSManagedObjectContext, referenceObject obj: BaseObject? = nil)
+    init(name: String, context: NSManagedObjectContext, insert: Bool, referenceObject obj: BaseObject? = nil)
       {
         let entityDescription = NSEntityDescription.entityForName(name, inManagedObjectContext: context)!
 
-        super.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+        super.init(entity: entityDescription, insertIntoManagedObjectContext: insert ? context : nil)
       }
 
 

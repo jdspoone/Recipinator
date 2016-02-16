@@ -24,9 +24,9 @@ class Step : BaseObject
       }
 
 
-    init(number: Int16, summary: String, detail: String, imageData: NSData?, context: NSManagedObjectContext)
+    init(number: Int16, summary: String, detail: String, imageData: NSData?, context: NSManagedObjectContext, insert: Bool = true)
       {
-        super.init(name: "Step", context: context)
+        super.init(name: "Step", context: context, insert: insert)
 
         self.number = number
         self.summary = summary

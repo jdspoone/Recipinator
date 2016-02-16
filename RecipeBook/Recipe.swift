@@ -25,9 +25,9 @@ class Recipe: BaseObject
       }
 
 
-    init(name: String, imageData: NSData?, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext)
+    init(name: String, imageData: NSData?, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext, insert: Bool = true)
       {
-        super.init(name: "Recipe", context: context)
+        super.init(name: "Recipe", context: context, insert: insert)
 
         self.name = name
         self.imageData = imageData

@@ -15,9 +15,9 @@ class Tag: BaseObject
     @NSManaged var name: String
 
 
-    init(name: String, context: NSManagedObjectContext)
+    init(name: String, context: NSManagedObjectContext, insert: Bool = true)
       {
-        super.init(name: "Tag", context: context)
+        super.init(name: "Tag", context: context, insert: insert)
 
         self.name = name
       }
