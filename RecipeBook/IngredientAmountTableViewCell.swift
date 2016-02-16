@@ -96,7 +96,10 @@ class IngredientsTableViewCell: UITableViewCell, UITextFieldDelegate
       {
         switch textField {
           case nameTextField :
-            ingredientAmount.ingredient.name = textField.text!
+            if textField.text! != ingredientAmount.ingredient.name {
+              ingredientAmount.updateIngredient(textField.text!, context: recipeViewController.managedObjectContext)
+              recipeViewController.addNewIngredientAmountToRecipe()
+            }
           case amountTextField :
             ingredientAmount.amount = textField.text!
           default :

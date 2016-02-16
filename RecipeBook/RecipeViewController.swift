@@ -28,7 +28,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     var tagsViewController: TagsViewController!
     var tagTextField: UITextField!
 
-    var editingIngredientIndex: Int?
+    var newIngredientAmount: IngredientAmount?
+
+    var editingIngredientIndexPath: NSIndexPath?
 
 
     var ingredientsTableViewHeightConstraint: NSLayoutConstraint!
@@ -60,6 +62,8 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     var addStepButton: UIButton!
     var collapseStepsButton: UIButton!
 
+
+    // MARK: -
 
     init(recipe: Recipe, editing: Bool, context: NSManagedObjectContext, completion: (Recipe) -> Void)
       {
@@ -97,6 +101,26 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
         // Set the content size of the scroll view
         scrollView.contentSize = CGSize(width: view.frame.width, height: tagTextField.frame.origin.y + tagTextField.frame.height + 8.0)
+      }
+
+
+    func addNewIngredientAmountToRecipe()
+      {
+        if let ingredientAmount = newIngredientAmount {
+          // Insert the new managed objects into the context if necessary
+          if ingredientAmount.ingredient.inserted == false {
+            managedObjectContext.insertObject(ingredientAmount.ingredient)
+          }
+          if ingredientAmount.inserted == false {
+            managedObjectContext.insertObject(ingredientAmount)
+          }
+
+          // Update the recipe
+          recipe.ingredientAmounts.insert(ingredientAmount)
+
+          // Set the new ingredient amount property to nil
+          newIngredientAmount = nil
+        }
       }
 
 
@@ -376,7 +400,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath)
       {
         // If we're about to show the newly created ingredient cell
-        if tableView === ingredientsTableView && editingIngredientIndex == indexPath.row {
+        if tableView === ingredientsTableView && editingIngredientIndexPath == indexPath {
           dispatch_async(dispatch_get_main_queue())
               { () -> Void in
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! IngredientsTableViewCell
@@ -384,6 +408,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
               }
         }
       }
+
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
       {
@@ -414,63 +439,79 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
       {
-        let view = UIView(frame: CGRect.zero)
-        view.backgroundColor = UIColor.whiteColor()
+        if section == 0 {
+          let view = UIView(frame: CGRect.zero)
+          view.backgroundColor = UIColor.whiteColor()
 
-        var leftButton: UIButton!
-        let label = UILabel(frame: CGRect.zero)
-        var rightButton: UIButton!
+          var leftButton: UIButton!
+          let label = UILabel(frame: CGRect.zero)
+          var rightButton: UIButton!
 
-        switch tableView {
-          case ingredientsTableView :
-            leftButton = collapseIngredientsButton
-            label.text = "Ingredients"
-            rightButton = addIngredientButton
-          case stepsTableView :
-            leftButton = collapseStepsButton
-            label.text = "Steps"
-            rightButton = addStepButton
-          default :
-            fatalError("unexpected table view")
+          switch tableView {
+            case ingredientsTableView :
+              leftButton = collapseIngredientsButton
+              label.text = "Ingredients"
+              rightButton = addIngredientButton
+            case stepsTableView :
+              leftButton = collapseStepsButton
+              label.text = "Steps"
+              rightButton = addStepButton
+            default :
+              fatalError("unexpected table view")
+          }
+
+          view.addSubview(leftButton)
+          view.addSubview(rightButton)
+
+          label.textAlignment = .Center
+          label.translatesAutoresizingMaskIntoConstraints = false
+          view.addSubview(label)
+
+          leftButton.widthAnchor.constraintEqualToConstant(30.0).active = true
+          leftButton.heightAnchor.constraintEqualToConstant(30.0).active = true
+          leftButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
+          leftButton.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
+
+          rightButton.widthAnchor.constraintEqualToConstant(30.0).active = true
+          rightButton.heightAnchor.constraintEqualToConstant(30.0).active = true
+          rightButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
+          rightButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
+
+          label.leftAnchor.constraintEqualToAnchor(leftButton.rightAnchor).active = true
+          label.rightAnchor.constraintEqualToAnchor(rightButton.leftAnchor).active = true
+          label.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
+          label.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
+
+          return view
         }
-
-        view.addSubview(leftButton)
-        view.addSubview(rightButton)
-
-        label.textAlignment = .Center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(label)
-
-        leftButton.widthAnchor.constraintEqualToConstant(30.0).active = true
-        leftButton.heightAnchor.constraintEqualToConstant(30.0).active = true
-        leftButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-        leftButton.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
-
-        rightButton.widthAnchor.constraintEqualToConstant(30.0).active = true
-        rightButton.heightAnchor.constraintEqualToConstant(30.0).active = true
-        rightButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-        rightButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
-
-        label.leftAnchor.constraintEqualToAnchor(leftButton.rightAnchor).active = true
-        label.rightAnchor.constraintEqualToAnchor(rightButton.leftAnchor).active = true
-        label.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
-        label.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
-
-        return view
+        return nil
       }
 
 
     func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
-      { return 30 }
+      { return section == 0 ? 30 : 0 }
 
 
     // MARK: - UITableViewDataSource
+
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int
+      {
+        switch tableView {
+          case ingredientsTableView :
+            return newIngredientAmount == nil ? 1 : 2
+          case stepsTableView :
+            return 1
+          default :
+            fatalError("unexpected table view")
+        }
+      }
+
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
       {
         switch tableView {
           case ingredientsTableView :
-            return recipe.ingredientAmounts.count
+            return section == 0 ? recipe.ingredientAmounts.count : 1
 
           case stepsTableView :
             return recipe.steps.count
@@ -485,9 +526,17 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
       {
         switch tableView {
           case ingredientsTableView :
-            let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
-            let cell = IngredientsTableViewCell(ingredientAmount: ingredientAmount, tableView: tableView)
-            return cell
+            // Either we're working with pre-existing ingredient amounts
+            if indexPath.section == 0 {
+              let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+              let cell = IngredientsTableViewCell(ingredientAmount: ingredientAmount, tableView: tableView)
+              return cell
+            }
+            // Or we're creating a new ingredient amount
+            else {
+              let cell = IngredientsTableViewCell(ingredientAmount: newIngredientAmount!, tableView: tableView)
+              return cell
+            }
 
           case stepsTableView :
             let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
@@ -584,13 +633,23 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func addIngredient(sender: AnyObject)
       {
-        // Add am ingredient amount pair to our list
-        let ingredient = Ingredient(name: "", context: managedObjectContext)
-        editingIngredientIndex = recipe.ingredientAmounts.count
-        let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: "", number: Int16(editingIngredientIndex!), context: managedObjectContext)
-        recipe.ingredientAmounts.insert(ingredientAmount)
+        // If we previously created an ingredient amount which has not yet been inserted into the context
+        if let ingredientAmount = newIngredientAmount {
+          // We only want to add it if it is valid
+          if ingredientAmount.ingredient.name != "" {
+            addNewIngredientAmountToRecipe()
+          }
+          // Otherwise do nothing
+          else {
+            return
+          }
+        }
 
-        // Reload the table view, why does reloading the specific row not work?
+        // Create a new ingredient and ingredient amount, without inserting it into the context
+        let newIngredient = Ingredient(name: "", context: managedObjectContext, insert: false)
+        newIngredientAmount = IngredientAmount(ingredient: newIngredient, amount: "", number: Int16(recipe.ingredientAmounts.count), context: managedObjectContext, insert: false)
+        editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 1)
+
         ingredientsTableView.reloadData()
 
         view.layoutSubviews()

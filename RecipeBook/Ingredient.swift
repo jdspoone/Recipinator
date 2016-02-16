@@ -61,6 +61,33 @@ class IngredientAmount : BaseObject
       }
 
 
+    func updateIngredient(name: String, context: NSManagedObjectContext)
+      {
+        assert(name != "", "unexpected state - the empty string is not a valid ingredient name")
+
+        // Look for an already existing ingredient with the same name
+        let request = NSFetchRequest(entityName: "Ingredient")
+        request.predicate = NSPredicate(format: "name = %@", name)
+
+        var results: [Ingredient] = []
+        do { results = try context.executeFetchRequest(request) as! [Ingredient] }
+        catch let e { fatalError("error: \(e)") }
+
+        if results.count == 0 {
+          ingredient.name = name
+        }
+        else {
+          assert(results.count == 1, "unexpected state - \(results.count) ingredients with name: \(name)")
+
+          if inserted == false {
+            context.insertObject(self)
+          }
+
+          ingredient = results.first!
+        }
+      }
+
+
     override class func properties() -> [String : Property]
       {
         return [
