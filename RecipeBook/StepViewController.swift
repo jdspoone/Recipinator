@@ -161,7 +161,7 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        textField.resignFirstResponder()
+        textField.endEditing(true)
         return true;
       }
 
@@ -172,8 +172,6 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
         detailTextView.userInteractionEnabled = true
         imageView.userInteractionEnabled = true
-
-        textField.resignFirstResponder()
 
         if activeSubview === textField {
           activeSubview = nil
@@ -208,8 +206,6 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
         summaryTextField.userInteractionEnabled = true
         imageView.userInteractionEnabled = true
-
-        textView.resignFirstResponder()
 
         if activeSubview === textView {
           activeSubview = nil

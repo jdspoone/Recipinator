@@ -193,8 +193,7 @@ class ScrollingViewController: UIViewController
 
     func done(sender: UIBarButtonItem)
       {
-        assert(activeSubview != nil, "unexpected state - no active subview")
-        activeSubview?.resignFirstResponder()
+        activeSubview!.resignFirstResponder()
       }
 
   }

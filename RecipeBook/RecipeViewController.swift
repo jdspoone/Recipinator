@@ -319,8 +319,11 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        textField.resignFirstResponder()
-        return true;
+        if textField.text != nil && textField.text != "" {
+          textField.endEditing(true)
+          return true
+        }
+        return false
       }
 
 
@@ -337,8 +340,6 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         }
 
         imageView.userInteractionEnabled = true
-
-        textField.resignFirstResponder()
 
         activeSubview = nil
       }
@@ -542,6 +543,21 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
         do { try managedObjectContext.save() }
         catch { fatalError("failed to save") }
+      }
+
+
+    override func done(sender: UIBarButtonItem)
+      {
+        // If the active subview is a text field
+        if activeSubview!.isKindOfClass(UITextField) {
+          // Treat the done button like the return button
+          let textField = activeSubview as! UITextField
+          textField.delegate!.textFieldShouldReturn!(textField)
+        }
+        // Or some non-text view
+        else {
+          super.done(sender)
+        }
       }
 
 

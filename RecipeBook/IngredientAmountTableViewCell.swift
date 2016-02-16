@@ -82,16 +82,13 @@ class IngredientsTableViewCell: UITableViewCell, UITextFieldDelegate
       }
 
 
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool
-      {
-        return true
-      }
-
-
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        textField.resignFirstResponder()
-        return true;
+        if textField.text != nil && textField.text != "" {
+          textField.endEditing(true)
+          return true
+        }
+        return false
       }
 
 
@@ -105,9 +102,6 @@ class IngredientsTableViewCell: UITableViewCell, UITextFieldDelegate
           default :
             print("")
         }
-
-        textField.resignFirstResponder()
-
         recipeViewController.activeSubview = nil
       }
 
