@@ -18,15 +18,8 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     var managedObjectContext: NSManagedObjectContext
 
-    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool =
-        { (a: IngredientAmount, b: IngredientAmount) -> Bool in
-          return a.number < b.number
-        }
-
-    let stepsSortingBlock: (Step, Step) -> Bool =
-        { (a: Step, b: Step) -> Bool in
-          return a.number < b.number
-        }
+    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number < $1.number }
+    let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
     var imageView: UIImageView!
