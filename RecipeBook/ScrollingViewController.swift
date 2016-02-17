@@ -118,15 +118,8 @@ class ScrollingViewController: UIViewController
         super.setEditing(editing, animated: animated)
         didChangeValueForKey("editing")
 
-        if editing {
-          navigationItem.setHidesBackButton(true, animated: false)
-          navigationItem.rightBarButtonItem = saveButton
-        }
-        else {
-          activeSubview?.resignFirstResponder()
-          navigationItem.setHidesBackButton(false, animated: false)
-          navigationItem.rightBarButtonItem = editButtonItem()
-        }
+        navigationItem.setHidesBackButton(editing, animated: false)
+        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem()
       }
 
 
@@ -194,6 +187,8 @@ class ScrollingViewController: UIViewController
 
     func save(sender: UIBarButtonItem)
       {
+        activeSubview?.resignFirstResponder()
+
         setEditing(false, animated: true)
       }
 
