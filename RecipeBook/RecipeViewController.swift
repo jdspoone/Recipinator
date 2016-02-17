@@ -343,11 +343,21 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        if textField.text != nil && textField.text != "" {
-          textField.endEditing(true)
-          return true
+        switch textField {
+          case nameTextField :
+            if textField.text != nil && textField.text != "" {
+              textField.endEditing(true)
+              return true
+            }
+            return false
+
+          case tagTextField :
+            textField.endEditing(true)
+            return true
+
+          default :
+            fatalError("unexpected text field")
         }
-        return false
       }
 
 
@@ -356,9 +366,13 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         switch textField {
           case nameTextField :
             recipe.name = textField.text!
+
           case tagTextField :
-            tagsViewController.addTagWithName(textField.text!)
-            textField.text = ""
+            if textField.text != "" {
+              tagsViewController.addTagWithName(textField.text!)
+              textField.text = ""
+            }
+
           default :
             fatalError("unexpected text field")
         }
