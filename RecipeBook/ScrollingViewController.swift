@@ -11,6 +11,8 @@ class ScrollingViewController: UIViewController
   {
 
     var scrollView: UIScrollView!
+    var scrollViewBottomConstraint: NSLayoutConstraint!
+    var scrollViewHeightConstraint: NSLayoutConstraint!
 
     var saveButton: UIBarButtonItem!
     var doneButton: UIBarButtonItem!
@@ -57,7 +59,7 @@ class ScrollingViewController: UIViewController
         let width = windowFrame.width
         let height = windowFrame.height - (navigationBarFrame.origin.y + navigationBarFrame.height)
 
-        view = UIView(frame: CGRect(origin: CGPoint.zero, size: CGSize(width: width, height: height)))
+        view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
 
         // Create the scroll view
         scrollView = UIScrollView(frame: CGRect.zero)
@@ -69,8 +71,10 @@ class ScrollingViewController: UIViewController
         // Configure the layout bindings for the scroll view
         scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor).active = true
         scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor).active = true
-        scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
         scrollView.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
+
+        scrollViewBottomConstraint = scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
+        scrollViewBottomConstraint.active = true
 
         // Create the navigation bar buttons
         saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: "save:")
@@ -135,43 +139,46 @@ class ScrollingViewController: UIViewController
           // Sanity check
           assert(subview.isKindOfClass(UITextField) || subview.isKindOfClass(UITextView))
 
-          // Get the frame of the keyboard
+          // Get the frames of the keyboard and subview
+          let navFrame = navigationController!.navigationBar.frame
           let frame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
-          let keyboardFrame = CGRect(x: frame.origin.x, y: scrollView.contentSize.height - frame.height, width: frame.width, height: frame.height)
-
-          // Get the frame of the subview
-          var subviewFrame: CGRect
-          // If the view is a direct descendant of the scroll view, its frame is ready to use
-          if scrollView.subviews.contains(subview) {
-            subviewFrame = subview.frame
-          }
-          // Otherwise it is an indirect descendant of the scroll view, and it needs to be converted
-          else {
-            subviewFrame = subview.convertRect(subview.frame, toView: scrollView)
-          }
+          let keyboardFrame = CGRect(x: frame.origin.x, y: frame.origin.y - (navFrame.origin.y + navFrame.height), width: frame.width, height: frame.height)
+          let subviewFrame = subview.superview!.convertRect(subview.frame, toView: view)
 
           // Get the overlap between the keyboard and subview
           let overlapRect = subviewFrame.intersect(keyboardFrame)
 
-          // If there is any overlap
+          // Get the duration of the keyboard animation
+          let duration = notification.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! Double
+
+          // If the keyboard is about to be presented and will overlap with the active subview
           if notification.name == UIKeyboardWillShowNotification && overlapRect.height > 0 {
-            let duration = (notification.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! NSNumber).doubleValue
 
-            // Unhook the bottom of the scroll view from its parent view
-            scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = false
+            // Deactivate the scroll view's bottom constraint
+            scrollViewBottomConstraint.active = false
 
-            // Shrink the scroll view
+            // Set and activate the scroll view's height constraint
+            scrollViewHeightConstraint = scrollView.heightAnchor.constraintEqualToConstant(scrollView.frame.height - keyboardFrame.height)
+            scrollViewHeightConstraint.active = true
+
+            // Update the scroll view's frame and content offset in an animation block
             UIView.animateWithDuration(duration, animations:
                 { () -> Void in
-                  // Set the content inset of the scroll view
-                  self.scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardFrame.height, right: 0)
-                  // Scroll so the textfield is visible
-                  self.scrollView.scrollRectToVisible(CGRect(x: self.scrollView.frame.origin.x, y: subviewFrame.origin.y, width: self.scrollView.frame.width, height: subviewFrame.height), animated: true)
+                  self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.scrollView.frame.height - keyboardFrame.height)
+                  self.scrollView.contentOffset = CGPoint(x: self.scrollView.contentOffset.x, y: self.scrollView.contentOffset.y + subviewFrame.origin.y + subviewFrame.height - self.scrollView.frame.height)
                 })
           }
-          else {
-            // Restore the scroll view to its original size
-            scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+          // Otherwise if the keyboard is about to disappear
+          else if notification.name == UIKeyboardWillHideNotification {
+            // Update the scroll view's layout constraints
+            scrollViewHeightConstraint.active = false
+            scrollViewBottomConstraint.active = true
+
+            // Animate the scroll view's frame
+            UIView.animateWithDuration(duration, animations:
+                { () -> Void in
+                  self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.view.frame.height)
+                })
           }
         }
       }
