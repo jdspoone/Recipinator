@@ -100,7 +100,8 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         NSLayoutConstraint.activateConstraints([ingredientsTableViewHeightConstraint, stepsTableViewHeightConstraint])
 
         // Set the content size of the scroll view
-        scrollView.contentSize = CGSize(width: view.frame.width, height: tagTextField.frame.origin.y + tagTextField.frame.height + 8.0)
+        let finalSubview = editing ? tagTextField : tagsViewController.view
+        scrollView.contentSize = CGSize(width: view.frame.width, height: finalSubview.frame.origin.y + finalSubview.frame.height + 8.0)
       }
 
 
