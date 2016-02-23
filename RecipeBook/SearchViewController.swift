@@ -192,7 +192,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         let recipe = list[indexPath.row]
 
         // Configure the cell
-        cell.textLabel?.text = recipe.name
+        cell.textLabel!.text = recipe.name != "" ? recipe.name : "Unnamed recipe"
 
         return cell
       }
