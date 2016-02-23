@@ -205,11 +205,19 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath)
       {
         if editingStyle == .Delete {
-          var list = searching ? filteredRecipes : recipes
 
           // Remove the recipe from the list, and update the managed object context
-          let recipe = list.removeAtIndex(indexPath.row)
+          var recipe: Recipe
+          if searching {
+            recipe = filteredRecipes.removeAtIndex(indexPath.row)
+            recipes.removeAtIndex(recipes.indexOf(recipe)!)
+          }
+          else {
+            recipe = recipes.removeAtIndex(indexPath.row)
+          }
+
           managedObjectContext.deleteObject(recipe)
+
           do { try managedObjectContext.save() }
           catch let e { fatalError("error: \(e)") }
 
