@@ -68,8 +68,9 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
         // Configure the detail text view
         detailTextView = UITextView(frame: CGRect.zero)
-        detailTextView.layer.borderColor = UIColor.grayColor().CGColor
+        detailTextView.layer.cornerRadius = 5.0
         detailTextView.layer.borderWidth = 0.5
+        detailTextView.layer.borderColor = UIColor.lightGrayColor().CGColor
         detailTextView.translatesAutoresizingMaskIntoConstraints = false
         detailTextView.delegate = self
         scrollView.addSubview(detailTextView)
@@ -134,6 +135,8 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
       {
         super.setEditing(editing, animated: animated)
 
+        summaryTextField.borderStyle = editing ? .RoundedRect : .None
+
         imageView.userInteractionEnabled = editing
       }
 
@@ -153,9 +156,6 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
     func textFieldDidBeginEditing(textField: UITextField)
       {
         activeSubview = textField
-
-        detailTextView.userInteractionEnabled = false
-        imageView.userInteractionEnabled = false;
       }
 
 
@@ -169,9 +169,6 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
     func textFieldDidEndEditing(textField: UITextField)
       {
         step.summary = textField.text!
-
-        detailTextView.userInteractionEnabled = true
-        imageView.userInteractionEnabled = true
 
         if activeSubview === textField {
           activeSubview = nil
@@ -194,18 +191,12 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
     func textViewDidBeginEditing(textView: UITextView)
       {
         activeSubview = textView
-
-        summaryTextField.userInteractionEnabled = true
-        imageView.userInteractionEnabled = false;
       }
 
 
     func textViewDidEndEditing(textView: UITextView)
       {
         step.detail = textView.text!
-
-        summaryTextField.userInteractionEnabled = true
-        imageView.userInteractionEnabled = true
 
         if activeSubview === textView {
           activeSubview = nil
