@@ -144,25 +144,37 @@ class ScrollingViewController: UIViewController
           // Get the duration of the keyboard animation
           let duration = notification.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! Double
 
-          // If the keyboard is about to be presented and will overlap with the active subview
-          if notification.name == UIKeyboardWillShowNotification && overlapRect.height > 0 {
+          // If the keyboard is about to appear
+          if notification.name == UIKeyboardWillShowNotification {
 
-            // Deactivate the scroll view's bottom constraint
-            scrollViewBottomConstraint.active = false
+            // Disable scrolling while we're editing text
+            scrollView.scrollEnabled = false
 
-            // Set and activate the scroll view's height constraint
-            scrollViewHeightConstraint = scrollView.heightAnchor.constraintEqualToConstant(scrollView.frame.height - keyboardFrame.height)
-            scrollViewHeightConstraint!.active = true
+            // If the keyboard will overlap with the active subview
+            if overlapRect.height > 0 {
 
-            // Update the scroll view's frame and content offset in an animation block
-            UIView.animateWithDuration(duration, animations:
-                { () -> Void in
-                  self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.scrollView.frame.height - keyboardFrame.height)
-                  self.scrollView.contentOffset = CGPoint(x: self.scrollView.contentOffset.x, y: self.scrollView.contentOffset.y + subviewFrame.origin.y + subviewFrame.height - self.scrollView.frame.height)
-                })
+              // Deactivate the scroll view's bottom constraint
+              scrollViewBottomConstraint.active = false
+
+              // Set and activate the scroll view's height constraint
+              scrollViewHeightConstraint = scrollView.heightAnchor.constraintEqualToConstant(scrollView.frame.height - keyboardFrame.height)
+              scrollViewHeightConstraint!.active = true
+
+              // Update the scroll view's frame and content offset in an animation block
+              UIView.animateWithDuration(duration, animations:
+                  { () -> Void in
+                    self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.scrollView.frame.height - keyboardFrame.height)
+                    self.scrollView.contentOffset = CGPoint(x: self.scrollView.contentOffset.x, y: self.scrollView.contentOffset.y + subviewFrame.origin.y + subviewFrame.height - self.scrollView.frame.height)
+                  })
+            }
           }
+
           // Otherwise if the keyboard is about to disappear
           else if notification.name == UIKeyboardWillHideNotification {
+
+            // Re-enable scrolling
+            scrollView.scrollEnabled = true
+
             // Update the scroll view's layout constraints
             scrollViewHeightConstraint?.active = false
             scrollViewBottomConstraint.active = true
