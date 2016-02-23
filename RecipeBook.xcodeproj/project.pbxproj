@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1F0149711C3CDE0900DC3E59 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0149701C3CDE0900DC3E59 /* Recipe.swift */; };
-		1F0149731C3CDEDA00DC3E59 /* RecipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0149721C3CDEDA00DC3E59 /* RecipeTableViewController.swift */; };
 		1F0E916A1C669F0500DD2446 /* RecipeBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */; };
 		1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29E81C580CCA000CE463 /* StepViewController.swift */; };
 		1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29EA1C58249C000CE463 /* Observation.swift */; };
+		1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */; };
 		1F8A251C1C6537E6008E394D /* BaseObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8A251B1C6537E6008E394D /* BaseObject.swift */; };
 		1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8A80F61C51637B00971E9D /* RecipeViewController.swift */; };
 		1F8A80FB1C52E28F00971E9D /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8A80FA1C52E28F00971E9D /* Step.swift */; };
@@ -27,11 +27,11 @@
 
 /* Begin PBXFileReference section */
 		1F0149701C3CDE0900DC3E59 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
-		1F0149721C3CDEDA00DC3E59 /* RecipeTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeTableViewController.swift; sourceTree = "<group>"; };
 		1F0E91691C669F0500DD2446 /* RecipeBook.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RecipeBook.xcdatamodel; sourceTree = "<group>"; };
 		1F4C29E61C57FD64000CE463 /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
 		1F4C29E81C580CCA000CE463 /* StepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepViewController.swift; sourceTree = "<group>"; };
 		1F4C29EA1C58249C000CE463 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
+		1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		1F8A251B1C6537E6008E394D /* BaseObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseObject.swift; sourceTree = "<group>"; };
 		1F8A80F61C51637B00971E9D /* RecipeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeViewController.swift; sourceTree = "<group>"; };
 		1F8A80FA1C52E28F00971E9D /* Step.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
@@ -93,9 +93,9 @@
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
 				1F4C29EA1C58249C000CE463 /* Observation.swift */,
 				1F0149701C3CDE0900DC3E59 /* Recipe.swift */,
-				1F0149721C3CDEDA00DC3E59 /* RecipeTableViewController.swift */,
 				1F8A80F61C51637B00971E9D /* RecipeViewController.swift */,
 				1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */,
+				1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */,
 				1F8A80FA1C52E28F00971E9D /* Step.swift */,
 				1F4C29E81C580CCA000CE463 /* StepViewController.swift */,
 				1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */,
@@ -178,10 +178,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */,
 				1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */,
 				1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */,
 				1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */,
-				1F0149731C3CDEDA00DC3E59 /* RecipeTableViewController.swift in Sources */,
 				1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */,
 				1F918ACC1C6D565C00C5B2D0 /* ScrollingViewController.swift in Sources */,
 				1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */,

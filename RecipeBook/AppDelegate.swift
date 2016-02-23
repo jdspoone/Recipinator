@@ -62,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         window = UIWindow(frame: UIScreen.mainScreen().bounds)
 
         // Embed the recipe table view controller in a navigation view controller, and set that as the root view controller
-        let navigationViewController = UINavigationController(rootViewController: RecipeTableViewController(managedObjectContext: managedObjectContext))
+        let navigationViewController = UINavigationController(rootViewController: SearchViewController(context: managedObjectContext))
         navigationViewController.navigationBar.translucent = false
         self.window!.rootViewController = navigationViewController
 
