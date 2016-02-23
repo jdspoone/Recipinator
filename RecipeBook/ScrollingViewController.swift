@@ -12,7 +12,7 @@ class ScrollingViewController: UIViewController
 
     var scrollView: UIScrollView!
     var scrollViewBottomConstraint: NSLayoutConstraint!
-    var scrollViewHeightConstraint: NSLayoutConstraint!
+    var scrollViewHeightConstraint: NSLayoutConstraint?
 
     var saveButton: UIBarButtonItem!
     var doneButton: UIBarButtonItem!
@@ -69,8 +69,8 @@ class ScrollingViewController: UIViewController
         view.addSubview(scrollView)
 
         // Configure the layout bindings for the scroll view
-        scrollView.trailingAnchor.constraintEqualToAnchor(view.trailingAnchor).active = true
-        scrollView.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor).active = true
+        scrollView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
+        scrollView.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
         scrollView.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
 
         scrollViewBottomConstraint = scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
@@ -152,7 +152,7 @@ class ScrollingViewController: UIViewController
 
             // Set and activate the scroll view's height constraint
             scrollViewHeightConstraint = scrollView.heightAnchor.constraintEqualToConstant(scrollView.frame.height - keyboardFrame.height)
-            scrollViewHeightConstraint.active = true
+            scrollViewHeightConstraint!.active = true
 
             // Update the scroll view's frame and content offset in an animation block
             UIView.animateWithDuration(duration, animations:
@@ -164,7 +164,7 @@ class ScrollingViewController: UIViewController
           // Otherwise if the keyboard is about to disappear
           else if notification.name == UIKeyboardWillHideNotification {
             // Update the scroll view's layout constraints
-            scrollViewHeightConstraint.active = false
+            scrollViewHeightConstraint?.active = false
             scrollViewBottomConstraint.active = true
 
             // Animate the scroll view's frame
