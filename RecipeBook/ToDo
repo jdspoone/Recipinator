@@ -1,38 +1,42 @@
-TagsViewController:
-  -delete button doesn't look great...
+Improve TableView efficiency, i.e. don't reload the entire table when we can do a single row/section instead...
+
+CoreData:
+  -make new recipes orphans until completion call back
+    -inside RecipeViewController, will need to remember whether we've been inserted yet, and delay adding sub-nodes to the context until the recipe is added...
+
+  -implement reference object stuff...
+
+
+SearchViewController
+  -expand to include Ingredients and Tags
+
+  -add little button to go inside search text field to clear field without exiting search mode
+
 
 RecipeViewController:
   -image view
     -give clear indication that you can select a photo when in editting mode
       -when editing, display label above view with text "tap to select photo"?
+      -when editing, change default photo to one that says "tap to select photo"?
     -add ability to delete photo without selecting a new one
       -when it editing, display delete button in top right corner?
-
-  -table view add/collapse buttons should have images...
 
   -the component textfields of the ingredientTableViewCells should have dynamic lengths
 
   -as ingredients table view shrinks, steps table view should smoothly follow it up..
     -will require unbinding some layout constraints and animating the frame of the steps table view
 
-  -do we disable scrolling when editting a textfield???
-
-  -add method to create custom square buttons
-    -lots of repitition for add/collapse ingredient/step buttons currently...
-
   -implement ingredient/step reordering...
 
 
-ScrollingViewController
-  -smoother scrolling transition when keyboard appears
+Buttons:
+  -should have actual views associated with them, not text...
+  -add method to create custom square buttons?
+
 
 
 AppDelegate:
   -attempt to convert data store before just deleting it...
-
-
-CoreData:
-  -do we really need to override initWithEntity:insertIntoManagedObjectContext for every subclass of NSManagedObject?
 
 
 implement willGoIntoBackground stuff...
