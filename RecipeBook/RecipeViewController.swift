@@ -673,9 +673,11 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func addStep(sender: AnyObject)
       {
-        let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", imageData: nil, context: managedObjectContext)
+        let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", imageData: nil, context: managedObjectContext, insert: false)
         let stepViewController = StepViewController(step: step, editing: true, context: managedObjectContext)
             { (step: Step) -> Void in
+              // Insert the returned step into the managed object context, and update the recipe
+              self.managedObjectContext.insertObject(step)
               self.recipe.steps.insert(step)
 
               do { try self.managedObjectContext.save() }
