@@ -214,53 +214,10 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         tagTextField.heightAnchor.constraintEqualToConstant(30.0).active = true
         tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
 
-        // Configure button to add ingredients
-        addIngredientButton = UIButton(type: .Custom)
-        addIngredientButton.layer.cornerRadius = 5.0
-        addIngredientButton.layer.borderWidth = 0.5
-        addIngredientButton.layer.borderColor = UIColor.blackColor().CGColor
-        addIngredientButton.showsTouchWhenHighlighted = true
-        addIngredientButton.setTitle("+", forState: .Normal)
-        addIngredientButton.addTarget(self, action: "addIngredient:", forControlEvents: .TouchUpInside)
-        addIngredientButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        addIngredientButton.titleLabel!.textAlignment = .Center
-        addIngredientButton.translatesAutoresizingMaskIntoConstraints = false
-
-        // Configure the button to collapse the ingredients table view
-        collapseIngredientsButton = UIButton(type: .Custom)
-        collapseIngredientsButton.layer.cornerRadius = 5.0
-        collapseIngredientsButton.layer.borderWidth = 0.5
-        collapseIngredientsButton.layer.borderColor = UIColor.blackColor().CGColor
-        collapseIngredientsButton.showsTouchWhenHighlighted = true
-        collapseIngredientsButton.setTitle(">", forState: .Normal)
-        collapseIngredientsButton.addTarget(self, action: "collapseIngredients:", forControlEvents: .TouchUpInside)
-        collapseIngredientsButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        collapseIngredientsButton.titleLabel!.textAlignment = .Center
-        collapseIngredientsButton.translatesAutoresizingMaskIntoConstraints = false
-
-        // Configure button to add steps
-        addStepButton = UIButton(type: .Custom)
-        addStepButton.layer.cornerRadius = 5.0
-        addStepButton.layer.borderWidth = 0.5
-        addStepButton.layer.borderColor = UIColor.blackColor().CGColor
-        addStepButton.showsTouchWhenHighlighted = true
-        addStepButton.setTitle("+", forState: .Normal)
-        addStepButton.addTarget(self, action: "addStep:", forControlEvents: .TouchUpInside)
-        addStepButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        addStepButton.titleLabel!.textAlignment = .Center
-        addStepButton.translatesAutoresizingMaskIntoConstraints = false
-
-        // Configure the button to collapse the ingredients table view
-        collapseStepsButton = UIButton(type: .Custom)
-        collapseStepsButton.layer.cornerRadius = 5.0
-        collapseStepsButton.layer.borderWidth = 0.5
-        collapseStepsButton.layer.borderColor = UIColor.blackColor().CGColor
-        collapseStepsButton.showsTouchWhenHighlighted = true
-        collapseStepsButton.setTitle(">", forState: .Normal)
-        collapseStepsButton.addTarget(self, action: "collapseSteps:", forControlEvents: .TouchUpInside)
-        collapseStepsButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-        collapseStepsButton.titleLabel!.textAlignment = .Center
-        collapseStepsButton.translatesAutoresizingMaskIntoConstraints = false
+        addIngredientButton = roundedSquareButton(self, action: "addIngredient:", controlEvents: .TouchUpInside, imageName: "addImage")
+        collapseIngredientsButton = roundedSquareButton(self, action: "collapseIngredients:", controlEvents: .TouchUpInside, imageName: "collapseImage")
+        addStepButton = roundedSquareButton(self, action: "addStep:", controlEvents: .TouchUpInside, imageName: "addImage")
+        collapseStepsButton = roundedSquareButton(self, action: "collapseSteps:", controlEvents: .TouchUpInside, imageName: "collapseImage")
       }
 
 
