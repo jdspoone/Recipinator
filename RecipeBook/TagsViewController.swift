@@ -62,7 +62,7 @@ class TagsViewController: UIViewController
           tags.insert(tag)
           didChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
 
-          let tagView = TagView(tag: tag, controller: self)
+          let tagView = TagView(tag: tag, editing: editing, controller: self)
           view.addSubview(tagView)
 
           tagViewDictionary[tag] = tagView
@@ -168,10 +168,18 @@ class TagsViewController: UIViewController
 
         // Build the tag subview dictionary
         for tag in tags {
-          let tagView = TagView(tag: tag, controller: self)
+          let tagView = TagView(tag: tag, editing: editing, controller: self)
           tagViewDictionary[tag] = tagView
           view.addSubview(tagView)
         }
+      }
+
+
+    override func viewDidLoad()
+      {
+        super.viewDidLoad()
+
+        setEditing(editing, animated: true)
       }
 
 
@@ -188,7 +196,7 @@ class TagsViewController: UIViewController
         super.setEditing(editing, animated: animated)
 
         for (_, tagView) in tagViewDictionary {
-          tagView.deleteButton.hidden = editing ? false : true
+          tagView.setEditing(editing)
         }
       }
 
@@ -204,15 +212,20 @@ class TagsViewController: UIViewController
         var leftConstraint: NSLayoutConstraint?
         var topConstraint: NSLayoutConstraint?
 
+        var nameLabelLeftConstraint: NSLayoutConstraint!
+        var nameLabelRightConstraint: NSLayoutConstraint!
+        var nameLabelWidthConstraint: NSLayoutConstraint!
+        var nameLabelCenterXConstraint: NSLayoutConstraint!
+
         var nameLabel: UILabel!
         var deleteButton: UIButton!
 
         var width: CGFloat
-          { return nameLabel.intrinsicContentSize().width + nameLabel.intrinsicContentSize().height + (3 * spacing) }
+          { return nameLabel.intrinsicContentSize().width + nameLabel.intrinsicContentSize().height + (2 * spacing) }
 
         let spacing: CGFloat = 2.5
 
-        init(tag: Tag, controller: TagsViewController)
+        init(tag: Tag, editing: Bool, controller: TagsViewController)
           {
             self.recipeTag = tag
             self.tagsViewController = controller
@@ -228,32 +241,42 @@ class TagsViewController: UIViewController
             nameLabel.translatesAutoresizingMaskIntoConstraints = false
             addSubview(nameLabel)
 
-            deleteButton = UIButton(type: .Custom)
-            deleteButton.showsTouchWhenHighlighted = true
-            deleteButton.setTitle("X", forState: .Normal)
-            deleteButton.addTarget(self, action: "deleteTag:", forControlEvents: .TouchUpInside)
-            deleteButton.setTitleColor(UIColor.blackColor(), forState: .Normal)
-            deleteButton.titleLabel!.textAlignment = .Center
-            deleteButton.translatesAutoresizingMaskIntoConstraints = false
+            deleteButton = button(self, action: "deleteTag:", controlEvents: .TouchUpInside, imageName: "deleteImage")
             addSubview(deleteButton)
 
-            nameLabel.leftAnchor.constraintEqualToAnchor(leftAnchor, constant: spacing).active = true
-            nameLabel.rightAnchor.constraintEqualToAnchor(deleteButton.leftAnchor, constant: -spacing).active = true
+            // Establish layout constraints
+            nameLabelLeftConstraint = nameLabel.leftAnchor.constraintEqualToAnchor(leftAnchor, constant: spacing)
+            nameLabelRightConstraint = nameLabel.rightAnchor.constraintEqualToAnchor(deleteButton.leftAnchor, constant: -spacing)
+
+            nameLabelWidthConstraint = nameLabel.widthAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().width)
+            nameLabelCenterXConstraint = nameLabel.centerXAnchor.constraintEqualToAnchor(centerXAnchor)
+
             nameLabel.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
 
             deleteButton.widthAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().height).active = true
             deleteButton.heightAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().height).active = true
-            deleteButton.rightAnchor.constraintEqualToAnchor(rightAnchor, constant: spacing).active = true
+            deleteButton.rightAnchor.constraintEqualToAnchor(rightAnchor).active = true
             deleteButton.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
 
-            widthAnchor.constraintEqualToConstant(width)
+            widthAnchor.constraintEqualToConstant(width).active = true
             heightAnchor.constraintEqualToAnchor(nameLabel.heightAnchor).active = true
+
+            setEditing(editing)
           }
 
 
         required init?(coder aDecoder: NSCoder)
           {
             fatalError("init(coder:) has not been implemented")
+          }
+
+
+        func setEditing(editing: Bool)
+          {
+            deleteButton.hidden = editing ? false : true
+
+            NSLayoutConstraint.deactivateConstraints(editing ? [nameLabelWidthConstraint, nameLabelCenterXConstraint] : [nameLabelLeftConstraint, nameLabelRightConstraint])
+            NSLayoutConstraint.activateConstraints(editing ? [nameLabelLeftConstraint, nameLabelRightConstraint] : [nameLabelWidthConstraint, nameLabelCenterXConstraint])
           }
 
 
