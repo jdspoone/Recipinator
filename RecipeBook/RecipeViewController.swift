@@ -277,6 +277,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         nameTextField.borderStyle = editing ? .RoundedRect : .None
         imageView.userInteractionEnabled = editing
 
+        stepsTableView.setEditing(editing, animated: animated)
         tagsViewController.setEditing(editing, animated: animated)
       }
 
@@ -514,6 +515,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
             let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
             let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
             cell.textLabel?.text = step.summary
+            cell.showsReorderControl = true
             return cell
 
           default :
@@ -553,6 +555,37 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         }
 
         view.layoutSubviews()
+      }
+
+
+    func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool
+      { return editing }
+
+
+    func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath)
+      {
+        switch tableView {
+          case ingredientsTableView :
+            fatalError("ingredient amount reordering has not been implemented")
+
+          case stepsTableView :
+            // Get handles on the ingredient amounts we're going to be working with
+            let sourceStep = recipe.steps.sort(stepsSortingBlock)[sourceIndexPath.row]
+            let destinationStep = recipe.steps.sort(stepsSortingBlock)[destinationIndexPath.row]
+            let movedSteps = recipe.steps.filter({ $0.number > sourceStep.number && $0.number <= destinationStep.number })
+
+            let sourceNumber = sourceStep.number
+            let destinationNumber = destinationStep.number
+
+            // Update the ordering of the ingredients
+            sourceStep.number = destinationStep.number
+            for step in movedSteps {
+              step.number += sourceNumber < destinationNumber ? -1 : 1
+            }
+
+          default :
+            fatalError("unexpected table view")
+        }
       }
 
 
