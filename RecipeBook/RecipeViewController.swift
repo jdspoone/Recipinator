@@ -23,7 +23,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     var nameTextField: UITextField!
     var imageView: UIImageView!
-    var ingredientsTableView: UITableView!
+    var ingredientAmountsTableView: UITableView!
     var stepsTableView: UITableView!
     var tagsViewController: TagsViewController!
     var tagTextField: UITextField!
@@ -33,15 +33,15 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     var editingIngredientIndexPath: NSIndexPath?
 
 
-    var ingredientsTableViewHeightConstraint: NSLayoutConstraint!
+    var ingredientAmountsTableViewHeightConstraint: NSLayoutConstraint!
       {
         willSet {
-          if ingredientsTableViewHeightConstraint != nil {
-            NSLayoutConstraint.deactivateConstraints([ingredientsTableViewHeightConstraint])
+          if ingredientAmountsTableViewHeightConstraint != nil {
+            NSLayoutConstraint.deactivateConstraints([ingredientAmountsTableViewHeightConstraint])
           }
         }
         didSet {
-          NSLayoutConstraint.activateConstraints([ingredientsTableViewHeightConstraint])
+          NSLayoutConstraint.activateConstraints([ingredientAmountsTableViewHeightConstraint])
         }
       }
 
@@ -88,16 +88,16 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func updateLayoutConstraints()
       {
         // Deactivate
-        if ingredientsTableViewHeightConstraint != nil && stepsTableViewHeightConstraint != nil {
-          NSLayoutConstraint.deactivateConstraints([ingredientsTableViewHeightConstraint, stepsTableViewHeightConstraint])
+        if ingredientAmountsTableViewHeightConstraint != nil && stepsTableViewHeightConstraint != nil {
+          NSLayoutConstraint.deactivateConstraints([ingredientAmountsTableViewHeightConstraint, stepsTableViewHeightConstraint])
         }
 
         // Set
-        ingredientsTableViewHeightConstraint = ingredientsTableView.heightAnchor.constraintEqualToConstant(ingredientsTableView.contentSize.height)
+        ingredientAmountsTableViewHeightConstraint = ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(ingredientAmountsTableView.contentSize.height)
         stepsTableViewHeightConstraint = stepsTableView.heightAnchor.constraintEqualToConstant(stepsTableView.contentSize.height)
 
         // Activate
-        NSLayoutConstraint.activateConstraints([ingredientsTableViewHeightConstraint, stepsTableViewHeightConstraint])
+        NSLayoutConstraint.activateConstraints([ingredientAmountsTableViewHeightConstraint, stepsTableViewHeightConstraint])
 
         // Set the content size of the scroll view
         let finalSubview = editing ? tagTextField : tagsViewController.view
@@ -110,7 +110,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
 
         // Get the tableViewCell for the new ingredientAmount
-        let cell = ingredientsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
         let name = cell.nameTextField.text!
         let amount = cell.amountTextField.text!
 
@@ -150,12 +150,12 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         scrollView.addSubview(imageView)
 
         // Configure the ingredient table view
-        ingredientsTableView = UITableView(frame: CGRect.zero)
-        ingredientsTableView.bounces = false
-        ingredientsTableView.delegate = self
-        ingredientsTableView.dataSource = self
-        ingredientsTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(ingredientsTableView)
+        ingredientAmountsTableView = UITableView(frame: CGRect.zero)
+        ingredientAmountsTableView.bounces = false
+        ingredientAmountsTableView.delegate = self
+        ingredientAmountsTableView.dataSource = self
+        ingredientAmountsTableView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(ingredientAmountsTableView)
 
         // Configure the step table view
         stepsTableView = UITableView(frame: CGRect.zero)
@@ -192,14 +192,14 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         imageView.topAnchor.constraintEqualToAnchor(nameTextField.bottomAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the ingredient table view
-        ingredientsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        ingredientsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        ingredientsTableView.topAnchor.constraintEqualToAnchor(imageView.bottomAnchor, constant: 16.0).active = true
+        ingredientAmountsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
+        ingredientAmountsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
+        ingredientAmountsTableView.topAnchor.constraintEqualToAnchor(imageView.bottomAnchor, constant: 16.0).active = true
 
         // Configure the layout bindings for the step table view
         stepsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         stepsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        stepsTableView.topAnchor.constraintEqualToAnchor(ingredientsTableView.bottomAnchor, constant: 16.0).active = true
+        stepsTableView.topAnchor.constraintEqualToAnchor(ingredientAmountsTableView.bottomAnchor, constant: 16.0).active = true
 
         // Configure the layout bindings for the tag view
         tagsViewController.view.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
@@ -372,7 +372,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath)
       {
         // If we're about to show the newly created ingredient cell
-        if tableView === ingredientsTableView && editingIngredientIndexPath == indexPath {
+        if tableView === ingredientAmountsTableView && editingIngredientIndexPath == indexPath {
           dispatch_async(dispatch_get_main_queue())
               { () -> Void in
                 let cell = tableView.cellForRowAtIndexPath(indexPath) as! NewIngredientAmountTableViewCell
@@ -385,7 +385,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
       {
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
             return
 
@@ -420,7 +420,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
           var rightButton: UIButton!
 
           switch tableView {
-            case ingredientsTableView :
+            case ingredientAmountsTableView :
               leftButton = collapseIngredientsButton
               label.text = "Ingredients"
               rightButton = addIngredientButton
@@ -469,7 +469,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func numberOfSectionsInTableView(tableView: UITableView) -> Int
       {
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             return newIngredientAmount == false ? 1 : 2
           case stepsTableView :
             return 1
@@ -482,7 +482,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
       {
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             return section == 0 ? recipe.ingredientAmounts.count : 1
 
           case stepsTableView :
@@ -497,7 +497,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
       {
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             // Either we're working with pre-existing ingredient amounts
             if indexPath.section == 0 {
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
@@ -531,7 +531,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         assert(editing == true, "unexpected state")
 
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             if editingStyle == .Delete {
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
               recipe.ingredientAmounts.remove(ingredientAmount)
@@ -562,7 +562,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath)
       {
         switch tableView {
-          case ingredientsTableView :
+          case ingredientAmountsTableView :
             fatalError("ingredient amount reordering has not been implemented")
 
           case stepsTableView :
@@ -642,7 +642,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
       {
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
         if (newIngredientAmount == true) {
-          let cell = ingredientsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
 
           // If the new ingredientAmount has a valid name, add it to the recipe
           if let name = cell.nameTextField.text where name != "" {
@@ -658,8 +658,8 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         newIngredientAmount = true;
         editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 1)
 
-        // Reload the ingredientsTableView and layout subviews
-        ingredientsTableView.reloadData()
+        // Reload the ingredientAmountsTableView and layout subviews
+        ingredientAmountsTableView.reloadData()
         view.layoutSubviews()
       }
 
@@ -686,10 +686,10 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func collapseIngredients(sender: AnyObject)
       {
-        let ingredients = self.ingredientsTableView
+        let ingredients = self.ingredientAmountsTableView
 
         // Either we're collapsing the table view
-        if ingredientsTableView.frame.height == ingredientsTableView.contentSize.height {
+        if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
                 ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: self.collapseIngredientsButton.frame.height)
@@ -697,14 +697,14 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
              },
             completion:
               { (compete: Bool) -> Void in
-                self.ingredientsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
+                self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
               })
         }
         // Or we're expanding it
         else {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
-                self.ingredientsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(ingredients.contentSize.height)
+                self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(ingredients.contentSize.height)
                 ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: ingredients.contentSize.height)
                 ingredients.scrollEnabled = true
              })
