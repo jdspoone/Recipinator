@@ -28,7 +28,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     var tagsViewController: TagsViewController!
     var tagTextField: UITextField!
 
-    var newIngredientAmount: IngredientAmount?
+    var newIngredientAmount = false
 
     var editingIngredientIndexPath: NSIndexPath?
 
@@ -107,21 +107,20 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func addNewIngredientAmountToRecipe()
       {
-        if let ingredientAmount = newIngredientAmount {
-          // Insert the new managed objects into the context if necessary
-          if ingredientAmount.ingredient.inserted == false {
-            managedObjectContext.insertObject(ingredientAmount.ingredient)
-          }
-          if ingredientAmount.inserted == false {
-            managedObjectContext.insertObject(ingredientAmount)
-          }
+        assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
 
-          // Update the recipe
-          recipe.ingredientAmounts.insert(ingredientAmount)
+        // Get the tableViewCell for the new ingredientAmount
+        let cell = ingredientsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+        let name = cell.nameTextField.text!
+        let amount = cell.amountTextField.text!
 
-          // Set the new ingredient amount property to nil
-          newIngredientAmount = nil
-        }
+        // Create a new ingredient and ingredientAmount, and add it to the recipe
+        let ingredient = Ingredient(name: name, context: managedObjectContext)
+        let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: amount, number: Int16(recipe.ingredientAmounts.count), context: managedObjectContext)
+        recipe.ingredientAmounts.insert(ingredientAmount)
+
+        // Set the newIngredientAmount flag to false
+        newIngredientAmount = false
       }
 
 
@@ -376,7 +375,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         if tableView === ingredientsTableView && editingIngredientIndexPath == indexPath {
           dispatch_async(dispatch_get_main_queue())
               { () -> Void in
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! IngredientsTableViewCell
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! NewIngredientAmountTableViewCell
                 cell.nameTextField.becomeFirstResponder()
               }
         }
@@ -471,7 +470,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
       {
         switch tableView {
           case ingredientsTableView :
-            return newIngredientAmount == nil ? 1 : 2
+            return newIngredientAmount == false ? 1 : 2
           case stepsTableView :
             return 1
           default :
@@ -502,13 +501,11 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
             // Either we're working with pre-existing ingredient amounts
             if indexPath.section == 0 {
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
-              let cell = IngredientsTableViewCell(ingredientAmount: ingredientAmount, tableView: tableView)
-              return cell
+              return IngredientAmountTableViewCell(ingredientAmount: ingredientAmount, tableView: tableView)
             }
             // Or we're creating a new ingredient amount
             else {
-              let cell = IngredientsTableViewCell(ingredientAmount: newIngredientAmount!, tableView: tableView)
-              return cell
+              return NewIngredientAmountTableViewCell(tableView: tableView)
             }
 
           case stepsTableView :
@@ -593,6 +590,11 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     override func save(sender: UIBarButtonItem)
       {
+        // If there is new (and thus unsaved) ingredientAmount, add it to the recipe
+        if (newIngredientAmount == true) {
+          addNewIngredientAmountToRecipe()
+        }
+
         super.save(sender)
 
         do { try managedObjectContext.save() }
@@ -638,25 +640,26 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     func addIngredient(sender: AnyObject)
       {
-        // If we previously created an ingredient amount which has not yet been inserted into the context
-        if let ingredientAmount = newIngredientAmount {
-          // We only want to add it if it is valid
-          if ingredientAmount.ingredient.name != "" {
+        // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
+        if (newIngredientAmount == true) {
+          let cell = ingredientsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+
+          // If the new ingredientAmount has a valid name, add it to the recipe
+          if let name = cell.nameTextField.text where name != "" {
             addNewIngredientAmountToRecipe()
           }
-          // Otherwise do nothing
+          // Otherwise, return
           else {
             return
           }
         }
 
-        // Create a new ingredient and ingredient amount, without inserting it into the context
-        let newIngredient = Ingredient(name: "", context: managedObjectContext, insert: false)
-        newIngredientAmount = IngredientAmount(ingredient: newIngredient, amount: "", number: Int16(recipe.ingredientAmounts.count), context: managedObjectContext, insert: false)
+        // Set the newIngredientAmount flag and the editingIngredientIndexPath
+        newIngredientAmount = true;
         editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 1)
 
+        // Reload the ingredientsTableView and layout subviews
         ingredientsTableView.reloadData()
-
         view.layoutSubviews()
       }
 

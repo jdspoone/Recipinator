@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1F0149711C3CDE0900DC3E59 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0149701C3CDE0900DC3E59 /* Recipe.swift */; };
 		1F0E916A1C669F0500DD2446 /* RecipeBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */; };
+		1F1E12B91CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */; };
 		1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29E81C580CCA000CE463 /* StepViewController.swift */; };
 		1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29EA1C58249C000CE463 /* Observation.swift */; };
 		1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */; };
@@ -29,6 +30,7 @@
 /* Begin PBXFileReference section */
 		1F0149701C3CDE0900DC3E59 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		1F0E91691C669F0500DD2446 /* RecipeBook.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RecipeBook.xcdatamodel; sourceTree = "<group>"; };
+		1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewIngredientAmountTableViewCell.swift; sourceTree = "<group>"; };
 		1F4C29E61C57FD64000CE463 /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
 		1F4C29E81C580CCA000CE463 /* StepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepViewController.swift; sourceTree = "<group>"; };
 		1F4C29EA1C58249C000CE463 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				1F8A251B1C6537E6008E394D /* BaseObject.swift */,
 				1FFA67C21C55676D00C4F458 /* Ingredient.swift */,
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
+				1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */,
 				1F4C29EA1C58249C000CE463 /* Observation.swift */,
 				1F0149701C3CDE0900DC3E59 /* Recipe.swift */,
 				1F8A80F61C51637B00971E9D /* RecipeViewController.swift */,
@@ -192,6 +195,7 @@
 				1F8A80FB1C52E28F00971E9D /* Step.swift in Sources */,
 				1F918ACA1C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift in Sources */,
 				1FFF52211C3319D5006A99C2 /* AppDelegate.swift in Sources */,
+				1F1E12B91CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift in Sources */,
 				1F918AD01C6E5FF200C5B2D0 /* Tag.swift in Sources */,
 				1F0E916A1C669F0500DD2446 /* RecipeBook.xcdatamodeld in Sources */,
 				1F0149711C3CDE0900DC3E59 /* Recipe.swift in Sources */,

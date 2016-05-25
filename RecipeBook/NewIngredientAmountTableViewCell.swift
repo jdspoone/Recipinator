@@ -7,11 +7,9 @@
 import UIKit
 
 
-class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
+class NewIngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
   {
     weak var parentTableView: UITableView?
-
-    var ingredientAmount: IngredientAmount
 
     var nameTextField: UITextField!
     var amountTextField: UITextField!
@@ -22,23 +20,20 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
       }
 
 
-    init(ingredientAmount: IngredientAmount, tableView: UITableView)
+    init(tableView: UITableView)
       {
-        self.ingredientAmount = ingredientAmount
         self.parentTableView = tableView
 
-        super.init(style: .Default, reuseIdentifier: "ingredientTableViewCell")
+        super.init(style: .Default, reuseIdentifier: "newIngredientTableViewCell")
 
         nameTextField = UITextField(frame: CGRect.zero)
         nameTextField.placeholder = "Name"
-        nameTextField.text = ingredientAmount.ingredient.name
         nameTextField.returnKeyType = .Done
         nameTextField.delegate = self
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
 
         amountTextField = UITextField(frame: CGRect.zero)
         amountTextField.placeholder = "Amount"
-        amountTextField.text = ingredientAmount.amount
         amountTextField.textAlignment = .Right
         amountTextField.returnKeyType = .Done
         amountTextField.delegate = self
@@ -62,6 +57,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         amountTextField.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
       }
 
+
     required init?(coder aDecoder: NSCoder)
       {
         fatalError("init(coder:) has not been implemented")
@@ -84,27 +80,31 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        if textField.text != nil && textField.text != "" {
+        // Allow users to end editting if both the name and amount text fields are empty
+        if ((nameTextField.text == nil || nameTextField.text == "") && (amountTextField.text == nil || amountTextField.text == "")) {
+          // Forcibly end editting of the textField
+          textField.endEditing(true)
+
+          // Set the RecipeViewController's newIngredientAmount flag to be false, and tell the parentTable to reload it's data
+          recipeViewController.newIngredientAmount = false
+          parentTableView!.reloadData()
+
+          return true
+        }
+        // Allow users to end editting if the name text field is non-empty
+        else if (nameTextField.text != nil || nameTextField.text != "") {
           textField.endEditing(true)
           return true
         }
-        return false
+        // Otherwise prevent ending editting
+        else {
+          return false
+        }
       }
 
 
     func textFieldDidEndEditing(textField: UITextField)
       {
-        switch textField {
-          case nameTextField :
-            if textField.text! != ingredientAmount.ingredient.name {
-              ingredientAmount.updateIngredient(textField.text!, context: recipeViewController.managedObjectContext)
-              recipeViewController.addNewIngredientAmountToRecipe()
-            }
-          case amountTextField :
-            ingredientAmount.amount = textField.text!
-          default :
-            fatalError("unexpected case")
-        }
         recipeViewController.activeSubview = nil
       }
 
