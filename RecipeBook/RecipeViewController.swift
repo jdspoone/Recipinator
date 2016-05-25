@@ -115,7 +115,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         let amount = cell.amountTextField.text!
 
         // Create a new ingredient and ingredientAmount, and add it to the recipe
-        let ingredient = Ingredient(name: name, context: managedObjectContext)
+        let ingredient = Ingredient.withName(name, inContext: managedObjectContext)
         let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: amount, number: Int16(recipe.ingredientAmounts.count), context: managedObjectContext)
         recipe.ingredientAmounts.insert(ingredientAmount)
 

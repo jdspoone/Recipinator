@@ -23,6 +23,29 @@ class Ingredient : BaseObject
       }
 
 
+    class func withName(name: String, inContext context: NSManagedObjectContext) -> Ingredient
+      {
+        let request = NSFetchRequest(entityName: "Ingredient")
+        request.predicate = NSPredicate(format: "name = %@", name)
+
+        // Query the context for any ingredients with the given name
+        var results: [Ingredient] = []
+        do { results = try context.executeFetchRequest(request) as! [Ingredient] }
+        catch let e { fatalError("errorL \(e)") }
+
+        // If there are no ingredients with that name, return
+        if (results.count == 0) {
+          return Ingredient(name: name, context: context)
+        }
+        else {
+          assert(results.count == 1, "unexpected state - multiple ingredients with name: \(name)")
+          return results.first!
+        }
+      }
+
+
+    // MARK: BaseObject
+
     override class func properties() -> [String : Property]
       {
         return [
