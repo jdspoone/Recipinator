@@ -107,7 +107,7 @@ class TagsViewController: UIViewController
           // If there isn't enough space in the current column, move to the next
           if tagView.width > availableWidthInRow(row) {
             tagViewArrangement.append([])
-            row++
+            row += 1
             column = 0
           }
 
@@ -133,7 +133,7 @@ class TagsViewController: UIViewController
           // Activate the new constraints
           NSLayoutConstraint.activateConstraints([tagView.leftConstraint!, tagView.topConstraint!])
 
-          column++
+          column += 1
         }
       }
 
@@ -241,7 +241,7 @@ class TagsViewController: UIViewController
             nameLabel.translatesAutoresizingMaskIntoConstraints = false
             addSubview(nameLabel)
 
-            deleteButton = button(self, action: "deleteTag:", controlEvents: .TouchUpInside, imageName: "deleteImage")
+            deleteButton = button(self, action: #selector(TagView.deleteTag(_:)), controlEvents: .TouchUpInside, imageName: "deleteImage")
             addSubview(deleteButton)
 
             // Establish layout constraints

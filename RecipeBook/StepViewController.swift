@@ -77,7 +77,7 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("selectImage:")))
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(StepViewController.selectImage(_:))))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(imageView)
 

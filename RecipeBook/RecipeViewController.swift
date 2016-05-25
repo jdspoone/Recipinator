@@ -146,7 +146,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector("selectImage:")))
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(RecipeViewController.selectImage(_:))))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(imageView)
 
@@ -214,10 +214,10 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         tagTextField.heightAnchor.constraintEqualToConstant(30.0).active = true
         tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
 
-        addIngredientButton = roundedSquareButton(self, action: "addIngredient:", controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseIngredientsButton = roundedSquareButton(self, action: "collapseIngredients:", controlEvents: .TouchUpInside, imageName: "collapseImage")
-        addStepButton = roundedSquareButton(self, action: "addStep:", controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseStepsButton = roundedSquareButton(self, action: "collapseSteps:", controlEvents: .TouchUpInside, imageName: "collapseImage")
+        addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
+        collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.collapseIngredients(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
+        addStepButton = roundedSquareButton(self, action: #selector(RecipeViewController.addStep(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
+        collapseStepsButton = roundedSquareButton(self, action: #selector(RecipeViewController.collapseSteps(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
       }
 
 

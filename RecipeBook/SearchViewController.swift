@@ -115,9 +115,9 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         recipeTableViewTopConstraint.active = true
 
         // Create the required bar buttons
-        addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: "addRecipe:")
-        searchButton =  UIBarButtonItem(barButtonSystemItem: .Search, target: self, action: "search:")
-        cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: "cancelSearch:")
+        addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(SearchViewController.addRecipe(_:)))
+        searchButton =  UIBarButtonItem(barButtonSystemItem: .Search, target: self, action: #selector(SearchViewController.search(_:)))
+        cancelButton = UIBarButtonItem(barButtonSystemItem: .Cancel, target: self, action: #selector(SearchViewController.cancelSearch(_:)))
       }
 
 

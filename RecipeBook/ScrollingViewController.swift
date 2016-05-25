@@ -77,8 +77,8 @@ class ScrollingViewController: UIViewController
         scrollViewBottomConstraint.active = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: "save:")
-        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: "done:")
+        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(ScrollingViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(ScrollingViewController.done(_:)))
       }
 
 
@@ -94,10 +94,10 @@ class ScrollingViewController: UIViewController
       {
         super.viewWillAppear(animated)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillMove:", name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillMove:", name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "deviceOrientationDidChange:", name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.deviceOrientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
       }
 
 
