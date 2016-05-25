@@ -160,6 +160,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the step table view
         stepsTableView = UITableView(frame: CGRect.zero)
         stepsTableView.bounces = false
+        stepsTableView.allowsSelectionDuringEditing = true
         stepsTableView.delegate = self
         stepsTableView.dataSource = self
         stepsTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -391,7 +392,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
           case stepsTableView :
             let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
-            let stepViewController = StepViewController(step: step, editing: false, context: managedObjectContext)
+            let stepViewController = StepViewController(step: step, editing: editing, context: managedObjectContext)
                 { (step: Step) -> Void in
                   if self.managedObjectContext.hasChanges {
                     do { try self.managedObjectContext.save() }
