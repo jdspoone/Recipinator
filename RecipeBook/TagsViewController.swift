@@ -54,10 +54,11 @@ class TagsViewController: UIViewController
 
     func addTagWithName(name: String)
       {
-        // Prevent multiple tags with the same name being created
-        if shouldCreateTagWithName(name) {
-          let tag = Tag(name: name, context: managedObjectContext)
+        // Get a tag object for the given name
+        let tag = Tag.withName(name, inContext: managedObjectContext)
 
+        // Add the tag to the set of tags, if it is not already in there
+        if (tags.contains(tag) == false) {
           willChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
           tags.insert(tag)
           didChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
