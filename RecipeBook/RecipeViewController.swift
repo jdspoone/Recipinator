@@ -512,7 +512,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
           case stepsTableView :
             let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
             let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
-            cell.textLabel?.text = step.summary
+            cell.textLabel?.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
             cell.showsReorderControl = true
             return cell
 
