@@ -1,5 +1,6 @@
 Improve TableView efficiency, i.e. don't reload the entire table when we can do a single row/section instead...
 
+
 CoreData:
   -make new recipes orphans until completion call back
     -inside RecipeViewController, will need to remember whether we've been inserted yet, and delay adding sub-nodes to the context until the recipe is added...
@@ -8,8 +9,6 @@ CoreData:
 
 
 SearchViewController
-  -expand to include Ingredients and Tags
-
   -add little button to go inside search text field to clear field without exiting search mode
 
 
@@ -26,13 +25,7 @@ RecipeViewController:
   -as ingredients table view shrinks, steps table view should smoothly follow it up..
     -will require unbinding some layout constraints and animating the frame of the steps table view
 
-  -implement ingredient/step reordering...
-
-
-Buttons:
-  -should have actual views associated with them, not text...
-  -add method to create custom square buttons?
-
+  -implement ingredient reordering...
 
 
 AppDelegate:
