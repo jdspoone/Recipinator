@@ -567,15 +567,17 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
             fatalError("ingredient amount reordering has not been implemented")
 
           case stepsTableView :
-            // Get handles on the ingredient amounts we're going to be working with
+            // Get handles on the steps and step numbers we're going to be working with
             let sourceStep = recipe.steps.sort(stepsSortingBlock)[sourceIndexPath.row]
-            let destinationStep = recipe.steps.sort(stepsSortingBlock)[destinationIndexPath.row]
-            let movedSteps = recipe.steps.filter({ $0.number > sourceStep.number && $0.number <= destinationStep.number })
-
             let sourceNumber = sourceStep.number
+
+            let destinationStep = recipe.steps.sort(stepsSortingBlock)[destinationIndexPath.row]
             let destinationNumber = destinationStep.number
 
-            // Update the ordering of the ingredients
+            // Determine which steps will be affected by the reordering
+            let movedSteps = recipe.steps.filter({ return sourceNumber < destinationNumber ? $0.number <= destinationNumber && $0.number > sourceNumber : $0.number >= destinationNumber && $0.number < sourceNumber })
+
+            // Update the order of the steps
             sourceStep.number = destinationStep.number
             for step in movedSteps {
               step.number += sourceNumber < destinationNumber ? -1 : 1
