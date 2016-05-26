@@ -10,6 +10,16 @@ import CoreData
 
 class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
   {
+    enum SearchCategory: Int {
+      case Recipe = 0
+      case Ingredient
+      case Tag
+    }
+
+    var observations = Set<Observation>()
+
+    var searchCategory = SearchCategory.Recipe
+
     var recipes = [Recipe]()
     var filteredRecipes = [Recipe]()
 
@@ -21,9 +31,11 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     var searchButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
 
+    var searchSegmentedControl: UISegmentedControl!
     var searchTextField: UITextField!
     var recipeTableView: UITableView!
 
+    var searchSegmentedControlHeightConstraint: NSLayoutConstraint!
     var searchTextFieldHeightConstraint: NSLayoutConstraint!
     var recipeTableViewTopConstraint: NSLayoutConstraint!
 
@@ -42,13 +54,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         navigationItem.setLeftBarButtonItem(searching ? cancelButton : nil, animated: animated)
         navigationItem.setRightBarButtonItems(searching ? nil : [addButton, searchButton], animated: animated)
 
-        NSLayoutConstraint.deactivateConstraints([searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
+        NSLayoutConstraint.deactivateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
+        searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraintEqualToConstant(searching ? 30.0 : 0.0)
         searchTextFieldHeightConstraint = searchTextField.heightAnchor.constraintEqualToConstant(searching ? 30.0 : 0.0)
         searchTextField.hidden = searching ? false : true
         recipeTableViewTopConstraint = recipeTableView.topAnchor.constraintEqualToAnchor(searching ? searchTextField.bottomAnchor : view.topAnchor, constant: searching ? 8.0 : 0.0)
 
-        NSLayoutConstraint.activateConstraints([searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
+        NSLayoutConstraint.activateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
         searchTextField.text = ""
 
@@ -81,10 +94,16 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         view.backgroundColor = UIColor.whiteColor()
         view.opaque = true
 
+        // Configure the search segmented control
+        searchSegmentedControl = UISegmentedControl(items: ["Recipe", "Ingredient", "Tag"])
+        searchSegmentedControl.selectedSegmentIndex = 0
+        searchSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchSegmentedControl)
+
         // Configure the search text field
         searchTextField = UITextField(frame: CGRect.zero)
         searchTextField.autocorrectionType = .No
-        searchTextField.placeholder = "Search recipes"
+        searchTextField.placeholder = "Search recipes by name"
         searchTextField.textAlignment = .Center
         searchTextField.returnKeyType = .Done
         searchTextField.borderStyle = .RoundedRect
@@ -100,10 +119,17 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         recipeTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(recipeTableView)
 
+        // Configure the layout bindings for the search segmented control
+        searchSegmentedControl.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 8.0).active = true
+        searchSegmentedControl.rightAnchor.constraintEqualToAnchor(view.rightAnchor, constant: -8.0).active = true
+        searchSegmentedControl.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 8.0).active = true
+        searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraintEqualToConstant(0)
+        searchSegmentedControlHeightConstraint.active = true
+
         // Configure the layout bindings for the search text field
         searchTextField.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: 8.0).active = true
-        searchTextField.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: 8.0).active = true
         searchTextField.rightAnchor.constraintEqualToAnchor(view.rightAnchor, constant: -8.0).active = true
+        searchTextField.topAnchor.constraintEqualToAnchor(searchSegmentedControl.bottomAnchor, constant: 8.0).active = true
         searchTextFieldHeightConstraint = searchTextField.heightAnchor.constraintEqualToConstant(0.0)
         searchTextFieldHeightConstraint.active = true
 
@@ -158,6 +184,45 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       }
 
 
+    override func viewWillAppear(animated: Bool)
+      {
+        // Register observations
+        observations = [
+          Observation(source: searchSegmentedControl, keypaths: ["selectedSegmentIndex"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                if (self.searching) {
+                  // Update the search category and search text field placeholder
+                  switch self.searchSegmentedControl.selectedSegmentIndex {
+                    case 0:
+                      self.searchCategory = .Recipe
+                      self.searchTextField.placeholder = "Search recipes by name"
+                    case 1:
+                      self.searchCategory = .Ingredient
+                      self.searchTextField.placeholder = "Search recipes by ingredient"
+                    case 2:
+                      self.searchCategory = .Tag
+                      self.searchTextField.placeholder = "Search recipes by tag"
+                    default:
+                      fatalError("unexpected case")
+                  }
+
+                  // Reset the contents of search text field and the list of filtered recipes
+                  self.searchTextField.text! = ""
+                  self.filteredRecipes = []
+                  self.recipeTableView.reloadData()
+                }
+              })
+        ]
+      }
+
+
+    override func viewWillDisappear(animated: Bool)
+      {
+        // De-register observations
+        observations.removeAll()
+      }
+
+
     // MARK: - UITextFieldDelegate
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
@@ -170,12 +235,37 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       }
 
 
-    func textFieldDidEndEditing(textField: UITextField)
+    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool
       {
-        if let text = textField.text where text != "" {
-          filteredRecipes = recipes.filter({ $0.name.lowercaseString.rangeOfString(textField.text!.lowercaseString) != nil })
+        // Build a Swift range from the given NSRange
+        let start = textField.text!.startIndex.advancedBy(range.location)
+        let end = textField.text!.startIndex.advancedBy(range.location + range.length)
+        let swiftRange = Range<String.Index>(start ..< end)
+
+        // Determine what the search string will be after this update
+        var searchText = String(textField.text!)
+        searchText.replaceRange(swiftRange, with: string)
+
+        // If the string is non-empty
+        if (searchText != "") {
+          // Filter the list of recipes according to the current search category
+          switch searchCategory {
+            case .Recipe:
+              filteredRecipes = recipes.filter({ $0.name.lowercaseString.rangeOfString(searchText.lowercaseString) != nil })
+
+            case .Ingredient:
+              filteredRecipes = recipes.filter({ $0.ingredientAmounts.filter({ $0.ingredient.name.lowercaseString.rangeOfString(searchText.lowercaseString) != nil }).count > 0 })
+
+            case .Tag:
+              filteredRecipes = recipes.filter({ $0.tags.filter({ $0.name.lowercaseString.rangeOfString(searchText.lowercaseString) != nil }).count > 0 })
+          }
+
+          // Update the recipe table view
           recipeTableView.reloadData()
         }
+
+        // Always return true
+        return true
       }
 
 
