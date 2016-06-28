@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1F0149711C3CDE0900DC3E59 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0149701C3CDE0900DC3E59 /* Recipe.swift */; };
 		1F0E916A1C669F0500DD2446 /* RecipeBook.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */; };
+		1F165E7F1D231022001DBAA5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1F165E7D1D231022001DBAA5 /* LICENSE */; };
+		1F165E801D231022001DBAA5 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 1F165E7E1D231022001DBAA5 /* README */; };
 		1F1E12B91CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */; };
 		1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29E81C580CCA000CE463 /* StepViewController.swift */; };
 		1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29EA1C58249C000CE463 /* Observation.swift */; };
@@ -30,8 +32,10 @@
 /* Begin PBXFileReference section */
 		1F0149701C3CDE0900DC3E59 /* Recipe.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		1F0E91691C669F0500DD2446 /* RecipeBook.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RecipeBook.xcdatamodel; sourceTree = "<group>"; };
+		1F165E7D1D231022001DBAA5 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		1F165E7E1D231022001DBAA5 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewIngredientAmountTableViewCell.swift; sourceTree = "<group>"; };
-		1F4C29E61C57FD64000CE463 /* ToDo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ToDo; sourceTree = "<group>"; };
+		1F4C29E61C57FD64000CE463 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		1F4C29E81C580CCA000CE463 /* StepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepViewController.swift; sourceTree = "<group>"; };
 		1F4C29EA1C58249C000CE463 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
 		1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -62,10 +66,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1F165E811D231045001DBAA5 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				1F8A251B1C6537E6008E394D /* BaseObject.swift */,
+				1FFA67C21C55676D00C4F458 /* Ingredient.swift */,
+				1F0149701C3CDE0900DC3E59 /* Recipe.swift */,
+				1F8A80FA1C52E28F00971E9D /* Step.swift */,
+				1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */,
+			);
+			name = CoreData;
+			sourceTree = "<group>";
+		};
+		1F165E821D23106E001DBAA5 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				1F4C29EA1C58249C000CE463 /* Observation.swift */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
 		1F4C29E51C57FD3B000CE463 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
-				1F4C29E61C57FD64000CE463 /* ToDo */,
+				1F165E7E1D231022001DBAA5 /* README */,
+				1F4C29E61C57FD64000CE463 /* TODO */,
+				1F165E7D1D231022001DBAA5 /* LICENSE */,
 			);
 			name = Documentation;
 			path = RecipeBook;
@@ -75,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				1F4C29E51C57FD3B000CE463 /* Documentation */,
-				1FFF521F1C3319D5006A99C2 /* RecipeBook */,
+				1FFF521F1C3319D5006A99C2 /* Sources */,
 				1FFF521E1C3319D5006A99C2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,22 +114,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1FFF521F1C3319D5006A99C2 /* RecipeBook */ = {
+		1FFF521F1C3319D5006A99C2 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				1F165E811D231045001DBAA5 /* CoreData */,
+				1F165E821D23106E001DBAA5 /* Library */,
 				1FFF52201C3319D5006A99C2 /* AppDelegate.swift */,
-				1F8A251B1C6537E6008E394D /* BaseObject.swift */,
-				1FFA67C21C55676D00C4F458 /* Ingredient.swift */,
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
 				1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */,
-				1F4C29EA1C58249C000CE463 /* Observation.swift */,
-				1F0149701C3CDE0900DC3E59 /* Recipe.swift */,
 				1F8A80F61C51637B00971E9D /* RecipeViewController.swift */,
 				1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */,
 				1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */,
-				1F8A80FA1C52E28F00971E9D /* Step.swift */,
 				1F4C29E81C580CCA000CE463 /* StepViewController.swift */,
-				1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */,
 				1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */,
 				1F6C8FD61C7D363300801856 /* utilities.swift */,
 				1FFF52341C331AB5006A99C2 /* Launch.xib */,
@@ -111,6 +133,7 @@
 				1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */,
 				1FFF522C1C3319D5006A99C2 /* Info.plist */,
 			);
+			name = Sources;
 			path = RecipeBook;
 			sourceTree = "<group>";
 		};
@@ -173,6 +196,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F165E801D231022001DBAA5 /* README in Resources */,
+				1F165E7F1D231022001DBAA5 /* LICENSE in Resources */,
 				1FFF52281C3319D5006A99C2 /* Assets.xcassets in Resources */,
 				1FFF52351C331AB5006A99C2 /* Launch.xib in Resources */,
 			);
