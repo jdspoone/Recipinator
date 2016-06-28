@@ -38,7 +38,7 @@ class Ingredient : BaseObject
           return Ingredient(name: name, context: context)
         }
         else {
-          assert(results.count == 1, "unexpected state - multiple ingredients with name: \(name)")
+          assert(results.count == 1, "unexpected state - \(results.count) ingredients with name: \(name)")
           return results.first!
         }
       }
