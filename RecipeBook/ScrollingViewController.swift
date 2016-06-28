@@ -2,6 +2,11 @@
 
   Written by Jeff Spooner
 
+  UIViewController subclass which programmatically creates a root view instance and child scroll view and 
+  manages their layout bindings,  as well as creating save and done buttons to be displayed in the navigation item.
+  This class maintains a reference to an optional active subview, assumed to be text based, and handles automatic 
+  scrolling of the primary scroll view to ensure the active subview will be visible when the keyboard appears.
+
 */
 
 import UIKit
