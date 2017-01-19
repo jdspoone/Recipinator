@@ -718,7 +718,10 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
              },
             completion:
               { (compete: Bool) -> Void in
+                // Update the height contraint of the ingredient amounts table view, and adjust the content size of the scroll view
                 self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
+
               })
         }
         // Or we're expanding it
@@ -731,7 +734,12 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
                 self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(ingredients.contentSize.height)
                 ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: ingredients.contentSize.height)
                 ingredients.scrollEnabled = true
-             })
+             },
+            completion:
+              { (complete: Bool) -> Void in
+                // Adjust the content size of the scroll view
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
+              })
         }
       }
 
@@ -752,7 +760,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
              },
             completion:
               { (compete: Bool) -> Void in
+                // Update the height contraint of the steps table view, and adjust the content size of the scroll view
                 self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(self.collapseStepsButton.frame.height)
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (tableView.contentSize.height - self.collapseStepsButton.frame.height))
               })
         }
         // Or we're expanding it
@@ -765,7 +775,11 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
                 self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(tableView.contentSize.height)
                 tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: tableView.contentSize.height)
                 tableView.scrollEnabled = true
-             })
+             }, completion:
+              { (complete: Bool) -> Void in
+                // Adjust the content size of the scroll view
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (tableView.contentSize.height - self.collapseStepsButton.frame.height))
+              })
         }
       }
 
