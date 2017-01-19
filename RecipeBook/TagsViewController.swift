@@ -101,7 +101,7 @@ class TagsViewController: UIViewController
           let tagView = tagViewDictionary[tag]!
 
           // Deactivate the old constraints
-          if let left = tagView.leftConstraint, top = tagView.topConstraint {
+          if let left = tagView.leftConstraint, let top = tagView.topConstraint {
             NSLayoutConstraint.deactivateConstraints([left, top])
           }
 
