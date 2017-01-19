@@ -25,6 +25,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
     var imageView: UIImageView!
     var ingredientAmountsTableView: UITableView!
     var stepsTableView: UITableView!
+    var tagsLabel: UILabel!
     var tagsViewController: TagsViewController!
     var tagTextField: UITextField!
 
@@ -166,6 +167,13 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         stepsTableView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(stepsTableView)
 
+        // Configure the tags label
+        tagsLabel = UILabel(frame: .zero)
+        tagsLabel.text = "Tags"
+        tagsLabel.textAlignment = .Center
+        tagsLabel.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(tagsLabel)
+
         // Configure the tag view controller
         tagsViewController = TagsViewController(tags: recipe.tags, context: managedObjectContext)
         scrollView.addSubview(tagsViewController.view)
@@ -202,11 +210,17 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         stepsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
         stepsTableView.topAnchor.constraintEqualToAnchor(ingredientAmountsTableView.bottomAnchor, constant: 16.0).active = true
 
+        // Configre the layout bindings for the tags label
+        tagsLabel.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
+        tagsLabel.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
+        tagsLabel.heightAnchor.constraintEqualToConstant(30.0).active = true
+        tagsLabel.topAnchor.constraintEqualToAnchor(stepsTableView.bottomAnchor, constant: 16.0).active = true
+
         // Configure the layout bindings for the tag view
         tagsViewController.view.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         tagsViewController.view.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
         tagsViewController.view.heightAnchor.constraintEqualToConstant(100.0).active = true
-        tagsViewController.view.topAnchor.constraintEqualToAnchor(stepsTableView.bottomAnchor, constant: 16.0).active = true
+        tagsViewController.view.topAnchor.constraintEqualToAnchor(tagsLabel.bottomAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the tag text field
         tagTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
