@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate
 
 
     class var dataStoreURL: NSURL
-      { return self.applicationDocumentsDirectory.URLByAppendingPathComponent("RecipeBook.sqlite") }
+      { return self.applicationDocumentsDirectory.URLByAppendingPathComponent("RecipeBook.sqlite")! }
 
 
     class var managedObjectModel: NSManagedObjectModel
