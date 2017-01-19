@@ -184,6 +184,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         tagTextField.placeholder = "Tag name"
         tagTextField.textAlignment = .Center
         tagTextField.returnKeyType = .Done
+        tagTextField.clearButtonMode = .Always
         tagTextField.translatesAutoresizingMaskIntoConstraints = false
         tagTextField.delegate = self
         scrollView.addSubview(tagTextField)
