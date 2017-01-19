@@ -8,10 +8,6 @@ CoreData:
   -implement reference object stuff...
 
 
-SearchViewController
-  -add little button to go inside search text field to clear field without exiting search mode
-
-
 RecipeViewController:
   -image view
     -give clear indication that you can select a photo when in editting mode

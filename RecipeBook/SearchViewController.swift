@@ -107,6 +107,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         searchTextField.textAlignment = .Center
         searchTextField.returnKeyType = .Done
         searchTextField.borderStyle = .RoundedRect
+        searchTextField.clearButtonMode = .Always
         searchTextField.delegate = self
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchTextField)
