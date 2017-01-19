@@ -326,6 +326,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lambda.RecipeBook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -340,6 +341,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Lambda.RecipeBook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
