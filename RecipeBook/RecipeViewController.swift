@@ -710,6 +710,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
+                // Rotate the button
+                self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+                // Collapse the tableview
                 ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: self.collapseIngredientsButton.frame.height)
                 ingredients.scrollEnabled = false
              },
@@ -722,6 +725,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         else {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
+                // Rotate the button
+                self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(0)
+                // Expand the tableview
                 self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(ingredients.contentSize.height)
                 ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: ingredients.contentSize.height)
                 ingredients.scrollEnabled = true
@@ -738,6 +744,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         if tableView.frame.height == tableView.contentSize.height {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
+                // Rotate the button
+                self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+                // Collapse the table view
                 tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: self.collapseStepsButton.frame.height)
                 tableView.scrollEnabled = false
              },
@@ -750,6 +759,9 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         else {
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
+                // Rotate the button
+                self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(0)
+                // Expand the tableview
                 self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(tableView.contentSize.height)
                 tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: tableView.contentSize.height)
                 tableView.scrollEnabled = true
