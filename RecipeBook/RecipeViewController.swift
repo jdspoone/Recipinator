@@ -278,7 +278,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     override func viewDidLayoutSubviews()
       {
-        super.viewWillLayoutSubviews()
+        super.viewDidLayoutSubviews()
 
         updateLayoutConstraints()
       }
