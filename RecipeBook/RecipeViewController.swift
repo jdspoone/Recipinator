@@ -36,11 +36,13 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     var ingredientAmountsTableViewHeightConstraint: NSLayoutConstraint!
       {
+        // Deactivate the old constraint if applicable
         willSet {
           if ingredientAmountsTableViewHeightConstraint != nil {
             NSLayoutConstraint.deactivateConstraints([ingredientAmountsTableViewHeightConstraint])
           }
         }
+        // Activate the new constraint
         didSet {
           NSLayoutConstraint.activateConstraints([ingredientAmountsTableViewHeightConstraint])
         }
@@ -48,11 +50,13 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     var stepsTableViewHeightConstraint: NSLayoutConstraint!
       {
+        // Deactivate the old constraint if applicable
         willSet {
           if stepsTableViewHeightConstraint != nil {
             NSLayoutConstraint.deactivateConstraints([stepsTableViewHeightConstraint])
           }
         }
+        // Activate the new constraint
         didSet {
           NSLayoutConstraint.activateConstraints([stepsTableViewHeightConstraint])
         }
