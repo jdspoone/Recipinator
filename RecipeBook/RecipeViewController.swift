@@ -610,7 +610,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
     // MARK: - Actions
 
-    override func save(sender: UIBarButtonItem)
+    override func save(sender: AnyObject?)
       {
         // If there is new (and thus unsaved) ingredientAmount, add it to the recipe
         if (newIngredientAmount == true) {
@@ -624,7 +624,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
       }
 
 
-    override func done(sender: UIBarButtonItem)
+    override func done(sender: AnyObject?)
       {
         // If the active subview is a text field
         if activeSubview!.isKindOfClass(UITextField) {

@@ -202,7 +202,7 @@ class ScrollingViewController: UIViewController
 
     // MARK: Actions
 
-    func save(sender: UIBarButtonItem)
+    func save(sender: AnyObject?)
       {
         activeSubview?.resignFirstResponder()
 
@@ -210,7 +210,7 @@ class ScrollingViewController: UIViewController
       }
 
 
-    func done(sender: UIBarButtonItem)
+    func done(sender: AnyObject?)
       {
         activeSubview!.resignFirstResponder()
       }
