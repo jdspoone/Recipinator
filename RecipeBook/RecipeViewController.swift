@@ -410,17 +410,15 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
             return
 
           case stepsTableView :
-            let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
-            let stepViewController = StepViewController(step: step, editing: editing, context: managedObjectContext)
-                { (step: Step) -> Void in
-                  if self.managedObjectContext.hasChanges {
-                    do { try self.managedObjectContext.save() }
-                    catch { fatalError("failed to save") }
-                  }
+            // Get the list of steps, and the index of the step we're interested in
+            let steps = recipe.steps.sort(stepsSortingBlock)
+            let index = indexPath.row
+            // Present a steps view controller
+            let stepsViewController = StepsViewController(steps: steps, index: index, editing: editing, context: managedObjectContext, completion:
+              { () in
 
-                  self.stepsTableView.reloadData()
-                }
-            showViewController(stepViewController, sender: self)
+              })
+            showViewController(stepsViewController, sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
 
           default :

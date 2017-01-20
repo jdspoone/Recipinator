@@ -12,6 +12,7 @@
 		1F165E7F1D231022001DBAA5 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1F165E7D1D231022001DBAA5 /* LICENSE */; };
 		1F165E801D231022001DBAA5 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 1F165E7E1D231022001DBAA5 /* README */; };
 		1F1E12B91CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */; };
+		1F20FAA71E329A24002BDD94 /* StepsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F20FAA61E329A24002BDD94 /* StepsViewController.swift */; };
 		1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29E81C580CCA000CE463 /* StepViewController.swift */; };
 		1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4C29EA1C58249C000CE463 /* Observation.swift */; };
 		1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */; };
@@ -35,6 +36,7 @@
 		1F165E7D1D231022001DBAA5 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		1F165E7E1D231022001DBAA5 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewIngredientAmountTableViewCell.swift; sourceTree = "<group>"; };
+		1F20FAA61E329A24002BDD94 /* StepsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepsViewController.swift; sourceTree = "<group>"; };
 		1F4C29E61C57FD64000CE463 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		1F4C29E81C580CCA000CE463 /* StepViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StepViewController.swift; sourceTree = "<group>"; };
 		1F4C29EA1C58249C000CE463 /* Observation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observation.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */,
 				1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */,
 				1F4C29E81C580CCA000CE463 /* StepViewController.swift */,
+				1F20FAA61E329A24002BDD94 /* StepsViewController.swift */,
 				1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */,
 				1F6C8FD61C7D363300801856 /* utilities.swift */,
 				1FFF52341C331AB5006A99C2 /* Launch.xib */,
@@ -211,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */,
+				1F20FAA71E329A24002BDD94 /* StepsViewController.swift in Sources */,
 				1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */,
 				1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */,
 				1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */,

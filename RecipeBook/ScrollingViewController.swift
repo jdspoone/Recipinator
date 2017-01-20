@@ -26,8 +26,14 @@ class ScrollingViewController: UIViewController
 
     var activeSubview: UIView?
       {
+        willSet {
+          assert(editing, "unexpected state")
+          willChangeValueForKey("activeSubview")
+        }
+
         didSet {
           assert(editing, "unexpected state")
+          didChangeValueForKey("activeSubview")
 
           if let _ = activeSubview {
             navigationItem.rightBarButtonItem = doneButton
@@ -59,10 +65,9 @@ class ScrollingViewController: UIViewController
       {
         // Create the root view
         let windowFrame = (UIApplication.sharedApplication().windows.first?.frame)!
-        let navigationBarFrame = navigationController!.navigationBar.frame
 
         let width = windowFrame.width
-        let height = windowFrame.height - (navigationBarFrame.origin.y + navigationBarFrame.height)
+        let height = windowFrame.height
 
         view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
 
