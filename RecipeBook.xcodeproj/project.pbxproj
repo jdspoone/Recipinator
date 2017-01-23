@@ -21,7 +21,7 @@
 		1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8A80F61C51637B00971E9D /* RecipeViewController.swift */; };
 		1F8A80FB1C52E28F00971E9D /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8A80FA1C52E28F00971E9D /* Step.swift */; };
 		1F918ACA1C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */; };
-		1F918ACC1C6D565C00C5B2D0 /* ScrollingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */; };
+		1F918ACC1C6D565C00C5B2D0 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */; };
 		1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */; };
 		1F918AD01C6E5FF200C5B2D0 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */; };
 		1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFA67C21C55676D00C4F458 /* Ingredient.swift */; };
@@ -46,7 +46,7 @@
 		1F8A80F61C51637B00971E9D /* RecipeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecipeViewController.swift; sourceTree = "<group>"; };
 		1F8A80FA1C52E28F00971E9D /* Step.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
 		1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IngredientAmountTableViewCell.swift; sourceTree = "<group>"; };
-		1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollingViewController.swift; sourceTree = "<group>"; };
+		1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		1FFA67C21C55676D00C4F458 /* Ingredient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ingredient.swift; sourceTree = "<group>"; };
@@ -122,10 +122,10 @@
 				1F165E811D231045001DBAA5 /* CoreData */,
 				1F165E821D23106E001DBAA5 /* Library */,
 				1FFF52201C3319D5006A99C2 /* AppDelegate.swift */,
+				1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */,
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
 				1F1E12B81CF6338F00B73303 /* NewIngredientAmountTableViewCell.swift */,
 				1F8A80F61C51637B00971E9D /* RecipeViewController.swift */,
-				1F918ACB1C6D565C00C5B2D0 /* ScrollingViewController.swift */,
 				1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */,
 				1F4C29E81C580CCA000CE463 /* StepViewController.swift */,
 				1F20FAA61E329A24002BDD94 /* StepsViewController.swift */,
@@ -219,7 +219,7 @@
 				1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */,
 				1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */,
 				1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */,
-				1F918ACC1C6D565C00C5B2D0 /* ScrollingViewController.swift in Sources */,
+				1F918ACC1C6D565C00C5B2D0 /* BaseViewController.swift in Sources */,
 				1F6C8FD71C7D363300801856 /* utilities.swift in Sources */,
 				1F4C29E91C580CCA000CE463 /* StepViewController.swift in Sources */,
 				1F8A80FB1C52E28F00971E9D /* Step.swift in Sources */,

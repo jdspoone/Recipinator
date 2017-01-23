@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate
+class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate
   {
 
     var step: Step

@@ -22,10 +22,10 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     var pageViewController: UIPageViewController
 
-    var activeViewController: ScrollingViewController?
+    var activeViewController: BaseViewController?
       {
         get {
-          return pageViewController.viewControllers!.first as? ScrollingViewController
+          return pageViewController.viewControllers!.first as? BaseViewController
         }
       }
 
@@ -77,8 +77,8 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         view.addSubview(pageViewController.view)
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(ScrollingViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(ScrollingViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 

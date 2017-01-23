@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource
+class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
     var observations: Set<Observation>

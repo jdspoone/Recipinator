@@ -2,8 +2,8 @@
 
   Written by Jeff Spooner
 
-  UIViewController subclass which programmatically creates a root view instance and child scroll view and 
-  manages their layout bindings,  as well as creating save and done buttons to be displayed in the navigation item.
+  UIViewController subclass which programmatically creates a root view instance with a child scroll view and
+  manages their layout bindings, as well as creating save and done buttons to be displayed in the navigation item.
   This class maintains a reference to an optional active subview, assumed to be text based, and handles automatic 
   scrolling of the primary scroll view to ensure the active subview will be visible when the keyboard appears.
 
@@ -12,7 +12,7 @@
 import UIKit
 
 
-class ScrollingViewController: UIViewController
+class BaseViewController: UIViewController
   {
 
     var scrollView: UIScrollView!
@@ -87,8 +87,8 @@ class ScrollingViewController: UIViewController
         scrollViewBottomConstraint.active = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(ScrollingViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(ScrollingViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 
@@ -104,10 +104,10 @@ class ScrollingViewController: UIViewController
       {
         super.viewWillAppear(animated)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ScrollingViewController.deviceOrientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.deviceOrientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
       }
 
 
