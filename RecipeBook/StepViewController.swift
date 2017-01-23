@@ -118,11 +118,11 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
       }
 
 
-    override func viewDidAppear(animated: Bool)
+    override func viewDidLayoutSubviews()
       {
-        super.viewDidAppear(animated)
+        super.viewDidLayoutSubviews()
 
-        scrollView.contentSize = CGSize(width: view.frame.width, height: imageView.frame.origin.y + imageView.frame.height)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: imageView.frame.origin.y + imageView.frame.height + 8.0)
       }
 
 
