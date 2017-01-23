@@ -141,6 +141,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
         // Configure the name text field
         nameTextField = UITextField(frame: CGRect.zero)
+        nameTextField.font = UIFont(name: "Helvetica", size: 18)
         nameTextField.placeholder = "Recipe name"
         nameTextField.textAlignment = .Center
         nameTextField.returnKeyType = .Done
@@ -157,6 +158,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
         ingredientAmountsTableView.bounces = false
+        ingredientAmountsTableView.rowHeight = 50
         ingredientAmountsTableView.delegate = self
         ingredientAmountsTableView.dataSource = self
         ingredientAmountsTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -165,6 +167,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the step table view
         stepsTableView = UITableView(frame: CGRect.zero)
         stepsTableView.bounces = false
+        stepsTableView.rowHeight = 50
         stepsTableView.allowsSelectionDuringEditing = true
         stepsTableView.delegate = self
         stepsTableView.dataSource = self
@@ -174,6 +177,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the tags label
         tagsLabel = UILabel(frame: .zero)
         tagsLabel.text = "Tags"
+        tagsLabel.font = UIFont(name: "Helvetica", size: 18)
         tagsLabel.textAlignment = .Center
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(tagsLabel)
@@ -184,6 +188,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
         // Configure the tag name text field
         tagTextField = UITextField(frame: CGRect.zero)
+        tagTextField.font = UIFont(name: "Helvetica", size: 18)
         tagTextField.borderStyle = .RoundedRect
         tagTextField.placeholder = "Tag name"
         tagTextField.textAlignment = .Center
@@ -196,7 +201,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the layout bindings for the text field
         nameTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         nameTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        nameTextField.heightAnchor.constraintEqualToConstant(30.0).active = true
+        nameTextField.heightAnchor.constraintEqualToConstant(40.0).active = true
         nameTextField.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the image view
@@ -230,7 +235,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
         // Configure the layout bindings for the tag text field
         tagTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         tagTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        tagTextField.heightAnchor.constraintEqualToConstant(30.0).active = true
+        tagTextField.heightAnchor.constraintEqualToConstant(40.0).active = true
         tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
@@ -435,6 +440,7 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
 
           var leftButton: UIButton!
           let label = UILabel(frame: CGRect.zero)
+          label.font = UIFont(name: "Helvetica", size: 18)
           var rightButton: UIButton!
 
           switch tableView {
@@ -529,7 +535,8 @@ class RecipeViewController: ScrollingViewController, UITextFieldDelegate, UIImag
           case stepsTableView :
             let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
             let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
-            cell.textLabel?.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
+            cell.textLabel!.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
+            cell.textLabel!.font = UIFont(name: "Helvetica", size: 16)
             cell.showsReorderControl = true
             return cell
 

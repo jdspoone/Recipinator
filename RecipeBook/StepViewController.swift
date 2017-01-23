@@ -53,12 +53,14 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
         // Configure the number label
         numberLabel = UILabel(frame: CGRect.zero)
         numberLabel.text = "Step \(step.number + 1)"
+        numberLabel.font = UIFont(name: "Helvetica", size: 18)
         numberLabel.textAlignment = .Center
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(numberLabel)
 
         // Configure the summary text field
         summaryTextField = UITextField(frame: CGRect.zero)
+        summaryTextField.font = UIFont(name: "Helvetica", size: 16)
         summaryTextField.placeholder = "Summary"
         summaryTextField.textAlignment = .Center
         summaryTextField.returnKeyType = .Done
@@ -68,6 +70,7 @@ class StepViewController: ScrollingViewController, UITextFieldDelegate, UITextVi
 
         // Configure the detail text view
         detailTextView = UITextView(frame: CGRect.zero)
+        detailTextView.font = UIFont(name: "Helvetica", size: 16)
         detailTextView.layer.cornerRadius = 5.0
         detailTextView.layer.borderWidth = 0.5
         detailTextView.layer.borderColor = UIColor.lightGrayColor().CGColor

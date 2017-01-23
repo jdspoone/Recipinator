@@ -56,10 +56,10 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         NSLayoutConstraint.deactivateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
-        searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraintEqualToConstant(searching ? 30.0 : 0.0)
-        searchTextFieldHeightConstraint = searchTextField.heightAnchor.constraintEqualToConstant(searching ? 30.0 : 0.0)
+        searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraintEqualToConstant(searching ? 40.0 : 0.0)
+        searchTextFieldHeightConstraint = searchTextField.heightAnchor.constraintEqualToConstant(searching ? 40.0 : 0.0)
         searchTextField.hidden = searching ? false : true
-        recipeTableViewTopConstraint = recipeTableView.topAnchor.constraintEqualToAnchor(searching ? searchTextField.bottomAnchor : view.topAnchor, constant: searching ? 8.0 : 0.0)
+        recipeTableViewTopConstraint = recipeTableView.topAnchor.constraintEqualToAnchor(searching ? searchTextField.bottomAnchor : view.topAnchor, constant: 0.0)
 
         NSLayoutConstraint.activateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
@@ -96,12 +96,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         // Configure the search segmented control
         searchSegmentedControl = UISegmentedControl(items: ["Recipe", "Ingredient", "Tag"])
+        searchSegmentedControl.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Helvetica", size: 16)!], forState: UIControlState())
         searchSegmentedControl.selectedSegmentIndex = 0
         searchSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchSegmentedControl)
 
         // Configure the search text field
         searchTextField = UITextField(frame: CGRect.zero)
+        searchTextField.font = UIFont(name: "Helvetica", size: 16)
         searchTextField.autocorrectionType = .No
         searchTextField.placeholder = "Search recipes by name"
         searchTextField.textAlignment = .Center
@@ -115,6 +117,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         // Configure the recipe table view
         recipeTableView = UITableView(frame: CGRect.zero, style: .Plain)
         recipeTableView.bounces = false
+        recipeTableView.rowHeight = 50
         recipeTableView.dataSource = self
         recipeTableView.delegate = self
         recipeTableView.translatesAutoresizingMaskIntoConstraints = false
@@ -286,6 +289,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         // Configure the cell
         cell.textLabel!.text = recipe.name != "" ? recipe.name : "Unnamed recipe"
+        cell.textLabel!.font = UIFont(name: "Helvetica", size: 18)
 
         return cell
       }

@@ -30,6 +30,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         super.init(style: .Default, reuseIdentifier: "ingredientTableViewCell")
 
         nameTextField = UITextField(frame: CGRect.zero)
+        nameTextField.font = UIFont(name: "Helvetica", size: 16)
         nameTextField.placeholder = "Name"
         nameTextField.text = ingredientAmount.ingredient.name
         nameTextField.returnKeyType = .Done
@@ -37,6 +38,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
 
         amountTextField = UITextField(frame: CGRect.zero)
+        amountTextField.font = UIFont(name: "Helvetica", size: 16)
         amountTextField.placeholder = "Amount"
         amountTextField.text = ingredientAmount.amount
         amountTextField.textAlignment = .Right
