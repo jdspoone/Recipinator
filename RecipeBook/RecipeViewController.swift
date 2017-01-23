@@ -90,17 +90,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     func updateLayoutConstraints()
       {
-        // Deactivate
-        if ingredientAmountsTableViewHeightConstraint != nil && stepsTableViewHeightConstraint != nil {
-          NSLayoutConstraint.deactivateConstraints([ingredientAmountsTableViewHeightConstraint, stepsTableViewHeightConstraint])
-        }
-
-        // Set
+        // Update the height constraints for the ingredient amounts and steps table views
         ingredientAmountsTableViewHeightConstraint = ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(ingredientAmountsTableView.contentSize.height)
         stepsTableViewHeightConstraint = stepsTableView.heightAnchor.constraintEqualToConstant(stepsTableView.contentSize.height)
-
-        // Activate
-        NSLayoutConstraint.activateConstraints([ingredientAmountsTableViewHeightConstraint, stepsTableViewHeightConstraint])
 
         // Set the content size of the scroll view
         let finalSubview = editing ? tagTextField : tagsViewController.view
