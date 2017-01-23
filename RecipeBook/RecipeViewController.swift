@@ -11,7 +11,7 @@ import CoreData
 class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
-    var observations: Set<Observation>
+    var observations = Set<Observation>()
 
     var recipe: Recipe
     let completion: (Recipe) -> Void
@@ -76,8 +76,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         self.completion = completion
 
         self.managedObjectContext = context
-
-        self.observations = Set<Observation>()
 
         super.init(editing: editing)
       }
@@ -184,6 +182,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
         // Configure the tag view controller
         tagsViewController = TagsViewController(tags: recipe.tags, context: managedObjectContext)
+        addChildViewController(tagsViewController)
         scrollView.addSubview(tagsViewController.view)
 
         // Configure the tag name text field
