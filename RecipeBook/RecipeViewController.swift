@@ -11,8 +11,6 @@ import CoreData
 class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
-    var observations = Set<Observation>()
-
     var recipe: Recipe
     let completion: (Recipe) -> Void
 
@@ -277,9 +275,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     override func viewWillDisappear(animated: Bool)
       {
         super.viewWillDisappear(animated)
-
-        // De-register custom notifications
-        observations.removeAll()
 
         // Execute our completion block
         completion(recipe)

@@ -15,6 +15,8 @@ import UIKit
 class BaseViewController: UIViewController
   {
 
+    var observations = Set<Observation>()
+
     var scrollView: UIScrollView!
     var scrollViewSubviews = Set<UIView>()
     var scrollViewBottomConstraint: NSLayoutConstraint!
@@ -153,6 +155,9 @@ class BaseViewController: UIViewController
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
 
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+
+        // De-register any custom notifications
+        observations.removeAll()
       }
 
 

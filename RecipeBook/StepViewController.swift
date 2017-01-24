@@ -11,8 +11,6 @@ import CoreData
 class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate
   {
 
-    var observations = Set<Observation>()
-
     var step: Step
     var completion: (Step) -> Void
 
@@ -152,9 +150,6 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
     override func viewWillDisappear(animated: Bool)
       {
         super.viewWillDisappear(animated)
-
-        // De-register custom notifications
-        observations.removeAll()
 
         // Execute the completion callback
         completion(step)
