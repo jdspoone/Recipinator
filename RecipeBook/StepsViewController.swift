@@ -61,11 +61,13 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
     override func loadView()
       {
         // Create the root view
-        let windowFrame = (UIApplication.sharedApplication().windows.first?.frame)!
-        let navigationBarFrame = navigationController!.navigationBar.frame
+        let window = UIApplication.sharedApplication().windows.first!
+        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
 
-        let width = windowFrame.width
-        let height = windowFrame.height - (navigationBarFrame.origin.y + navigationBarFrame.height)
+        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
+
+        let width = window.frame.width
+        let height = window.frame.height - offset
 
         // Configure the root view
         view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))

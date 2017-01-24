@@ -100,10 +100,13 @@ class BaseViewController: UIViewController
     override func loadView()
       {
         // Create the root view
-        let windowFrame = (UIApplication.sharedApplication().windows.first?.frame)!
+        let window = UIApplication.sharedApplication().windows.first!
+        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
 
-        let width = windowFrame.width
-        let height = windowFrame.height
+        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
+
+        let width = window.frame.width
+        let height = window.frame.height - offset
 
         view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
 
