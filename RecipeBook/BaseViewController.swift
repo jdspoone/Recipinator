@@ -16,6 +16,7 @@ class BaseViewController: UIViewController
   {
 
     var scrollView: UIScrollView!
+    var scrollViewSubviews = Set<UIView>()
     var scrollViewBottomConstraint: NSLayoutConstraint!
     var scrollViewHeightConstraint: NSLayoutConstraint?
 
@@ -45,11 +46,44 @@ class BaseViewController: UIViewController
       }
 
 
+    // MARK: -
+
     init(editing: Bool)
       {
         self.defaultEditingState = editing
 
         super.init(nibName: nil, bundle: nil)
+      }
+
+
+    func addSubviewToScrollView(view: UIView)
+      {
+        scrollViewSubviews.insert(view)
+        scrollView.addSubview(view)
+      }
+
+
+    func removeSubviewFromScrollView(view: UIView)
+      {
+        scrollViewSubviews.remove(view)
+        view.removeFromSuperview()
+      }
+
+
+    func updateScrollViewContentSize()
+      {
+        // Determine the content rect containing all approved subviews
+        var maxY: CGFloat = 0
+        for subview in scrollViewSubviews {
+          let candidate = subview.frame.origin.y + subview.frame.height
+          maxY = max(candidate, maxY)
+        }
+
+        let width = view.frame.width
+        let height = maxY + 8.0
+
+        // Update the size of the scroll view's content rect
+        scrollView.contentSize = CGSize(width: width, height: height)
       }
 
 

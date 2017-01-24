@@ -11,6 +11,8 @@ import CoreData
 class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate
   {
 
+    var observations = Set<Observation>()
+
     var step: Step
     var completion: (Step) -> Void
 
@@ -56,7 +58,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         numberLabel.font = UIFont(name: "Helvetica", size: 18)
         numberLabel.textAlignment = .Center
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(numberLabel)
+        addSubviewToScrollView(numberLabel)
 
         // Configure the summary text field
         summaryTextField = UITextField(frame: CGRect.zero)
@@ -66,7 +68,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         summaryTextField.returnKeyType = .Done
         summaryTextField.translatesAutoresizingMaskIntoConstraints = false
         summaryTextField.delegate = self
-        scrollView.addSubview(summaryTextField)
+        addSubviewToScrollView(summaryTextField)
 
         // Configure the detail text view
         detailTextView = UITextView(frame: CGRect.zero)
@@ -76,13 +78,13 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         detailTextView.layer.borderColor = UIColor.lightGrayColor().CGColor
         detailTextView.translatesAutoresizingMaskIntoConstraints = false
         detailTextView.delegate = self
-        scrollView.addSubview(detailTextView)
+        addSubviewToScrollView(detailTextView)
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(StepViewController.selectImage(_:))))
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(imageView)
+        addSubviewToScrollView(imageView)
 
         // Configure the layout bindings for the number label
         numberLabel.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
@@ -99,7 +101,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         // Configure the layout bindings for the detail text view
         detailTextView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         detailTextView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        detailTextView.heightAnchor.constraintEqualToConstant(100).active = true
+        detailTextView.heightAnchor.constraintEqualToConstant(150).active = true
         detailTextView.topAnchor.constraintEqualToAnchor(summaryTextField.bottomAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the image view
@@ -122,7 +124,23 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       {
         super.viewDidLayoutSubviews()
 
-        scrollView.contentSize = CGSize(width: view.frame.width, height: imageView.frame.origin.y + imageView.frame.height + 8.0)
+        // Update the content size of the scroll view
+        updateScrollViewContentSize()
+      }
+
+
+    override func viewWillAppear(animated: Bool)
+      {
+        super.viewWillAppear(animated)
+
+        // Register custom notifications
+        observations = [
+          Observation(source: self, keypaths: ["editing"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.summaryTextField.borderStyle = self.editing ? .RoundedRect : .None
+                self.imageView.userInteractionEnabled = self.editing
+              })
+        ]
       }
 
 
@@ -130,18 +148,13 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       {
         super.viewWillDisappear(animated)
 
+        // De-register custom notifications
+        observations.removeAll()
+
+        // Execute the completion callback
         completion(step)
       }
 
-
-    override func setEditing(editing: Bool, animated: Bool)
-      {
-        super.setEditing(editing, animated: animated)
-
-        summaryTextField.borderStyle = editing ? .RoundedRect : .None
-
-        imageView.userInteractionEnabled = editing
-      }
 
 
     // MARK: - UITextFieldDelegate

@@ -62,6 +62,21 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         }
       }
 
+    var tagTextFieldHeightConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet{
+          if tagTextFieldHeightConstraint != nil {
+            NSLayoutConstraint.deactivateConstraints([tagTextFieldHeightConstraint])
+          }
+        }
+        // Activate the new constraint
+        didSet {
+          NSLayoutConstraint.activateConstraints([tagTextFieldHeightConstraint])
+        }
+      }
+
+
     var addIngredientButton: UIButton!
     var collapseIngredientsButton: UIButton!
     var addStepButton: UIButton!
@@ -85,18 +100,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         nameTextField.text = recipe.name
         imageView.image = recipe.image ?? UIImage(named: "defaultImage")
-      }
-
-
-    func updateLayoutConstraints()
-      {
-        // Update the height constraints for the ingredient amounts and steps table views
-        ingredientAmountsTableViewHeightConstraint = ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(ingredientAmountsTableView.contentSize.height)
-        stepsTableViewHeightConstraint = stepsTableView.heightAnchor.constraintEqualToConstant(stepsTableView.contentSize.height)
-
-        // Set the content size of the scroll view
-        let finalSubview = editing ? tagTextField : tagsViewController.view
-        scrollView.contentSize = CGSize(width: view.frame.width, height: finalSubview.frame.origin.y + finalSubview.frame.height + 8.0)
       }
 
 
@@ -137,13 +140,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         nameTextField.returnKeyType = .Done
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         nameTextField.delegate = self
-        scrollView.addSubview(nameTextField)
+        addSubviewToScrollView(nameTextField)
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(RecipeViewController.selectImage(_:))))
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(imageView)
+        addSubviewToScrollView(imageView)
 
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
@@ -152,7 +155,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         ingredientAmountsTableView.delegate = self
         ingredientAmountsTableView.dataSource = self
         ingredientAmountsTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(ingredientAmountsTableView)
+        addSubviewToScrollView(ingredientAmountsTableView)
 
         // Configure the step table view
         stepsTableView = UITableView(frame: CGRect.zero)
@@ -162,7 +165,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         stepsTableView.delegate = self
         stepsTableView.dataSource = self
         stepsTableView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(stepsTableView)
+        addSubviewToScrollView(stepsTableView)
 
         // Configure the tags label
         tagsLabel = UILabel(frame: .zero)
@@ -170,12 +173,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         tagsLabel.font = UIFont(name: "Helvetica", size: 18)
         tagsLabel.textAlignment = .Center
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(tagsLabel)
+        addSubviewToScrollView(tagsLabel)
 
         // Configure the tag view controller
         tagsViewController = TagsViewController(tags: recipe.tags, context: managedObjectContext)
         addChildViewController(tagsViewController)
-        scrollView.addSubview(tagsViewController.view)
+        addSubviewToScrollView(tagsViewController.view)
 
         // Configure the tag name text field
         tagTextField = UITextField(frame: CGRect.zero)
@@ -187,7 +190,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         tagTextField.clearButtonMode = .Always
         tagTextField.translatesAutoresizingMaskIntoConstraints = false
         tagTextField.delegate = self
-        scrollView.addSubview(tagTextField)
+        addSubviewToScrollView(tagTextField)
 
         // Configure the layout bindings for the text field
         nameTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
@@ -226,7 +229,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         // Configure the layout bindings for the tag text field
         tagTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         tagTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        tagTextField.heightAnchor.constraintEqualToConstant(40.0).active = true
         tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
@@ -252,9 +254,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         observations = [
           Observation(source: self, keypaths: ["editing"], options: .Initial, block:
               { (changes: [String : AnyObject]?) -> Void in
+                self.nameTextField.userInteractionEnabled = self.editing
+                self.nameTextField.borderStyle = self.editing ? .RoundedRect : .None
+                self.imageView.userInteractionEnabled = self.editing
                 self.addIngredientButton.hidden = self.editing ? false : true
                 self.addStepButton.hidden = self.editing ? false : true
                 self.tagTextField.hidden = self.editing ? false : true
+                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraintEqualToConstant(self.editing ? 40 : 0)
               }),
           Observation(source: tagsViewController, keypaths: ["tags"], options: NSKeyValueObservingOptions(), block:
               { (change: [String : AnyObject]?) -> Void in
@@ -271,8 +277,18 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         // De-register custom notifications
         observations.removeAll()
 
-        // Call our completion block
+        // Execute our completion block
         completion(recipe)
+      }
+
+
+    override func viewWillLayoutSubviews()
+      {
+        super.viewWillLayoutSubviews()
+
+        // Update the height constraints for the ingredient amounts and steps table views
+        ingredientAmountsTableViewHeightConstraint = ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(ingredientAmountsTableView.contentSize.height)
+        stepsTableViewHeightConstraint = stepsTableView.heightAnchor.constraintEqualToConstant(stepsTableView.contentSize.height)
       }
 
 
@@ -280,7 +296,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         super.viewDidLayoutSubviews()
 
-        updateLayoutConstraints()
+        // Update the content size of the scroll view
+        updateScrollViewContentSize()
       }
 
 
@@ -288,12 +305,18 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         super.setEditing(editing, animated: animated)
 
-        nameTextField.userInteractionEnabled = editing
-        nameTextField.borderStyle = editing ? .RoundedRect : .None
-        imageView.userInteractionEnabled = editing
-
+        // Set the editing state of the various table views
         stepsTableView.setEditing(editing, animated: animated)
         tagsViewController.setEditing(editing, animated: animated)
+
+        // Animate the presentation or hiding of the tag text field
+          UIView.animateWithDuration(0.5, animations:
+              { () -> Void in
+                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraintEqualToConstant(self.editing ? 40 : 0)
+              }, completion:
+              { (complete: Bool) -> Void in
+                self.updateScrollViewContentSize()
+              })
       }
 
 
