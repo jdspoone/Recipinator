@@ -74,9 +74,17 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         view.backgroundColor = UIColor.whiteColor()
         view.opaque = true
 
-        // Add the page view controller's view as a subview of the root view
+        // Configure the page view controller
         addChildViewController(pageViewController)
-        view.addSubview(pageViewController.view)
+        let pageView = pageViewController.view
+        pageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageView)
+
+        // Configure the layout bindings for the page view controller
+        pageView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
+        pageView.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
+        pageView.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
+        pageView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
 
         // Create the navigation bar buttons
         saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
