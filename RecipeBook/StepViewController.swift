@@ -141,6 +141,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         observations = [
           Observation(source: self, keypaths: ["editing"], options: .Initial, block:
               { (changes: [String : AnyObject]?) -> Void in
+                self.summaryTextField.userInteractionEnabled = self.editing
                 self.summaryTextField.borderStyle = self.editing ? .RoundedRect : .None
                 self.imageView.userInteractionEnabled = self.editing
               })
