@@ -82,6 +82,10 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
+        imageView.layer.cornerRadius = 5.0
+        imageView.layer.borderWidth = 0.5
+        imageView.layer.borderColor = UIColor.lightGrayColor().CGColor
+        imageView.clipsToBounds = true
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(StepViewController.selectImage(_:))))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(imageView)
