@@ -21,8 +21,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     var nameTextField: UITextField!
     var imageView: UIImageView!
+
     var ingredientAmountsTableView: UITableView!
+    var ingredientsExpanded: Bool = true
+
     var stepsTableView: UITableView!
+    var stepsExpanded: Bool = true
+
     var tagsLabel: UILabel!
     var tagsViewController: TagsViewController!
     var tagTextField: UITextField!
@@ -234,9 +239,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.collapseIngredients(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
+        collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
         addStepButton = roundedSquareButton(self, action: #selector(RecipeViewController.addStep(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseStepsButton = roundedSquareButton(self, action: #selector(RecipeViewController.collapseSteps(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
+        collapseStepsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleStepsVisibility(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
       }
 
 
@@ -724,30 +729,23 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       }
 
 
-    func collapseIngredients(sender: AnyObject)
+    func toggleIngredientsVisibility(sender: AnyObject)
       {
-        let ingredients = self.ingredientAmountsTableView
-
-        // Either we're collapsing the table view
         if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
-          UIView.animateWithDuration(0.5, animations:
-              { () -> Void in
-                // Rotate the button
-                self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
-                // Collapse the tableview
-                ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: self.collapseIngredientsButton.frame.height)
-                ingredients.scrollEnabled = false
-             },
-            completion:
-              { (compete: Bool) -> Void in
-                // Update the height contraint of the ingredient amounts table view, and adjust the content size of the scroll view
-                self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
-                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
-
-              })
+          collapseIngredients()
         }
-        // Or we're expanding it
         else {
+          expandIngredients()
+        }
+      }
+
+
+    func expandIngredients()
+      {
+        if (ingredientsExpanded == false) {
+
+          let ingredients = self.ingredientAmountsTableView
+
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
                 // Rotate the button
@@ -760,35 +758,56 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
             completion:
               { (complete: Bool) -> Void in
                 // Adjust the content size of the scroll view
+                self.ingredientsExpanded = true
                 self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
               })
         }
       }
 
 
-    func collapseSteps(sender: AnyObject)
+    func collapseIngredients()
       {
-        let tableView = self.stepsTableView
+        if (ingredientsExpanded) {
 
-        // Either we're collapsing the table view
-        if tableView.frame.height == tableView.contentSize.height {
+          let ingredients = self.ingredientAmountsTableView
+
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
                 // Rotate the button
-                self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
-                // Collapse the table view
-                tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: self.collapseStepsButton.frame.height)
-                tableView.scrollEnabled = false
+                self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+                // Collapse the tableview
+                ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: self.collapseIngredientsButton.frame.height)
+                ingredients.scrollEnabled = false
              },
             completion:
               { (compete: Bool) -> Void in
-                // Update the height contraint of the steps table view, and adjust the content size of the scroll view
-                self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(self.collapseStepsButton.frame.height)
-                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (tableView.contentSize.height - self.collapseStepsButton.frame.height))
+                // Update the height contraint of the ingredient amounts table view, and adjust the content size of the scroll view
+                self.ingredientsExpanded = false
+                self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
+
               })
         }
-        // Or we're expanding it
+      }
+
+
+    func toggleStepsVisibility(sender: AnyObject)
+      {
+        if stepsTableView.frame.height == stepsTableView.contentSize.height {
+          collapseSteps()
+        }
         else {
+          expandSteps()
+        }
+      }
+
+
+    func expandSteps()
+      {
+        if (stepsExpanded == false) {
+
+          let tableView = self.stepsTableView
+
           UIView.animateWithDuration(0.5, animations:
               { () -> Void in
                 // Rotate the button
@@ -800,7 +819,33 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
              }, completion:
               { (complete: Bool) -> Void in
                 // Adjust the content size of the scroll view
+                self.stepsExpanded = true
                 self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (tableView.contentSize.height - self.collapseStepsButton.frame.height))
+              })
+        }
+      }
+
+
+    func collapseSteps()
+      {
+        if (stepsExpanded == true) {
+
+          let tableView = self.stepsTableView
+
+          UIView.animateWithDuration(0.5, animations:
+              { () -> Void in
+                // Rotate the button
+                self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+                // Collapse the table view
+                tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: self.collapseStepsButton.frame.height)
+                tableView.scrollEnabled = false
+             },
+            completion:
+              { (compete: Bool) -> Void in
+                // Update the height contraint of the steps table view, and adjust the content size of the scroll view
+                self.stepsExpanded = false
+                self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(self.collapseStepsButton.frame.height)
+                self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (tableView.contentSize.height - self.collapseStepsButton.frame.height))
               })
         }
       }
