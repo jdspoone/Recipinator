@@ -141,6 +141,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
               { (changes: [String : AnyObject]?) -> Void in
                 self.summaryTextField.userInteractionEnabled = self.editing
                 self.summaryTextField.borderStyle = self.editing ? .RoundedRect : .None
+                self.detailTextView.editable = self.editing
                 self.imageView.userInteractionEnabled = self.editing
               })
         ]
