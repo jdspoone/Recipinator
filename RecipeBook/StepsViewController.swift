@@ -98,7 +98,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         setEditing(initialEditingState, animated: true)
 
         // Set the view controller of the page view controller
-        let viewController = StepViewController(step: steps[initialIndex], editing: false, context: managedObjectContext)
+        let viewController = StepViewController(step: steps[initialIndex], editing: editing, context: managedObjectContext)
           { (step: Step) in
             if self.managedObjectContext.hasChanges {
               do { try self.managedObjectContext.save() }
