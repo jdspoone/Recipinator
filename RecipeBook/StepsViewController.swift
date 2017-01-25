@@ -24,9 +24,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     var activeViewController: BaseViewController?
       {
-        get {
-          return pageViewController.viewControllers!.first as? BaseViewController
-        }
+        get { return pageViewController.viewControllers!.first as? BaseViewController }
       }
 
     var saveButton: UIBarButtonItem!

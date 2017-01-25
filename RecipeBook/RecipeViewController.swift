@@ -25,6 +25,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
       {
+        // Enable key-value observation
         willSet { willChangeValueForKey("ingredientsExpanded") }
         didSet { didChangeValueForKey("ingredientsExpanded") }
       }
@@ -32,6 +33,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     var stepsTableView: UITableView!
     var stepsExpanded: Bool = true
       {
+        // Enable key-value observation
         willSet { willChangeValueForKey("stepsExpanded") }
         didSet { didChangeValueForKey("stepsExpanded") }
       }
@@ -342,6 +344,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool
       {
+        // Set the activeSubview to be the textField, if applicable
         if editing {
           activeSubview = textField
           return true
@@ -352,6 +355,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     func textFieldDidBeginEditing(textField: UITextField)
       {
+        // Users should not be able to interact with the imageView if they are editing a textField
         imageView.userInteractionEnabled = false;
       }
 
@@ -360,6 +364,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         switch textField {
           case nameTextField :
+            // Ensure we have a non-empty string in the nameTextField before returning
             if textField.text != nil && textField.text != "" {
               textField.endEditing(true)
               return true
@@ -380,9 +385,11 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         switch textField {
           case nameTextField :
+            // Update the recipe's name
             recipe.name = textField.text!
 
           case tagTextField :
+            // As long as we've got a non-empty string, add a tag
             if textField.text != "" {
               tagsViewController.addTagWithName(textField.text!)
               textField.text = ""
@@ -392,8 +399,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
             fatalError("unexpected text field")
         }
 
+        // Enable user interaction with the imageView, and set the activeSubview to nil
         imageView.userInteractionEnabled = true
-
         activeSubview = nil
       }
 
@@ -443,6 +450,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         switch tableView {
           case ingredientAmountsTableView :
+            // Do nothing
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
             return
 
@@ -590,25 +598,23 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         switch tableView {
           case ingredientAmountsTableView :
             if editingStyle == .Delete {
+              // Delete the selected ingredientAmount
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
               recipe.ingredientAmounts.remove(ingredientAmount)
               managedObjectContext.deleteObject(ingredientAmount)
-
               tableView.reloadData()
             }
           case stepsTableView :
             if editingStyle == .Delete {
+              // Delete the selected step
               let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
               recipe.steps.remove(step)
               managedObjectContext.deleteObject(step)
-
               tableView.reloadData()
             }
           default :
             fatalError("unexpected table view")
         }
-
-        view.layoutSubviews()
       }
 
 

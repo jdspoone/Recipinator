@@ -161,6 +161,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
     func textFieldShouldBeginEditing(textField: UITextField) -> Bool
       {
+        // Set the activeSubview to be the textField, if applicable
         if editing {
           activeSubview = textField
           return true

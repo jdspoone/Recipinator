@@ -51,9 +51,11 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       {
         self.searching = searching
 
+        // Set the buttons of the navigationItem
         navigationItem.setLeftBarButtonItem(searching ? cancelButton : nil, animated: animated)
         navigationItem.setRightBarButtonItems(searching ? nil : [addButton, searchButton], animated: animated)
 
+        // Deactivate the various layout constraints
         NSLayoutConstraint.deactivateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
         searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraintEqualToConstant(searching ? 40.0 : 0.0)
@@ -61,6 +63,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         searchTextField.hidden = searching ? false : true
         recipeTableViewTopConstraint = recipeTableView.topAnchor.constraintEqualToAnchor(searching ? searchTextField.bottomAnchor : view.topAnchor, constant: 0.0)
 
+        // Activate the various layout constraints
         NSLayoutConstraint.activateConstraints([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
         searchTextField.text = ""

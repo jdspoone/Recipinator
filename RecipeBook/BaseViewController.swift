@@ -137,6 +137,7 @@ class BaseViewController: UIViewController
       {
         super.viewDidLoad()
 
+        // Set the initial editing state
         setEditing(defaultEditingState, animated: true)
       }
 
@@ -145,6 +146,7 @@ class BaseViewController: UIViewController
       {
         super.viewWillAppear(animated)
 
+        // Register to observe notifications relating to keyboard appearance and disappearance, as well as changes to the device orientation
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
 
@@ -165,6 +167,7 @@ class BaseViewController: UIViewController
       {
         super.viewWillDisappear(animated)
 
+        // De-register to observe notifications
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
 
@@ -177,6 +180,7 @@ class BaseViewController: UIViewController
 
     override func setEditing(editing: Bool, animated: Bool)
       {
+        // Enable key-value observation for the editing property
         willChangeValueForKey("editing")
         super.setEditing(editing, animated: animated)
         didChangeValueForKey("editing")
@@ -254,6 +258,7 @@ class BaseViewController: UIViewController
 
     func deviceOrientationDidChange(notification: NSNotification)
       {
+        // Update the scrollView's contentSize
         scrollView.contentSize = CGSize(width: view.frame.width, height: scrollView.contentSize.height)
       }
 
@@ -262,14 +267,17 @@ class BaseViewController: UIViewController
 
     func save(sender: AnyObject?)
       {
+        // Have the activeSubview resign as first responder, if applicable
         activeSubview?.resignFirstResponder()
 
+        // Set the editing state to false
         setEditing(false, animated: true)
       }
 
 
     func done(sender: AnyObject?)
       {
+        // Have the activeSubview resign as first responder, if applicable
         activeSubview!.resignFirstResponder()
       }
 
