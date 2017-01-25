@@ -24,9 +24,17 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
+      {
+        willSet { willChangeValueForKey("ingredientsExpanded") }
+        didSet { didChangeValueForKey("ingredientsExpanded") }
+      }
 
     var stepsTableView: UITableView!
     var stepsExpanded: Bool = true
+      {
+        willSet { willChangeValueForKey("stepsExpanded") }
+        didSet { didChangeValueForKey("stepsExpanded") }
+      }
 
     var tagsLabel: UILabel!
     var tagsViewController: TagsViewController!
@@ -264,10 +272,26 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
                 self.nameTextField.userInteractionEnabled = self.editing
                 self.nameTextField.borderStyle = self.editing ? .RoundedRect : .None
                 self.imageView.userInteractionEnabled = self.editing
-                self.addIngredientButton.hidden = self.editing ? false : true
-                self.addStepButton.hidden = self.editing ? false : true
+                self.addIngredientButton.hidden = self.editing && self.ingredientsExpanded ? false : true
+                self.addStepButton.hidden = self.editing && self.stepsExpanded ? false : true
                 self.tagTextField.hidden = self.editing ? false : true
                 self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraintEqualToConstant(self.editing ? 40 : 0)
+              }),
+          Observation(source: self, keypaths: ["ingredientsExpanded"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.addIngredientButton.hidden = self.editing && self.ingredientsExpanded ? false : true
+              }),
+          Observation(source: self, keypaths: ["stepsExpanded"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.addStepButton.hidden = self.editing && self.stepsExpanded ? false : true
+              }),
+          Observation(source: ingredientAmountsTableView, keypaths: ["contentSize"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.ingredientAmountsTableViewHeightConstraint = self.ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(self.ingredientAmountsTableView.contentSize.height)
+              }),
+          Observation(source: stepsTableView, keypaths: ["contentSize"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.stepsTableViewHeightConstraint = self.stepsTableView.heightAnchor.constraintEqualToConstant(self.stepsTableView.contentSize.height)
               }),
           Observation(source: tagsViewController, keypaths: ["tags"], options: NSKeyValueObservingOptions(), block:
               { (change: [String : AnyObject]?) -> Void in
@@ -283,16 +307,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
         // Execute our completion block
         completion(recipe)
-      }
-
-
-    override func viewWillLayoutSubviews()
-      {
-        super.viewWillLayoutSubviews()
-
-        // Update the height constraints for the ingredient amounts and steps table views
-        ingredientAmountsTableViewHeightConstraint = ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(ingredientAmountsTableView.contentSize.height)
-        stepsTableViewHeightConstraint = stepsTableView.heightAnchor.constraintEqualToConstant(stepsTableView.contentSize.height)
       }
 
 
@@ -685,6 +699,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     func addIngredient(sender: AnyObject)
       {
+        assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
+
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
         if (newIngredientAmount == true) {
           let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
@@ -703,14 +719,15 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         newIngredientAmount = true;
         editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 1)
 
-        // Reload the ingredientAmountsTableView and layout subviews
+        // Reload the ingredientAmountsTableView's data
         ingredientAmountsTableView.reloadData()
-        view.layoutSubviews()
       }
 
 
     func addStep(sender: AnyObject)
       {
+        assert(stepsExpanded, "Unexpected state - steps table view is collapsed")
+
         let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", imageData: nil, context: managedObjectContext, insert: false)
         let stepViewController = StepViewController(step: step, editing: true, context: managedObjectContext)
             { (step: Step) -> Void in
@@ -721,9 +738,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
               do { try self.managedObjectContext.save() }
               catch { fatalError("failed to save") }
 
+              // Reload the stepsTableView's data
               self.stepsTableView.reloadData()
-
-              self.view.layoutSubviews()
             }
         showViewController(stepViewController, sender: self)
       }
