@@ -306,6 +306,12 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       {
         if editingStyle == .Delete {
 
+          // Begin the animation block
+          tableView.beginUpdates()
+
+          // Delete the appropriate row from the tableView
+          tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+
           // Remove the recipe from the list, and update the managed object context
           var recipe: Recipe
           if searching {
@@ -316,13 +322,15 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
             recipe = recipes.removeAtIndex(indexPath.row)
           }
 
+          // Delete the recipe from the managedObjectContext
           managedObjectContext.deleteObject(recipe)
 
+          // Save the managed object context
           do { try managedObjectContext.save() }
           catch let e { fatalError("error: \(e)") }
 
-          // Update the table view
-          tableView.reloadData()
+          // End the animation block
+          tableView.endUpdates()
         }
         else {
           fatalError("unexpected editing style: \(editingStyle)")

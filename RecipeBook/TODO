@@ -1,6 +1,3 @@
-Improve TableView efficiency, i.e. don't reload the entire table when we can do a single row/section instead...
-
-
 CoreData:
   -make new recipes orphans until completion call back
     -inside RecipeViewController, will need to remember whether we've been inserted yet, and delay adding sub-nodes to the context until the recipe is added...

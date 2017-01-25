@@ -595,26 +595,33 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         // We only expect to be modifying the table views when we're in editing mode
         assert(editing == true, "unexpected state")
 
+        // Begin the animation block
+        tableView.beginUpdates()
+
+        // Remove the appropriate row from the tableView
+        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+
         switch tableView {
           case ingredientAmountsTableView :
+            // Delete the selected ingredientAmount
             if editingStyle == .Delete {
-              // Delete the selected ingredientAmount
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
               recipe.ingredientAmounts.remove(ingredientAmount)
               managedObjectContext.deleteObject(ingredientAmount)
-              tableView.reloadData()
             }
           case stepsTableView :
+            // Delete the selected step
             if editingStyle == .Delete {
-              // Delete the selected step
               let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
               recipe.steps.remove(step)
               managedObjectContext.deleteObject(step)
-              tableView.reloadData()
             }
           default :
             fatalError("unexpected table view")
         }
+
+        // End the animation block
+        tableView.endUpdates()
       }
 
 
@@ -737,6 +744,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", imageData: nil, context: managedObjectContext, insert: false)
         let stepViewController = StepViewController(step: step, editing: true, context: managedObjectContext)
             { (step: Step) -> Void in
+
+              // Begin the animation block
+              self.stepsTableView.beginUpdates()
+
               // Insert the returned step into the managed object context, and update the recipe
               self.managedObjectContext.insertObject(step)
               self.recipe.steps.insert(step)
@@ -744,8 +755,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
               do { try self.managedObjectContext.save() }
               catch { fatalError("failed to save") }
 
-              // Reload the stepsTableView's data
-              self.stepsTableView.reloadData()
+              // Insert a new row into the table view
+              let indexPath = NSIndexPath(forRow: Int(step.number), inSection: 0)
+              self.stepsTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+
+              // End the animation block
+              self.stepsTableView.endUpdates()
             }
         showViewController(stepViewController, sender: self)
       }
