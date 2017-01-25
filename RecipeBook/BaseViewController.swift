@@ -152,6 +152,15 @@ class BaseViewController: UIViewController
       }
 
 
+    override func viewDidAppear(animated: Bool)
+      {
+        super.viewDidAppear(animated)
+
+        // Schedule a call to updateScrollViewContentSize after a slight delay
+        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.5)
+      }
+
+
     override func viewWillDisappear(animated: Bool)
       {
         super.viewWillDisappear(animated)
