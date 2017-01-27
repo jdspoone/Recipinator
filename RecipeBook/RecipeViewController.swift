@@ -458,10 +458,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
             // Get the list of steps, and the index of the step we're interested in
             let steps = recipe.steps.sort(stepsSortingBlock)
             let index = indexPath.row
+            let step = steps[index]
             // Present a steps view controller
             let stepsViewController = StepsViewController(steps: steps, index: index, editing: editing, context: managedObjectContext, completion:
               { () in
-
+                // Update the label of the tableView cell
+                let cell = tableView.cellForRowAtIndexPath(indexPath)!
+                cell.textLabel!.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
               })
             showViewController(stepsViewController, sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
