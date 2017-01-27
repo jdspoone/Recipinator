@@ -172,7 +172,7 @@
 				TargetAttributes = {
 					1FFF521C1C3319D5006A99C2 = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = RE77T6J6G4;
+						DevelopmentTeam = FH6VJP4VHD;
 					};
 				};
 			};
@@ -325,9 +325,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = FH6VJP4VHD;
 				INFOPLIST_FILE = RecipeBook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Lambda.RecipeBook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambda.RecipeBook.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 2.3;
@@ -340,9 +341,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = FH6VJP4VHD;
 				INFOPLIST_FILE = RecipeBook/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.Lambda.RecipeBook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lambda.RecipeBook.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 2.3;
