@@ -76,6 +76,7 @@
 				1F0149701C3CDE0900DC3E59 /* Recipe.swift */,
 				1F8A80FA1C52E28F00971E9D /* Step.swift */,
 				1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */,
+				1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -84,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				1F4C29EA1C58249C000CE463 /* Observation.swift */,
+				1F6C8FD61C7D363300801856 /* utilities.swift */,
 			);
 			name = Library;
 			sourceTree = "<group>";
@@ -130,10 +132,8 @@
 				1F4C29E81C580CCA000CE463 /* StepViewController.swift */,
 				1F20FAA61E329A24002BDD94 /* StepsViewController.swift */,
 				1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */,
-				1F6C8FD61C7D363300801856 /* utilities.swift */,
 				1FFF52341C331AB5006A99C2 /* Launch.xib */,
 				1FFF52271C3319D5006A99C2 /* Assets.xcassets */,
-				1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */,
 				1FFF522C1C3319D5006A99C2 /* Info.plist */,
 			);
 			name = Sources;
