@@ -14,7 +14,6 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
     var step: Step
     var completion: (Step) -> Void
 
-    var managedObjectContext: NSManagedObjectContext
 
     var numberLabel: UILabel!
     var summaryTextField: UITextField!
@@ -25,10 +24,9 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
     init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: (Step -> Void))
       {
         self.step = step
-        self.managedObjectContext = context
         self.completion = completion
 
-        super.init(editing: editing)
+        super.init(editing: editing, context: context)
       }
 
 

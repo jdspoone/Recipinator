@@ -10,12 +10,15 @@
 */
 
 import UIKit
+import CoreData
 
 
 class BaseViewController: UIViewController
   {
 
     var observations = Set<Observation>()
+
+    var managedObjectContext: NSManagedObjectContext
 
     var scrollView: UIScrollView!
     var scrollViewSubviews = Set<UIView>()
@@ -50,9 +53,10 @@ class BaseViewController: UIViewController
 
     // MARK: -
 
-    init(editing: Bool)
+    init(editing: Bool, context: NSManagedObjectContext)
       {
         self.defaultEditingState = editing
+        self.managedObjectContext = context
 
         super.init(nibName: nil, bundle: nil)
       }

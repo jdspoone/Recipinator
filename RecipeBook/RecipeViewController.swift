@@ -14,8 +14,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     var recipe: Recipe
     let completion: (Recipe) -> Void
 
-    var managedObjectContext: NSManagedObjectContext
-
     let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number < $1.number }
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
@@ -103,9 +101,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         self.recipe = recipe
         self.completion = completion
 
-        self.managedObjectContext = context
-
-        super.init(editing: editing)
+        super.init(editing: editing, context: context)
       }
 
 
