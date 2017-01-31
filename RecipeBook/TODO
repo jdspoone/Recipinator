@@ -1,15 +1,10 @@
-CoreData:
-  -make new recipes orphans until completion call back
-    -inside RecipeViewController, will need to remember whether we've been inserted yet, and delay adding sub-nodes to the context until the recipe is added...
-
-  -implement reference object stuff...
-
-
 RecipeViewController:
+
   -image view
     -give clear indication that you can select a photo when in editting mode
       -when editing, display label above view with text "tap to select photo"?
       -when editing, change default photo to one that says "tap to select photo"?
+    -enable users to select a photo from their library, or take a new one with the camera
     -add ability to delete photo without selecting a new one
       -when it editing, display delete button in top right corner?
 
