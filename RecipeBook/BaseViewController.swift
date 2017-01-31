@@ -282,7 +282,7 @@ class BaseViewController: UIViewController
     func done(sender: AnyObject?)
       {
         // Have the activeSubview resign as first responder, if applicable
-        activeSubview!.resignFirstResponder()
+        activeSubview?.resignFirstResponder()
       }
 
   }
