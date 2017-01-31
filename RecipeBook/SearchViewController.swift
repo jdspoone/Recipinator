@@ -168,19 +168,6 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
           if let fetchedObjects = resultsController.fetchedObjects where fetchedObjects.count > 0 {
             recipes = fetchedObjects as! [Recipe]
           }
-          // If there aren't any, create some default recipes
-          else {
-            let ingredient = Ingredient(name: "Eggs", context: managedObjectContext)
-            let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: "2", number: 0, context: managedObjectContext)
-            let step1 = Step(number: 0, summary: "Do this", detail: "", imageData: nil, context: managedObjectContext)
-            let step2 = Step(number: 1, summary: "Do that", detail: "", imageData: nil, context: managedObjectContext)
-            let step3 = Step(number: 2, summary: "And the other", detail: "", imageData: nil, context: managedObjectContext)
-            let recipe = Recipe(name: "Recipe A", imageData: nil, ingredientAmounts: [ingredientAmount], steps: [step1, step2, step3], tags: [], context: managedObjectContext)
-
-            recipes = [recipe]
-
-            try managedObjectContext.save()
-          }
         }
         catch let e { fatalError("error: \(e)") }
 
