@@ -11,7 +11,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
   {
     weak var parentTableView: UITableView?
 
-    var ingredientAmount: IngredientAmount
+    var ingredientAmount: IngredientAmount?
 
     var nameTextField: UITextField!
     var amountTextField: UITextField!
@@ -22,17 +22,17 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
       }
 
 
-    init(ingredientAmount: IngredientAmount, tableView: UITableView)
+    init(parentTableView: UITableView, ingredientAmount: IngredientAmount? = nil)
       {
+        self.parentTableView = parentTableView
         self.ingredientAmount = ingredientAmount
-        self.parentTableView = tableView
 
         super.init(style: .Default, reuseIdentifier: "ingredientTableViewCell")
 
         nameTextField = UITextField(frame: CGRect.zero)
         nameTextField.font = UIFont(name: "Helvetica", size: 16)
         nameTextField.placeholder = "Name"
-        nameTextField.text = ingredientAmount.ingredient.name
+        nameTextField.text = ingredientAmount?.ingredient.name
         nameTextField.returnKeyType = .Done
         nameTextField.delegate = self
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -40,7 +40,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         amountTextField = UITextField(frame: CGRect.zero)
         amountTextField.font = UIFont(name: "Helvetica", size: 16)
         amountTextField.placeholder = "Amount"
-        amountTextField.text = ingredientAmount.amount
+        amountTextField.text = ingredientAmount?.amount
         amountTextField.textAlignment = .Right
         amountTextField.returnKeyType = .Done
         amountTextField.delegate = self
@@ -86,27 +86,71 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
 
     func textFieldShouldReturn(textField: UITextField) -> Bool
       {
-        if textField.text != nil && textField.text != "" {
-          textField.endEditing(true)
-          return true
+
+        // If the ingredientAmount is non-nil
+        if let _ = ingredientAmount {
+
+          // Allow the user to end editing if the name text field is non-empty
+          if nameTextField.text != nil && nameTextField.text != "" {
+            textField.endEditing(true)
+            return true
+          }
+          return false
         }
-        return false
+        // Otherwise the ingredientAmount is nil
+        else {
+
+          // Allow the user to end editing if both the name and amount text fields are empty
+          if (nameTextField.text == nil || nameTextField.text == "") && (amountTextField.text == nil || amountTextField.text == "") {
+
+            // Forcibly end editting of the textField
+            textField.endEditing(true)
+
+            // Set the RecipeViewController's newIngredientAmount flag to be false, and tell the parentTable to reload it's data
+            recipeViewController.newIngredientAmount = false
+            parentTableView!.reloadData()
+
+            return true
+          }
+
+          // Allow the user to end editing if the name text field is non-empty
+          else if (nameTextField.text != nil || nameTextField.text != "") {
+            textField.endEditing(true)
+            return true
+          }
+
+          // Otherwise, prevent editing from ending
+          else {
+            return false
+          }
+        }
       }
 
 
     func textFieldDidEndEditing(textField: UITextField)
       {
-        switch textField {
-          case nameTextField :
-            if textField.text! != ingredientAmount.ingredient.name {
-              ingredientAmount.updateIngredient(textField.text!, context: recipeViewController.managedObjectContext)
-              recipeViewController.addNewIngredientAmountToRecipe()
-            }
-          case amountTextField :
-            ingredientAmount.amount = textField.text!
-          default :
-            fatalError("unexpected case")
+        // If the ingredientAmount is non-nil
+        if let ingredientAmount = ingredientAmount {
+
+          // Switch on the textField
+          switch textField {
+
+            // If the nameTextField's text differs from the ingredientAmount's ingredient name, update the ingredient amount
+            case nameTextField :
+              if textField.text! != ingredientAmount.ingredient.name {
+                ingredientAmount.updateIngredient(textField.text!, context: recipeViewController.managedObjectContext)
+              }
+
+            // Update the ingredientAmount's amount
+            case amountTextField :
+              ingredientAmount.amount = textField.text!
+
+            default :
+              fatalError("unexpected case")
+          }
         }
+
+        // Set the parent RecipeViewController's activeSubview to nil
         recipeViewController.activeSubview = nil
       }
 

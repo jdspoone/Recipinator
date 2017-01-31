@@ -117,7 +117,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
 
         // Get the tableViewCell for the new ingredientAmount
-        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! IngredientAmountTableViewCell
         let name = cell.nameTextField.text!
         let amount = cell.amountTextField.text!
 
@@ -435,7 +435,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         if tableView === ingredientAmountsTableView && editingIngredientIndexPath == indexPath {
           dispatch_async(dispatch_get_main_queue())
               { () -> Void in
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! NewIngredientAmountTableViewCell
+                let cell = tableView.cellForRowAtIndexPath(indexPath) as! IngredientAmountTableViewCell
                 cell.nameTextField.becomeFirstResponder()
               }
         }
@@ -561,14 +561,16 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         switch tableView {
           case ingredientAmountsTableView :
+
+
             // Either we're working with pre-existing ingredient amounts
             if indexPath.section == 0 {
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
-              return IngredientAmountTableViewCell(ingredientAmount: ingredientAmount, tableView: tableView)
+              return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
             }
             // Or we're creating a new ingredient amount
             else {
-              return NewIngredientAmountTableViewCell(tableView: tableView)
+              return IngredientAmountTableViewCell(parentTableView: tableView)
             }
 
           case stepsTableView :
@@ -715,7 +717,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
         if (newIngredientAmount == true) {
-          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! NewIngredientAmountTableViewCell
+          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! IngredientAmountTableViewCell
 
           // If the new ingredientAmount has a valid name, add it to the recipe
           if let name = cell.nameTextField.text where name != "" {
