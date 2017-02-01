@@ -252,18 +252,51 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
     func selectImage(sender: UITapGestureRecognizer)
       {
+        // As long as the gesture has ended
         if sender.state == .Ended {
 
-          // UIImagePickerController is a view controller that lets a user pick media from their photo library
-          let imagePickerController = UIImagePickerController()
+          // Hide the keyboard
+          activeSubview?.resignFirstResponder()
 
-          // Only allow photos to be picked, not taken
-          imagePickerController.sourceType = .PhotoLibrary
+          // Configure a number of UIAlertActions
+          var actions = [UIAlertAction]()
 
-          // Make sure ViewController is notified when the user picks an image
-          imagePickerController.delegate = self
+          // Always configure a cancel action
+          actions.append(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
 
-          presentViewController(imagePickerController, animated: true, completion: nil)
+          // Configure a camerta button if a camera is available
+          if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
+            actions.append(UIAlertAction(title: "Camera", style: .Default, handler:
+                { (action: UIAlertAction) in
+                  // Present a UIImagePickerController for the photo library
+                  let imagePickerController = UIImagePickerController()
+                  imagePickerController.sourceType = .Camera
+                  imagePickerController.delegate = self
+                  self.presentViewController(imagePickerController, animated: true, completion: nil)
+                }))
+          }
+
+          // Configure a photo library button if a photo library is available
+          if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
+            actions.append(UIAlertAction(title: "Photo Library", style: .Default, handler:
+              { (action: UIAlertAction) in
+                // Present a UIImagePickerController for the camera
+                let imagePickerController = UIImagePickerController()
+                imagePickerController.sourceType = .PhotoLibrary
+                imagePickerController.delegate = self
+                self.presentViewController(imagePickerController, animated: true, completion: nil)
+              }))
+          }
+
+
+          // Configure a UIAlertController
+          let alertController = UIAlertController(title: "Image Selection", message: "Choose the image source you'd like to use.", preferredStyle: .Alert)
+          for action in actions {
+            alertController.addAction(action)
+          }
+
+          // Present the UIAlertController
+          presentViewController(alertController, animated: true, completion: nil)
         }
       }
 
