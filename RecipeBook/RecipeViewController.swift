@@ -303,8 +303,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         super.viewWillDisappear(animated)
 
-        // Execute our completion block
-        completion(recipe)
+        // Execute the completion block as long as we're not presenting another view controller
+        if (presentedViewController == nil) {
+          completion(recipe)
+        }
       }
 
 

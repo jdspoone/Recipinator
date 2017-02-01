@@ -135,8 +135,10 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // De-register custom notifications
         observations.removeAll()
 
-        // Execute the completion block
-        completion()
+        // Execute the completion block as long as we're not presenting another view controller
+        if (presentedViewController == nil) {
+          completion()
+        }
       }
 
 
