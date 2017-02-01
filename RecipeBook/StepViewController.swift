@@ -78,6 +78,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
         // Configure the image view
         imageView = UIImageView(frame: CGRect.zero)
+        imageView.contentMode = .ScaleAspectFill
         imageView.layer.cornerRadius = 5.0
         imageView.layer.borderWidth = 0.5
         imageView.layer.borderColor = UIColor.lightGrayColor().CGColor
