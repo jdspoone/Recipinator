@@ -180,6 +180,8 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     override func viewWillAppear(animated: Bool)
       {
+        super.viewWillAppear(animated)
+
         // Register observations
         observations = [
           Observation(source: searchSegmentedControl, keypaths: ["selectedSegmentIndex"], options: .Initial, block:
@@ -212,6 +214,8 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     override func viewWillDisappear(animated: Bool)
       {
+        super.viewWillDisappear(animated)
+
         // De-register observations
         observations.removeAll()
       }
