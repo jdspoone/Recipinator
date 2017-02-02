@@ -117,7 +117,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
 
         // Get the tableViewCell for the new ingredientAmount
-        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! IngredientAmountTableViewCell
+        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) as! IngredientAmountTableViewCell
         let name = cell.nameTextField.text!
         let amount = cell.amountTextField.text!
 
@@ -542,10 +542,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     func numberOfSectionsInTableView(tableView: UITableView) -> Int
       {
         switch tableView {
+
           case ingredientAmountsTableView :
-            return newIngredientAmount == false ? 1 : 2
+            return newIngredientAmount ? 2 : 1
+
           case stepsTableView :
             return 1
+
           default :
             fatalError("unexpected table view")
         }
@@ -555,8 +558,26 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
       {
         switch tableView {
+
           case ingredientAmountsTableView :
-            return section == 0 ? recipe.ingredientAmounts.count : 1
+
+            // Switch on the section
+            switch section {
+
+              case 0:
+                // Section 0 should contain 1 row if we're adding a new ingredientAmount, and a row for each ingredientAmount otherwise
+                return newIngredientAmount ? 1 : recipe.ingredientAmounts.count
+
+              case 1:
+                // Sanity check
+                assert(newIngredientAmount, "unexpected state")
+
+                // If it exists, section 1 should contain a row for each ingredientAmount
+                return recipe.ingredientAmounts.count
+
+              default:
+                fatalError("unexpected section")
+            }
 
           case stepsTableView :
             return recipe.steps.count
@@ -569,16 +590,35 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
       {
+        // Switch on the tableView
         switch tableView {
+
           case ingredientAmountsTableView :
-            // Either we're working with pre-existing ingredient amounts
-            if indexPath.section == 0 {
-              let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
-              return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
-            }
-            // Or we're creating a new ingredient amount
-            else {
-              return IngredientAmountTableViewCell(parentTableView: tableView)
+
+            // Switch on the section
+            switch indexPath.section {
+
+              case 0:
+                // If we're creating a new ingredientAmount, return an empty ingredientAmountTableViewCell for it
+                if newIngredientAmount {
+                  return IngredientAmountTableViewCell(parentTableView: tableView)
+                }
+                // Otherwise return an ingredientAmountTableViewCell for the appropriate ingredientAmount
+                else {
+                  let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+                  return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
+                }
+
+              case 1:
+                // Sanity check
+                assert(newIngredientAmount, "unexpected state")
+
+                // Return an ingredientAmountTableViewCell for the appropriate ingredientAmount
+                let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+                return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
+
+              default:
+                fatalError("unexpected section")
             }
 
           case stepsTableView :
@@ -764,7 +804,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
         if (newIngredientAmount == true) {
-          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 1)) as! IngredientAmountTableViewCell
+          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) as! IngredientAmountTableViewCell
 
           // If the new ingredientAmount has a valid name, add it to the recipe
           if let name = cell.nameTextField.text where name != "" {
@@ -776,9 +816,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           }
         }
 
-        // Set the newIngredientAmount flag and the editingIngredientIndexPath
+        // Flip the newIngredientAmount flag and set the editingIngredientIndexPath approriately
         newIngredientAmount = true;
-        editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 1)
+        editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 0)
 
         // Reload the ingredientAmountsTableView's data
         ingredientAmountsTableView.reloadData()
