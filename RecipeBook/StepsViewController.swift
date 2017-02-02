@@ -206,10 +206,10 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool)
       {
-        // De-register custom notifications
+        // De-register custom notifications for the previous StepViewController
         observations.removeAll()
 
-        // Register custom notifications
+        // Register custom notifications for the new StepViewController
         observations = [
           Observation(source: self.activeViewController!, keypaths: ["activeSubview"], options: NSKeyValueObservingOptions(), block:
             { (change: [String : AnyObject]?) -> Void in
