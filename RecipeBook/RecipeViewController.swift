@@ -571,8 +571,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       {
         switch tableView {
           case ingredientAmountsTableView :
-
-
             // Either we're working with pre-existing ingredient amounts
             if indexPath.section == 0 {
               let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
