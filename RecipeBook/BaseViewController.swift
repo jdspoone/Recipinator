@@ -150,20 +150,14 @@ class BaseViewController: UIViewController
       {
         super.viewWillAppear(animated)
 
+        // Schedule a call to updateScrollViewContentSize after a slight delay
+        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.1)
+
         // Register to observe notifications relating to keyboard appearance and disappearance, as well as changes to the device orientation
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.deviceOrientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
-      }
-
-
-    override func viewDidAppear(animated: Bool)
-      {
-        super.viewDidAppear(animated)
-
-        // Schedule a call to updateScrollViewContentSize after a slight delay
-        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.5)
       }
 
 
