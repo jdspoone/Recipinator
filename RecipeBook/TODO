@@ -1,6 +1,8 @@
 RecipeViewController:
 
   -image view
+    -allow users to select a number of images for a given recipe/step
+
     -give clear indication that you can select a photo when in editting mode
       -when editing, display label above view with text "tap to select photo"?
       -when editing, change default photo to one that says "tap to select photo"?
