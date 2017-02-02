@@ -4,8 +4,6 @@ RecipeViewController:
     -give clear indication that you can select a photo when in editting mode
       -when editing, display label above view with text "tap to select photo"?
       -when editing, change default photo to one that says "tap to select photo"?
-    -add ability to delete photo without selecting a new one
-      -when it editing, display delete button in top right corner?
 
   -the component textfields of the ingredientTableViewCells should have dynamic lengths
 

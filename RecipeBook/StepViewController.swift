@@ -264,7 +264,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
           // Always configure a cancel action
           actions.append(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
 
-          // Configure a camerta button if a camera is available
+          // Configure a camera button if a camera is available
           if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
             actions.append(UIAlertAction(title: "Camera", style: .Default, handler:
                 { (action: UIAlertAction) in
@@ -288,6 +288,15 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
               }))
           }
 
+          // Configure a cancel button if the step has an associated image
+          if let _ = step.image {
+            actions.append(UIAlertAction(title: "Delete Image", style: .Default, handler:
+                { (action: UIAlertAction) in
+                  // Remove the associated image
+                  self.imageView.image = UIImage(named: "defaultImage")
+                  self.step.image = nil
+                }))
+          }
 
           // Configure a UIAlertController
           let alertController = UIAlertController(title: "Image Selection", message: "Choose the image source you'd like to use.", preferredStyle: .Alert)
