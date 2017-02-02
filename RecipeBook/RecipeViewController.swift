@@ -14,7 +14,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     var recipe: Recipe
     let completion: (Recipe) -> Void
 
-    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number < $1.number }
+    // Use reverse ordering for the ingredientAmounts as we add them from the top of the tableView
+    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number > $1.number }
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
