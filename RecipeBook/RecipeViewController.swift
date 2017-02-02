@@ -851,7 +851,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
               self.ingredientsExpanded = false
               self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
               self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
-
             })
       }
 
