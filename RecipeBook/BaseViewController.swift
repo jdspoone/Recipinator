@@ -88,9 +88,14 @@ class BaseViewController: UIViewController
         let width = view.frame.width
         let height = maxY + 8.0
 
-        // Conditionally update the size of the scroll view's content rect
+        // As long as there are changes to be made
         if (width != scrollView.contentSize.width || height != scrollView.contentSize.height) {
-          scrollView.contentSize = CGSize(width: width, height: height)
+          // Animate a change to scrollView's contentSize
+          UIView.animateWithDuration(0.5, animations:
+            {
+              self.scrollView.contentSize = CGSize(width: width, height: height)
+            })
+
         }
       }
 
