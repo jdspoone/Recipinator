@@ -530,6 +530,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
       { return section == 0 ? 30 : 0 }
 
 
+    func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath)
+      {
+        // Schedule a call to updateScrollViewContentSize after a slight delay
+        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.1)
+      }
+
+
     // MARK: - UITableViewDataSource
 
     func numberOfSectionsInTableView(tableView: UITableView) -> Int
