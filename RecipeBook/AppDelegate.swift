@@ -35,17 +35,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate
         let persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: AppDelegate.managedObjectModel)
 
         do {
-          if NSFileManager.defaultManager().fileExistsAtPath(AppDelegate.dataStoreURL.path!) {
-            let sourceMetadata = try NSPersistentStoreCoordinator.metadataForPersistentStoreOfType(NSSQLiteStoreType, URL: AppDelegate.dataStoreURL, options: nil)
+          // Create an options dictionary to enable automatic migration
+          let options = [
+              NSMigratePersistentStoresAutomaticallyOption: true,
+              NSInferMappingModelAutomaticallyOption: true
+            ]
 
-            // If the mom has changed since last time, just delete the old one
-            if AppDelegate.managedObjectModel.isConfiguration(nil, compatibleWithStoreMetadata: sourceMetadata) == false {
-              try NSFileManager.defaultManager().removeItemAtURL(AppDelegate.dataStoreURL)
-            }
-          }
-
-          // Add the pstore
-          try persistentStoreCoordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: AppDelegate.dataStoreURL, options: nil)
+          // Attempt to add the persistent store, using automatic migration if necessary
+          try persistentStoreCoordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: AppDelegate.dataStoreURL, options: options)
         }
         catch let e {
           fatalError("error: \(e)")

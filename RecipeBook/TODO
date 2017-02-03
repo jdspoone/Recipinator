@@ -14,9 +14,4 @@ RecipeViewController:
 
   -implement ingredient reordering...
 
-
-AppDelegate:
-  -attempt to convert data store before just deleting it...
-
-
 implement willGoIntoBackground stuff...
