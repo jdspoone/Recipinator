@@ -1,0 +1,55 @@
+/* 
+
+  Created by Jeffrey Spooner on 2017-02-05.
+
+*/
+
+"NAME" = "Name";
+
+"RECIPE" = "Recipe";
+
+"RECIPES" = "Recipes";
+
+"RECIPE NAME" = "Recipe Name";
+
+"INGREDIENT" = "Ingredient";
+
+"AMOUNT" = "Amount";
+
+"STEP" = "Step";
+
+"TAG" = "Tag";
+
+"TAGS" = "Tags";
+
+"TAG NAME" = "Tag Name";
+
+"INGREDIENTS" = "Ingredients";
+
+"STEPS" = "Steps";
+
+"CANCEL" = "Cancel";
+
+"CAMERA" = "Camera";
+
+"PHOTO LIBRARY" = "Photo Library";
+
+"DELETE IMAGE" = "Delete Image";
+
+"IMAGE SELECTION" = "Image Selection";
+
+"CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE." = "Choose the image source you'd like to use.";
+
+"SEARCH RECIPES BY NAME" = "Search recipes by name";
+
+"SEARCH RECIPES BY INGREDIENT" = "Search recipes by ingredient";
+
+"SEARCH RECIPES BY TAG" = "Search recipes by tag";
+
+"UNNAMED RECIPE" = "Unnamed recipe";
+
+"SUMMARY" = "Summary";
+
+"SAVE" = "Save";
+
+"DONE" = "Done";

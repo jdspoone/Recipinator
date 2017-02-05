@@ -50,7 +50,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
         // Configure the number label
         numberLabel = UILabel(frame: CGRect.zero)
-        numberLabel.text = "Step \(step.number + 1)"
+        numberLabel.text = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
         numberLabel.font = UIFont(name: "Helvetica", size: 18)
         numberLabel.textAlignment = .Center
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -59,7 +59,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         // Configure the summary text field
         summaryTextField = UITextField(frame: CGRect.zero)
         summaryTextField.font = UIFont(name: "Helvetica", size: 16)
-        summaryTextField.placeholder = "Summary"
+        summaryTextField.placeholder = NSLocalizedString("SUMMARY", comment: "")
         summaryTextField.textAlignment = .Center
         summaryTextField.returnKeyType = .Done
         summaryTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -262,11 +262,11 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
           var actions = [UIAlertAction]()
 
           // Always configure a cancel action
-          actions.append(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .Cancel, handler: nil))
 
           // Configure a camera button if a camera is available
           if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            actions.append(UIAlertAction(title: "Camera", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .Default, handler:
                 { (action: UIAlertAction) in
                   // Present a UIImagePickerController for the photo library
                   let imagePickerController = UIImagePickerController()
@@ -278,7 +278,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
           // Configure a photo library button if a photo library is available
           if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
-            actions.append(UIAlertAction(title: "Photo Library", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .Default, handler:
               { (action: UIAlertAction) in
                 // Present a UIImagePickerController for the camera
                 let imagePickerController = UIImagePickerController()
@@ -290,7 +290,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
           // Configure a cancel button if the step has an associated image
           if let _ = step.image {
-            actions.append(UIAlertAction(title: "Delete Image", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .Default, handler:
                 { (action: UIAlertAction) in
                   // Remove the associated image
                   self.imageView.image = UIImage(named: "defaultImage")
@@ -299,7 +299,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
           }
 
           // Configure a UIAlertController
-          let alertController = UIAlertController(title: "Image Selection", message: "Choose the image source you'd like to use.", preferredStyle: .Alert)
+          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .Alert)
           for action in actions {
             alertController.addAction(action)
           }

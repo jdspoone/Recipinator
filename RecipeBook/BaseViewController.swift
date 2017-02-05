@@ -137,8 +137,8 @@ class BaseViewController: UIViewController
         scrollViewBottomConstraint.active = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: NSLocalizedString("SAVE", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 

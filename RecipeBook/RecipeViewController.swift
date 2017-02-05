@@ -145,7 +145,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         // Configure the name text field
         nameTextField = UITextField(frame: CGRect.zero)
         nameTextField.font = UIFont(name: "Helvetica", size: 18)
-        nameTextField.placeholder = "Recipe name"
+        nameTextField.placeholder = NSLocalizedString("RECIPE NAME", comment: "")
         nameTextField.textAlignment = .Center
         nameTextField.returnKeyType = .Done
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -184,7 +184,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
         // Configure the tags label
         tagsLabel = UILabel(frame: .zero)
-        tagsLabel.text = "Tags"
+        tagsLabel.text = NSLocalizedString("TAGS", comment: "")
         tagsLabel.font = UIFont(name: "Helvetica", size: 18)
         tagsLabel.textAlignment = .Center
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -199,7 +199,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         tagTextField = UITextField(frame: CGRect.zero)
         tagTextField.font = UIFont(name: "Helvetica", size: 18)
         tagTextField.borderStyle = .RoundedRect
-        tagTextField.placeholder = "Tag name"
+        tagTextField.placeholder = NSLocalizedString("TAG NAME", comment: "")
         tagTextField.textAlignment = .Center
         tagTextField.returnKeyType = .Done
         tagTextField.clearButtonMode = .Always
@@ -464,7 +464,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
               { () in
                 // Update the label of the tableView cell
                 let cell = tableView.cellForRowAtIndexPath(indexPath)!
-                cell.textLabel!.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
+                cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
               })
             showViewController(stepsViewController, sender: self)
             tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -489,11 +489,11 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           switch tableView {
             case ingredientAmountsTableView :
               leftButton = collapseIngredientsButton
-              label.text = "Ingredients"
+              label.text = NSLocalizedString("INGREDIENTS", comment: "")
               rightButton = addIngredientButton
             case stepsTableView :
               leftButton = collapseStepsButton
-              label.text = "Steps"
+              label.text = NSLocalizedString("STEPS", comment: "")
               rightButton = addStepButton
             default :
               fatalError("unexpected table view")
@@ -625,7 +625,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           case stepsTableView :
             let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
             let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
-            cell.textLabel!.text = step.summary != "" ? step.summary : "Step \(step.number + 1)"
+            cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
             cell.textLabel!.font = UIFont(name: "Helvetica", size: 16)
             cell.showsReorderControl = true
             return cell
@@ -751,11 +751,11 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           var actions = [UIAlertAction]()
 
           // Always configure a cancel action
-          actions.append(UIAlertAction(title: "Cancel", style: .Cancel, handler: nil))
+          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .Cancel, handler: nil))
 
           // Configure a camera button if a camera is available
           if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            actions.append(UIAlertAction(title: "Camera", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .Default, handler:
                 { (action: UIAlertAction) in
                   // Present a UIImagePickerController for the photo library
                   let imagePickerController = UIImagePickerController()
@@ -767,7 +767,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
           // Configure a photo library button if a photo library is available
           if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
-            actions.append(UIAlertAction(title: "Photo Library", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .Default, handler:
               { (action: UIAlertAction) in
                 // Present a UIImagePickerController for the camera
                 let imagePickerController = UIImagePickerController()
@@ -779,7 +779,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
 
           // Configure a cancel button if the recipe has an associated image
           if let _ = recipe.image {
-            actions.append(UIAlertAction(title: "Delete Image", style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .Default, handler:
                 { (action: UIAlertAction) in
                   // Remove the associated image
                   self.imageView.image = UIImage(named: "defaultImage")
@@ -788,7 +788,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           }
 
           // Configure a UIAlertController
-          let alertController = UIAlertController(title: "Image Selection", message: "Choose the image source you'd like to use.", preferredStyle: .Alert)
+          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .Alert)
           for action in actions {
             alertController.addAction(action)
           }

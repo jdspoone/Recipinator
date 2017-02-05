@@ -23,6 +23,7 @@
 		1F918ACC1C6D565C00C5B2D0 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */; };
 		1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */; };
 		1F918AD01C6E5FF200C5B2D0 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */; };
+		1FB57F131E47B168003E9CFF /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1FB57F111E47B168003E9CFF /* Localizable.strings */; };
 		1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFA67C21C55676D00C4F458 /* Ingredient.swift */; };
 		1FFF52211C3319D5006A99C2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF52201C3319D5006A99C2 /* AppDelegate.swift */; };
 		1FFF52281C3319D5006A99C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FFF52271C3319D5006A99C2 /* Assets.xcassets */; };
@@ -47,6 +48,7 @@
 		1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
+		1FB57F121E47B168003E9CFF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1FFA67C21C55676D00C4F458 /* Ingredient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ingredient.swift; sourceTree = "<group>"; };
 		1FFF521D1C3319D5006A99C2 /* RecipeBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipeBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FFF52201C3319D5006A99C2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -99,6 +101,14 @@
 			path = RecipeBook;
 			sourceTree = "<group>";
 		};
+		1FB57F141E47B185003E9CFF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1FB57F111E47B168003E9CFF /* Localizable.strings */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		1FFF52141C3319D5006A99C2 = {
 			isa = PBXGroup;
 			children = (
@@ -121,6 +131,7 @@
 			children = (
 				1F165E811D231045001DBAA5 /* CoreData */,
 				1F165E821D23106E001DBAA5 /* Library */,
+				1FB57F141E47B185003E9CFF /* Resources */,
 				1FFF52201C3319D5006A99C2 /* AppDelegate.swift */,
 				1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */,
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
@@ -196,6 +207,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FB57F131E47B168003E9CFF /* Localizable.strings in Resources */,
 				1F165E801D231022001DBAA5 /* README in Resources */,
 				1F165E7F1D231022001DBAA5 /* LICENSE in Resources */,
 				1FFF52281C3319D5006A99C2 /* Assets.xcassets in Resources */,
@@ -230,6 +242,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		1FB57F111E47B168003E9CFF /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1FB57F121E47B168003E9CFF /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1FFF522D1C3319D5006A99C2 /* Debug */ = {

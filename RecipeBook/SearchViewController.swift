@@ -98,7 +98,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         view.opaque = true
 
         // Configure the search segmented control
-        searchSegmentedControl = UISegmentedControl(items: ["Recipe", "Ingredient", "Tag"])
+        searchSegmentedControl = UISegmentedControl(items: [NSLocalizedString("RECIPE", comment: ""), NSLocalizedString("INGREDIENT", comment: ""), NSLocalizedString("TAG", comment: "")])
         searchSegmentedControl.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Helvetica", size: 16)!], forState: UIControlState())
         searchSegmentedControl.selectedSegmentIndex = 0
         searchSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
@@ -108,7 +108,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         searchTextField = UITextField(frame: CGRect.zero)
         searchTextField.font = UIFont(name: "Helvetica", size: 16)
         searchTextField.autocorrectionType = .No
-        searchTextField.placeholder = "Search recipes by name"
+        searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY NAME", comment: "")
         searchTextField.textAlignment = .Center
         searchTextField.returnKeyType = .Done
         searchTextField.borderStyle = .RoundedRect
@@ -172,7 +172,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         catch let e { fatalError("error: \(e)") }
 
         // Configure the navigation item
-        navigationItem.title = "Recipes"
+        navigationItem.title = NSLocalizedString("RECIPES", comment: "")
 
         setSearching(false, animated: false)
       }
@@ -191,13 +191,13 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
                   switch self.searchSegmentedControl.selectedSegmentIndex {
                     case 0:
                       self.searchCategory = .Recipe
-                      self.searchTextField.placeholder = "Search recipes by name"
+                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY NAME", comment: "")
                     case 1:
                       self.searchCategory = .Ingredient
-                      self.searchTextField.placeholder = "Search recipes by ingredient"
+                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY INGREDIENT", comment: "")
                     case 2:
                       self.searchCategory = .Tag
-                      self.searchTextField.placeholder = "Search recipes by tag"
+                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY TAG", comment: "")
                     default:
                       fatalError("unexpected case")
                   }
@@ -282,7 +282,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         let recipe = list[indexPath.row]
 
         // Configure the cell
-        cell.textLabel!.text = recipe.name != "" ? recipe.name : "Unnamed recipe"
+        cell.textLabel!.text = recipe.name != "" ? recipe.name : NSLocalizedString("UNNAMED RECIPE", comment: "")
         cell.textLabel!.font = UIFont(name: "Helvetica", size: 18)
 
         return cell

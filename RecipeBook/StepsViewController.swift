@@ -85,8 +85,8 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         pageView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: "Save", style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: "Done", style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: NSLocalizedString("Save", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 
