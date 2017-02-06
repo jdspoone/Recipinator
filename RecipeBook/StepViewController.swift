@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate
+class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate
   {
 
     var step: Step
@@ -18,7 +18,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
     var numberLabel: UILabel!
     var summaryTextField: UITextField!
     var detailTextView: UITextView!
-    var imageView: UIImageView!
+    var imageViewController: ImageViewController!
 
 
     init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: (Step -> Void))
@@ -34,7 +34,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       {
         summaryTextField.text = step.summary
         detailTextView.text = step.detail
-        imageView.image = step.image ?? UIImage(named: "defaultImage")
+        imageViewController.imageView.image = step.image ?? UIImage(named: "defaultImage")
       }
 
 
@@ -77,15 +77,9 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         addSubviewToScrollView(detailTextView)
 
         // Configure the image view
-        imageView = UIImageView(frame: CGRect.zero)
-        imageView.contentMode = .ScaleAspectFill
-        imageView.layer.cornerRadius = 5.0
-        imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = UIColor.lightGrayColor().CGColor
-        imageView.clipsToBounds = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(StepViewController.selectImage(_:))))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(imageView)
+        imageViewController = ImageViewController(image: step.image)
+        addChildViewController(imageViewController)
+        addSubviewToScrollView(imageViewController.imageView)
 
         // Configure the layout bindings for the number label
         numberLabel.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
@@ -106,10 +100,10 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         detailTextView.topAnchor.constraintEqualToAnchor(summaryTextField.bottomAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the image view
-        imageView.widthAnchor.constraintEqualToConstant(320.0).active = true
-        imageView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        imageView.heightAnchor.constraintEqualToConstant(320.0).active = true
-        imageView.topAnchor.constraintEqualToAnchor(detailTextView.bottomAnchor, constant: 8.0).active = true
+        imageViewController.imageView.widthAnchor.constraintEqualToConstant(320.0).active = true
+        imageViewController.imageView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
+        imageViewController.imageView.heightAnchor.constraintEqualToConstant(320.0).active = true
+        imageViewController.imageView.topAnchor.constraintEqualToAnchor(detailTextView.bottomAnchor, constant: 8.0).active = true
       }
 
 
@@ -141,7 +135,11 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
                 self.summaryTextField.userInteractionEnabled = self.editing
                 self.summaryTextField.borderStyle = self.editing ? .RoundedRect : .None
                 self.detailTextView.editable = self.editing
-                self.imageView.userInteractionEnabled = self.editing
+                self.imageViewController.setUserInteractionEnabled(self.editing)
+              }),
+          Observation(source: imageViewController, keypaths: ["image"], options: .Initial, block:
+              { (changes: [String : AnyObject]?) -> Void in
+                self.step.image = self.imageViewController.image
               })
         ]
       }
@@ -219,93 +217,6 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
         if activeSubview === textView {
           activeSubview = nil
-        }
-      }
-
-
-    // MARK: - UIImagePickerControllerDelegate
-
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject])
-      {
-        // The info dictionary contains multiple representations of the timage, and this uses the original
-        let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-
-        // Set imageView to display the selected image
-        imageView.image = selectedImage
-
-        // Store the selected image in the editing recipe
-        step.image = selectedImage
-
-        // Dismiss the picker
-        dismissViewControllerAnimated(true, completion: nil)
-      }
-
-
-    func imagePickerControllerDidCancel(picker: UIImagePickerController)
-      {
-        // Dismiss the picker if the user cancelled
-        dismissViewControllerAnimated(true, completion: nil)
-      }
-
-
-    // MARK: - Actions
-
-    func selectImage(sender: UITapGestureRecognizer)
-      {
-        // As long as the gesture has ended
-        if sender.state == .Ended {
-
-          // Hide the keyboard
-          activeSubview?.resignFirstResponder()
-
-          // Configure a number of UIAlertActions
-          var actions = [UIAlertAction]()
-
-          // Always configure a cancel action
-          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .Cancel, handler: nil))
-
-          // Configure a camera button if a camera is available
-          if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .Default, handler:
-                { (action: UIAlertAction) in
-                  // Present a UIImagePickerController for the photo library
-                  let imagePickerController = UIImagePickerController()
-                  imagePickerController.sourceType = .Camera
-                  imagePickerController.delegate = self
-                  self.presentViewController(imagePickerController, animated: true, completion: nil)
-                }))
-          }
-
-          // Configure a photo library button if a photo library is available
-          if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .Default, handler:
-              { (action: UIAlertAction) in
-                // Present a UIImagePickerController for the camera
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.sourceType = .PhotoLibrary
-                imagePickerController.delegate = self
-                self.presentViewController(imagePickerController, animated: true, completion: nil)
-              }))
-          }
-
-          // Configure a cancel button if the step has an associated image
-          if let _ = step.image {
-            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .Default, handler:
-                { (action: UIAlertAction) in
-                  // Remove the associated image
-                  self.imageView.image = UIImage(named: "defaultImage")
-                  self.step.image = nil
-                }))
-          }
-
-          // Configure a UIAlertController
-          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .Alert)
-          for action in actions {
-            alertController.addAction(action)
-          }
-
-          // Present the UIAlertController
-          presentViewController(alertController, animated: true, completion: nil)
         }
       }
 

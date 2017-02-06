@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource
+class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
     var recipe: Recipe
@@ -19,7 +19,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
-    var imageView: UIImageView!
+    var imageViewController: ImageViewController!
 
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
@@ -109,7 +109,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     func restoreState()
       {
         nameTextField.text = recipe.name
-        imageView.image = recipe.image ?? UIImage(named: "defaultImage")
+        imageViewController.imageView.image = recipe.image ?? UIImage(named: "defaultImage")
       }
 
 
@@ -153,15 +153,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         addSubviewToScrollView(nameTextField)
 
         // Configure the image view
-        imageView = UIImageView(frame: CGRect.zero)
-        imageView.contentMode = .ScaleAspectFill
-        imageView.layer.cornerRadius = 5.0
-        imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = UIColor.lightGrayColor().CGColor
-        imageView.clipsToBounds = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(RecipeViewController.selectImage(_:))))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(imageView)
+        imageViewController = ImageViewController(image: recipe.image)
+        addChildViewController(imageViewController)
+        addSubviewToScrollView(imageViewController.imageView)
 
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
@@ -214,15 +208,15 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         nameTextField.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the image view
-        imageView.widthAnchor.constraintEqualToConstant(320.0).active = true
-        imageView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        imageView.heightAnchor.constraintEqualToConstant(320.0).active = true
-        imageView.topAnchor.constraintEqualToAnchor(nameTextField.bottomAnchor, constant: 8.0).active = true
+        imageViewController.view.widthAnchor.constraintEqualToConstant(320.0).active = true
+        imageViewController.view.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
+        imageViewController.view.heightAnchor.constraintEqualToConstant(320.0).active = true
+        imageViewController.view.topAnchor.constraintEqualToAnchor(nameTextField.bottomAnchor, constant: 8.0).active = true
 
         // Configure the layout bindings for the ingredient table view
         ingredientAmountsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
         ingredientAmountsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        ingredientAmountsTableView.topAnchor.constraintEqualToAnchor(imageView.bottomAnchor, constant: 16.0).active = true
+        ingredientAmountsTableView.topAnchor.constraintEqualToAnchor(imageViewController.view.bottomAnchor, constant: 16.0).active = true
 
         // Configure the layout bindings for the step table view
         stepsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
@@ -271,7 +265,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
               { (changes: [String : AnyObject]?) -> Void in
                 self.nameTextField.userInteractionEnabled = self.editing
                 self.nameTextField.borderStyle = self.editing ? .RoundedRect : .None
-                self.imageView.userInteractionEnabled = self.editing
+                self.imageViewController.setUserInteractionEnabled(self.editing)
                 self.addIngredientButton.hidden = self.editing && self.ingredientsExpanded ? false : true
                 self.addStepButton.hidden = self.editing && self.stepsExpanded ? false : true
                 self.tagTextField.hidden = self.editing ? false : true
@@ -296,6 +290,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
           Observation(source: tagsViewController, keypaths: ["tags"], options: NSKeyValueObservingOptions(), block:
               { (change: [String : AnyObject]?) -> Void in
                 self.recipe.tags = self.tagsViewController.tags
+              }),
+          Observation(source: imageViewController, keypaths: ["image"], options: .Initial, block:
+              { (change: [String : AnyObject]?) -> Void in
+                self.recipe.image = self.imageViewController.image
               })
         ]
       }
@@ -356,7 +354,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
     func textFieldDidBeginEditing(textField: UITextField)
       {
         // Users should not be able to interact with the imageView if they are editing a textField
-        imageView.userInteractionEnabled = false;
+        imageViewController.setUserInteractionEnabled(false);
       }
 
 
@@ -400,34 +398,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         }
 
         // Enable user interaction with the imageView, and set the activeSubview to nil
-        imageView.userInteractionEnabled = true
+        imageViewController.setUserInteractionEnabled(true)
         activeSubview = nil
-      }
-
-
-
-    // MARK: - UIImagePickerControllerDelegate
-
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject])
-      {
-        // The info dictionary contains multiple representations of the timage, and this uses the original
-        let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-
-        // Set imageView to display the selected image
-        imageView.image = selectedImage
-
-        // Store the selected image in the editing recipe
-        recipe.image = selectedImage
-
-        // Dismiss the picker
-        dismissViewControllerAnimated(true, completion: nil)
-      }
-
-
-    func imagePickerControllerDidCancel(picker: UIImagePickerController)
-      {
-        // Dismiss the picker if the user cancelled
-        dismissViewControllerAnimated(true, completion: nil)
       }
 
 
@@ -735,66 +707,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UIImagePick
         // Or some non-text view
         else {
           super.done(sender)
-        }
-      }
-
-
-    func selectImage(sender: UITapGestureRecognizer)
-      {
-        // As long as the gesture has ended
-        if sender.state == .Ended {
-
-          // Hide the keyboard
-          activeSubview?.resignFirstResponder()
-
-          // Configure a number of UIAlertActions
-          var actions = [UIAlertAction]()
-
-          // Always configure a cancel action
-          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .Cancel, handler: nil))
-
-          // Configure a camera button if a camera is available
-          if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .Default, handler:
-                { (action: UIAlertAction) in
-                  // Present a UIImagePickerController for the photo library
-                  let imagePickerController = UIImagePickerController()
-                  imagePickerController.sourceType = .Camera
-                  imagePickerController.delegate = self
-                  self.presentViewController(imagePickerController, animated: true, completion: nil)
-                }))
-          }
-
-          // Configure a photo library button if a photo library is available
-          if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .Default, handler:
-              { (action: UIAlertAction) in
-                // Present a UIImagePickerController for the camera
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.sourceType = .PhotoLibrary
-                imagePickerController.delegate = self
-                self.presentViewController(imagePickerController, animated: true, completion: nil)
-              }))
-          }
-
-          // Configure a cancel button if the recipe has an associated image
-          if let _ = recipe.image {
-            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .Default, handler:
-                { (action: UIAlertAction) in
-                  // Remove the associated image
-                  self.imageView.image = UIImage(named: "defaultImage")
-                  self.recipe.image = nil
-                }))
-          }
-
-          // Configure a UIAlertController
-          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .Alert)
-          for action in actions {
-            alertController.addAction(action)
-          }
-
-          // Present the UIAlertController
-          presentViewController(alertController, animated: true, completion: nil)
         }
       }
 

@@ -24,6 +24,7 @@
 		1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */; };
 		1F918AD01C6E5FF200C5B2D0 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */; };
 		1FB57F131E47B168003E9CFF /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1FB57F111E47B168003E9CFF /* Localizable.strings */; };
+		1FB57F191E48FDA1003E9CFF /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB57F181E48FDA1003E9CFF /* ImageViewController.swift */; };
 		1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFA67C21C55676D00C4F458 /* Ingredient.swift */; };
 		1FFF52211C3319D5006A99C2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FFF52201C3319D5006A99C2 /* AppDelegate.swift */; };
 		1FFF52281C3319D5006A99C2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1FFF52271C3319D5006A99C2 /* Assets.xcassets */; };
@@ -49,6 +50,7 @@
 		1F918ACD1C6E5FB100C5B2D0 /* TagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsViewController.swift; sourceTree = "<group>"; };
 		1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		1FB57F121E47B168003E9CFF /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Resources/en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		1FB57F181E48FDA1003E9CFF /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		1FFA67C21C55676D00C4F458 /* Ingredient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ingredient.swift; sourceTree = "<group>"; };
 		1FFF521D1C3319D5006A99C2 /* RecipeBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipeBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FFF52201C3319D5006A99C2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				1FB57F141E47B185003E9CFF /* Resources */,
 				1FFF52201C3319D5006A99C2 /* AppDelegate.swift */,
 				1F918ACB1C6D565C00C5B2D0 /* BaseViewController.swift */,
+				1FB57F181E48FDA1003E9CFF /* ImageViewController.swift */,
 				1F918AC91C6D3DF900C5B2D0 /* IngredientAmountTableViewCell.swift */,
 				1F8A80F61C51637B00971E9D /* RecipeViewController.swift */,
 				1F6C8FD41C7BAE8C00801856 /* SearchViewController.swift */,
@@ -225,6 +228,7 @@
 				1F6C8FD51C7BAE8C00801856 /* SearchViewController.swift in Sources */,
 				1F20FAA71E329A24002BDD94 /* StepsViewController.swift in Sources */,
 				1F4C29EB1C58249C000CE463 /* Observation.swift in Sources */,
+				1FB57F191E48FDA1003E9CFF /* ImageViewController.swift in Sources */,
 				1FFA67C31C55676D00C4F458 /* Ingredient.swift in Sources */,
 				1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */,
 				1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */,
