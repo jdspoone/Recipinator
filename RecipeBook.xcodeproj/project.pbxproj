@@ -184,6 +184,7 @@
 					1FFF521C1C3319D5006A99C2 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = FH6VJP4VHD;
+						LastSwiftMigration = 0820;
 					};
 				};
 			};
@@ -359,7 +360,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lambda.RecipeBook.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -375,7 +376,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.lambda.RecipeBook.iOS;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

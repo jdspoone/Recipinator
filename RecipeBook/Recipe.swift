@@ -13,7 +13,7 @@ class Recipe: BaseObject
   {
 
     @NSManaged var name: String
-    @NSManaged var imageData: NSData?
+    @NSManaged var imageData: Data?
     @NSManaged var ingredientAmounts: Set<IngredientAmount>
     @NSManaged var steps: Set<Step>
     @NSManaged var tags: Set<Tag>
@@ -25,7 +25,7 @@ class Recipe: BaseObject
       }
 
 
-    init(name: String, imageData: NSData?, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext, insert: Bool = true)
+    init(name: String, imageData: Data?, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext, insert: Bool = true)
       {
         super.init(name: "Recipe", context: context, insert: insert)
 
@@ -40,19 +40,19 @@ class Recipe: BaseObject
     override class func properties() -> [String : Property]
       {
         return [
-          "name" : .Attribute,
-          "imageData" : .Attribute,
-          "ingredientAmounts" : .ToMany(IngredientAmount),
-          "steps" : .ToMany(Step)
+          "name" : .attribute,
+          "imageData" : .attribute,
+          "ingredientAmounts" : .toMany(IngredientAmount.self),
+          "steps" : .toMany(Step.self)
         ]
       }
 
 
     // MARK: - NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }

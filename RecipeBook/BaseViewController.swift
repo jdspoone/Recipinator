@@ -33,13 +33,13 @@ class BaseViewController: UIViewController
     var activeSubview: UIView?
       {
         willSet {
-          assert(editing, "unexpected state")
-          willChangeValueForKey("activeSubview")
+          assert(isEditing, "unexpected state")
+          willChangeValue(forKey: "activeSubview")
         }
 
         didSet {
-          assert(editing, "unexpected state")
-          didChangeValueForKey("activeSubview")
+          assert(isEditing, "unexpected state")
+          didChangeValue(forKey: "activeSubview")
 
           if let _ = activeSubview {
             navigationItem.rightBarButtonItem = doneButton
@@ -62,14 +62,14 @@ class BaseViewController: UIViewController
       }
 
 
-    func addSubviewToScrollView(view: UIView)
+    func addSubviewToScrollView(_ view: UIView)
       {
         scrollViewSubviews.insert(view)
         scrollView.addSubview(view)
       }
 
 
-    func removeSubviewFromScrollView(view: UIView)
+    func removeSubviewFromScrollView(_ view: UIView)
       {
         scrollViewSubviews.remove(view)
         view.removeFromSuperview()
@@ -91,7 +91,7 @@ class BaseViewController: UIViewController
         // As long as there are changes to be made
         if (width != scrollView.contentSize.width || height != scrollView.contentSize.height) {
           // Animate a change to scrollView's contentSize
-          UIView.animateWithDuration(0.5, animations:
+          UIView.animate(withDuration: 0.5, animations:
             {
               self.scrollView.contentSize = CGSize(width: width, height: height)
             })
@@ -111,7 +111,7 @@ class BaseViewController: UIViewController
     override func loadView()
       {
         // Create the root view
-        let window = UIApplication.sharedApplication().windows.first!
+        let window = UIApplication.shared.windows.first!
         let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
 
         let offset = navigationBar.frame.origin.y + navigationBar.frame.height
@@ -123,22 +123,22 @@ class BaseViewController: UIViewController
 
         // Create the scroll view
         scrollView = UIScrollView(frame: CGRect.zero)
-        scrollView.backgroundColor = UIColor.whiteColor()
-        scrollView.opaque = true
+        scrollView.backgroundColor = UIColor.white
+        scrollView.isOpaque = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
 
         // Configure the layout bindings for the scroll view
-        scrollView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
-        scrollView.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
-        scrollView.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
+        scrollView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        scrollView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        scrollView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
 
-        scrollViewBottomConstraint = scrollView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor)
-        scrollViewBottomConstraint.active = true
+        scrollViewBottomConstraint = scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        scrollViewBottomConstraint.isActive = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: NSLocalizedString("SAVE", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: NSLocalizedString("SAVE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 
@@ -151,87 +151,87 @@ class BaseViewController: UIViewController
       }
 
 
-    override func viewWillAppear(animated: Bool)
+    override func viewWillAppear(_ animated: Bool)
       {
         super.viewWillAppear(animated)
 
         // Schedule a call to updateScrollViewContentSize after a slight delay
-        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.1)
+        perform(#selector(BaseViewController.updateScrollViewContentSize), with: nil, afterDelay: 0.1)
 
         // Register to observe notifications relating to keyboard appearance and disappearance, as well as changes to the device orientation
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(BaseViewController.keyboardWillMove(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
 
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(BaseViewController.deviceOrientationDidChange(_:)), name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(BaseViewController.deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
       }
 
 
-    override func viewWillDisappear(animated: Bool)
+    override func viewWillDisappear(_ animated: Bool)
       {
         super.viewWillDisappear(animated)
 
         // De-register to observe notifications
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
 
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIDeviceOrientationDidChangeNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
 
         // De-register any custom notifications
         observations.removeAll()
       }
 
 
-    override func setEditing(editing: Bool, animated: Bool)
+    override func setEditing(_ editing: Bool, animated: Bool)
       {
         // Enable key-value observation for the editing property
-        willChangeValueForKey("editing")
+        willChangeValue(forKey: "editing")
         super.setEditing(editing, animated: animated)
-        didChangeValueForKey("editing")
+        didChangeValue(forKey: "editing")
 
         navigationItem.setHidesBackButton(editing, animated: false)
-        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem()
+        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem
       }
 
 
     // MARK: - NSNotificationCenter
 
-    func keyboardWillMove(notification: NSNotification)
+    func keyboardWillMove(_ notification: Notification)
       {
         if let subview = activeSubview {
 
           // Sanity check
-          assert(subview.isKindOfClass(UITextField) || subview.isKindOfClass(UITextView))
+          assert(subview.isKind(of: UITextField.self) || subview.isKind(of: UITextView.self))
 
           // Get the frames of the keyboard and subview
           let navFrame = navigationController!.navigationBar.frame
-          let frame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).CGRectValue()
+          let frame = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
           let keyboardFrame = CGRect(x: frame.origin.x, y: frame.origin.y - (navFrame.origin.y + navFrame.height), width: frame.width, height: frame.height)
-          let subviewFrame = subview.superview!.convertRect(subview.frame, toView: view)
+          let subviewFrame = subview.superview!.convert(subview.frame, to: view)
 
           // Get the overlap between the keyboard and subview
-          let overlapRect = subviewFrame.intersect(keyboardFrame)
+          let overlapRect = subviewFrame.intersection(keyboardFrame)
 
           // Get the duration of the keyboard animation
           let duration = notification.userInfo![UIKeyboardAnimationDurationUserInfoKey] as! Double
 
           // If the keyboard is about to appear
-          if notification.name == UIKeyboardWillShowNotification {
+          if notification.name == NSNotification.Name.UIKeyboardWillShow {
 
             // Disable scrolling while we're editing text
-            scrollView.scrollEnabled = false
+            scrollView.isScrollEnabled = false
 
             // If the keyboard will overlap with the active subview
             if overlapRect.height > 0 {
 
               // Deactivate the scroll view's bottom constraint
-              scrollViewBottomConstraint.active = false
+              scrollViewBottomConstraint.isActive = false
 
               // Set and activate the scroll view's height constraint
-              scrollViewHeightConstraint = scrollView.heightAnchor.constraintEqualToConstant(scrollView.frame.height - keyboardFrame.height)
-              scrollViewHeightConstraint!.active = true
+              scrollViewHeightConstraint = scrollView.heightAnchor.constraint(equalToConstant: scrollView.frame.height - keyboardFrame.height)
+              scrollViewHeightConstraint!.isActive = true
 
               // Update the scroll view's frame and content offset in an animation block
-              UIView.animateWithDuration(duration, animations:
+              UIView.animate(withDuration: duration, animations:
                   { () -> Void in
                     self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.scrollView.frame.height - keyboardFrame.height)
                     self.scrollView.contentOffset = CGPoint(x: self.scrollView.contentOffset.x, y: self.scrollView.contentOffset.y + subviewFrame.origin.y + subviewFrame.height - self.scrollView.frame.height)
@@ -240,17 +240,17 @@ class BaseViewController: UIViewController
           }
 
           // Otherwise if the keyboard is about to disappear
-          else if notification.name == UIKeyboardWillHideNotification {
+          else if notification.name == NSNotification.Name.UIKeyboardWillHide {
 
             // Re-enable scrolling
-            scrollView.scrollEnabled = true
+            scrollView.isScrollEnabled = true
 
             // Update the scroll view's layout constraints
-            scrollViewHeightConstraint?.active = false
-            scrollViewBottomConstraint.active = true
+            scrollViewHeightConstraint?.isActive = false
+            scrollViewBottomConstraint.isActive = true
 
             // Animate the scroll view's frame
-            UIView.animateWithDuration(duration, animations:
+            UIView.animate(withDuration: duration, animations:
                 { () -> Void in
                   self.scrollView.frame = CGRect(x: self.scrollView.frame.origin.x, y: self.scrollView.frame.origin.y, width: self.scrollView.frame.width, height: self.view.frame.height)
                 })
@@ -259,7 +259,7 @@ class BaseViewController: UIViewController
       }
 
 
-    func deviceOrientationDidChange(notification: NSNotification)
+    func deviceOrientationDidChange(_ notification: Notification)
       {
         // Update the scrollView's contentSize
         scrollView.contentSize = CGSize(width: view.frame.width, height: scrollView.contentSize.height)
@@ -268,7 +268,7 @@ class BaseViewController: UIViewController
 
     // MARK: Actions
 
-    func save(sender: AnyObject?)
+    func save(_ sender: AnyObject?)
       {
         // Have the activeSubview resign as first responder, if applicable
         activeSubview?.resignFirstResponder()
@@ -278,7 +278,7 @@ class BaseViewController: UIViewController
       }
 
 
-    func done(sender: AnyObject?)
+    func done(_ sender: AnyObject?)
       {
         // Have the activeSubview resign as first responder, if applicable
         activeSubview?.resignFirstResponder()

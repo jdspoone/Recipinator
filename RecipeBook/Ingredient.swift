@@ -23,14 +23,14 @@ class Ingredient : BaseObject
       }
 
 
-    class func withName(name: String, inContext context: NSManagedObjectContext) -> Ingredient
+    class func withName(_ name: String, inContext context: NSManagedObjectContext) -> Ingredient
       {
-        let request = NSFetchRequest(entityName: "Ingredient")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Ingredient")
         request.predicate = NSPredicate(format: "name = %@", name)
 
         // Query the context for any ingredients with the given name
         var results: [Ingredient] = []
-        do { results = try context.executeFetchRequest(request) as! [Ingredient] }
+        do { results = try context.fetch(request) as! [Ingredient] }
         catch let e { fatalError("errorL \(e)") }
 
         // If there are no ingredients with that name, return
@@ -49,16 +49,16 @@ class Ingredient : BaseObject
     override class func properties() -> [String : Property]
       {
         return [
-          "name" : .Attribute
+          "name" : .attribute
         ]
       }
 
 
     // MARK: NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }
@@ -84,16 +84,16 @@ class IngredientAmount : BaseObject
       }
 
 
-    func updateIngredient(name: String, context: NSManagedObjectContext)
+    func updateIngredient(_ name: String, context: NSManagedObjectContext)
       {
         assert(name != "", "unexpected state - the empty string is not a valid ingredient name")
 
         // Look for an already existing ingredient with the same name
-        let request = NSFetchRequest(entityName: "Ingredient")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Ingredient")
         request.predicate = NSPredicate(format: "name = %@", name)
 
         var results: [Ingredient] = []
-        do { results = try context.executeFetchRequest(request) as! [Ingredient] }
+        do { results = try context.fetch(request) as! [Ingredient] }
         catch let e { fatalError("error: \(e)") }
 
         if results.count == 0 {
@@ -102,8 +102,8 @@ class IngredientAmount : BaseObject
         else {
           assert(results.count == 1, "unexpected state - \(results.count) ingredients with name: \(name)")
 
-          if inserted == false {
-            context.insertObject(self)
+          if isInserted == false {
+            context.insert(self)
           }
 
           ingredient = results.first!
@@ -114,17 +114,17 @@ class IngredientAmount : BaseObject
     override class func properties() -> [String : Property]
       {
         return [
-          "ingredient" : .ToOne(Ingredient),
-          "amount" : .Attribute
+          "ingredient" : .toOne(Ingredient.self),
+          "amount" : .attribute
         ]
       }
 
 
     // MARK: NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }

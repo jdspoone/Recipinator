@@ -23,14 +23,14 @@ class Tag: BaseObject
       }
 
 
-    class func withName(name: String, inContext context: NSManagedObjectContext) -> Tag
+    class func withName(_ name: String, inContext context: NSManagedObjectContext) -> Tag
       {
-        let request = NSFetchRequest(entityName: "Tag")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Tag")
         request.predicate = NSPredicate(format: "name = %@", name)
 
         // Query the context for any ingredients with the given name
         var results: [Tag] = []
-        do { results = try context.executeFetchRequest(request) as! [Tag] }
+        do { results = try context.fetch(request) as! [Tag] }
         catch let e { fatalError("errorL \(e)") }
 
         // If there are no ingredients with that name, return
@@ -49,16 +49,16 @@ class Tag: BaseObject
     override class func properties() -> [String : Property]
       {
         return [
-            "name" : .Attribute
+            "name" : .attribute
           ]
       }
 
       
     // MARK: - NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }

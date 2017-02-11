@@ -21,7 +21,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
     var imageViewController: ImageViewController!
 
 
-    init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: (Step -> Void))
+    init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: @escaping ((Step) -> Void))
       {
         self.step = step
         self.completion = completion
@@ -52,7 +52,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         numberLabel = UILabel(frame: CGRect.zero)
         numberLabel.text = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
         numberLabel.font = UIFont(name: "Helvetica", size: 18)
-        numberLabel.textAlignment = .Center
+        numberLabel.textAlignment = .center
         numberLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(numberLabel)
 
@@ -60,8 +60,8 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         summaryTextField = UITextField(frame: CGRect.zero)
         summaryTextField.font = UIFont(name: "Helvetica", size: 16)
         summaryTextField.placeholder = NSLocalizedString("SUMMARY", comment: "")
-        summaryTextField.textAlignment = .Center
-        summaryTextField.returnKeyType = .Done
+        summaryTextField.textAlignment = .center
+        summaryTextField.returnKeyType = .done
         summaryTextField.translatesAutoresizingMaskIntoConstraints = false
         summaryTextField.delegate = self
         addSubviewToScrollView(summaryTextField)
@@ -71,7 +71,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         detailTextView.font = UIFont(name: "Helvetica", size: 16)
         detailTextView.layer.cornerRadius = 5.0
         detailTextView.layer.borderWidth = 0.5
-        detailTextView.layer.borderColor = UIColor.lightGrayColor().CGColor
+        detailTextView.layer.borderColor = UIColor.lightGray.cgColor
         detailTextView.translatesAutoresizingMaskIntoConstraints = false
         detailTextView.delegate = self
         addSubviewToScrollView(detailTextView)
@@ -82,28 +82,28 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         addSubviewToScrollView(imageViewController.imageView)
 
         // Configure the layout bindings for the number label
-        numberLabel.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        numberLabel.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        numberLabel.heightAnchor.constraintEqualToConstant(30.0).active = true
-        numberLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 8.0).active = true
+        numberLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        numberLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        numberLabel.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+        numberLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the summary text field
-        summaryTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        summaryTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        summaryTextField.heightAnchor.constraintEqualToConstant(30.0).active = true
-        summaryTextField.topAnchor.constraintEqualToAnchor(numberLabel.bottomAnchor, constant: 8.0).active = true
+        summaryTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        summaryTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        summaryTextField.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+        summaryTextField.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the detail text view
-        detailTextView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        detailTextView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        detailTextView.heightAnchor.constraintEqualToConstant(150).active = true
-        detailTextView.topAnchor.constraintEqualToAnchor(summaryTextField.bottomAnchor, constant: 8.0).active = true
+        detailTextView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        detailTextView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        detailTextView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        detailTextView.topAnchor.constraint(equalTo: summaryTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imageViewController.imageView.widthAnchor.constraintEqualToConstant(320.0).active = true
-        imageViewController.imageView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        imageViewController.imageView.heightAnchor.constraintEqualToConstant(320.0).active = true
-        imageViewController.imageView.topAnchor.constraintEqualToAnchor(detailTextView.bottomAnchor, constant: 8.0).active = true
+        imageViewController.imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageViewController.imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imageViewController.imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageViewController.imageView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
       }
 
 
@@ -124,28 +124,28 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       }
 
 
-    override func viewWillAppear(animated: Bool)
+    override func viewWillAppear(_ animated: Bool)
       {
         super.viewWillAppear(animated)
 
         // Register custom notifications
         observations = [
-          Observation(source: self, keypaths: ["editing"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.summaryTextField.userInteractionEnabled = self.editing
-                self.summaryTextField.borderStyle = self.editing ? .RoundedRect : .None
-                self.detailTextView.editable = self.editing
-                self.imageViewController.setUserInteractionEnabled(self.editing)
+          Observation(source: self, keypaths: ["editing"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.summaryTextField.isUserInteractionEnabled = self.isEditing
+                self.summaryTextField.borderStyle = self.isEditing ? .roundedRect : .none
+                self.detailTextView.isEditable = self.isEditing
+                self.imageViewController.setUserInteractionEnabled(self.isEditing)
               }),
-          Observation(source: imageViewController, keypaths: ["image"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
+          Observation(source: imageViewController, keypaths: ["image"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.step.image = self.imageViewController.image
               })
         ]
       }
 
 
-    override func viewWillDisappear(animated: Bool)
+    override func viewWillDisappear(_ animated: Bool)
       {
         super.viewWillDisappear(animated)
 
@@ -159,10 +159,10 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
     // MARK: - UITextFieldDelegate
 
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
       {
         // Set the activeSubview to be the textField, if applicable
-        if editing {
+        if isEditing {
           activeSubview = textField
           return true
         }
@@ -170,20 +170,20 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       }
 
 
-    func textFieldDidBeginEditing(textField: UITextField)
+    func textFieldDidBeginEditing(_ textField: UITextField)
       {
         activeSubview = textField
       }
 
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
         textField.endEditing(true)
         return true;
       }
 
 
-    func textFieldDidEndEditing(textField: UITextField)
+    func textFieldDidEndEditing(_ textField: UITextField)
       {
         step.summary = textField.text!
 
@@ -195,9 +195,9 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
 
     // MARK: - UITextViewDelegate
 
-    func textViewShouldBeginEditing(textView: UITextView) -> Bool
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool
       {
-        if editing {
+        if isEditing {
           activeSubview = textView
           return true
         }
@@ -205,13 +205,13 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       }
 
 
-    func textViewDidBeginEditing(textView: UITextView)
+    func textViewDidBeginEditing(_ textView: UITextView)
       {
         activeSubview = textView
       }
 
 
-    func textViewDidEndEditing(textView: UITextView)
+    func textViewDidEndEditing(_ textView: UITextView)
       {
         step.detail = textView.text!
 

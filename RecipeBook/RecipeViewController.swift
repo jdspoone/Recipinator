@@ -25,16 +25,16 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
     var ingredientsExpanded: Bool = true
       {
         // Enable key-value observation
-        willSet { willChangeValueForKey("ingredientsExpanded") }
-        didSet { didChangeValueForKey("ingredientsExpanded") }
+        willSet { willChangeValue(forKey: "ingredientsExpanded") }
+        didSet { didChangeValue(forKey: "ingredientsExpanded") }
       }
 
     var stepsTableView: UITableView!
     var stepsExpanded: Bool = true
       {
         // Enable key-value observation
-        willSet { willChangeValueForKey("stepsExpanded") }
-        didSet { didChangeValueForKey("stepsExpanded") }
+        willSet { willChangeValue(forKey: "stepsExpanded") }
+        didSet { didChangeValue(forKey: "stepsExpanded") }
       }
 
     var tagsLabel: UILabel!
@@ -43,7 +43,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     var newIngredientAmount = false
 
-    var editingIngredientIndexPath: NSIndexPath?
+    var editingIngredientIndexPath: IndexPath?
 
 
     var ingredientAmountsTableViewHeightConstraint: NSLayoutConstraint!
@@ -51,12 +51,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Deactivate the old constraint if applicable
         willSet {
           if ingredientAmountsTableViewHeightConstraint != nil {
-            NSLayoutConstraint.deactivateConstraints([ingredientAmountsTableViewHeightConstraint])
+            NSLayoutConstraint.deactivate([ingredientAmountsTableViewHeightConstraint])
           }
         }
         // Activate the new constraint
         didSet {
-          NSLayoutConstraint.activateConstraints([ingredientAmountsTableViewHeightConstraint])
+          NSLayoutConstraint.activate([ingredientAmountsTableViewHeightConstraint])
         }
       }
 
@@ -65,12 +65,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Deactivate the old constraint if applicable
         willSet {
           if stepsTableViewHeightConstraint != nil {
-            NSLayoutConstraint.deactivateConstraints([stepsTableViewHeightConstraint])
+            NSLayoutConstraint.deactivate([stepsTableViewHeightConstraint])
           }
         }
         // Activate the new constraint
         didSet {
-          NSLayoutConstraint.activateConstraints([stepsTableViewHeightConstraint])
+          NSLayoutConstraint.activate([stepsTableViewHeightConstraint])
         }
       }
 
@@ -79,12 +79,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Deactivate the old constraint if applicable
         willSet{
           if tagTextFieldHeightConstraint != nil {
-            NSLayoutConstraint.deactivateConstraints([tagTextFieldHeightConstraint])
+            NSLayoutConstraint.deactivate([tagTextFieldHeightConstraint])
           }
         }
         // Activate the new constraint
         didSet {
-          NSLayoutConstraint.activateConstraints([tagTextFieldHeightConstraint])
+          NSLayoutConstraint.activate([tagTextFieldHeightConstraint])
         }
       }
 
@@ -97,7 +97,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     // MARK: -
 
-    init(recipe: Recipe, editing: Bool, context: NSManagedObjectContext, completion: (Recipe) -> Void)
+    init(recipe: Recipe, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Recipe) -> Void)
       {
         self.recipe = recipe
         self.completion = completion
@@ -118,7 +118,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
 
         // Get the tableViewCell for the new ingredientAmount
-        let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) as! IngredientAmountTableViewCell
+        let cell = ingredientAmountsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! IngredientAmountTableViewCell
         let name = cell.nameTextField.text!
         let amount = cell.amountTextField.text!
 
@@ -146,8 +146,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         nameTextField = UITextField(frame: CGRect.zero)
         nameTextField.font = UIFont(name: "Helvetica", size: 18)
         nameTextField.placeholder = NSLocalizedString("RECIPE NAME", comment: "")
-        nameTextField.textAlignment = .Center
-        nameTextField.returnKeyType = .Done
+        nameTextField.textAlignment = .center
+        nameTextField.returnKeyType = .done
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         nameTextField.delegate = self
         addSubviewToScrollView(nameTextField)
@@ -180,7 +180,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         tagsLabel = UILabel(frame: .zero)
         tagsLabel.text = NSLocalizedString("TAGS", comment: "")
         tagsLabel.font = UIFont(name: "Helvetica", size: 18)
-        tagsLabel.textAlignment = .Center
+        tagsLabel.textAlignment = .center
         tagsLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(tagsLabel)
 
@@ -192,58 +192,58 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Configure the tag name text field
         tagTextField = UITextField(frame: CGRect.zero)
         tagTextField.font = UIFont(name: "Helvetica", size: 18)
-        tagTextField.borderStyle = .RoundedRect
+        tagTextField.borderStyle = .roundedRect
         tagTextField.placeholder = NSLocalizedString("TAG NAME", comment: "")
-        tagTextField.textAlignment = .Center
-        tagTextField.returnKeyType = .Done
-        tagTextField.clearButtonMode = .Always
+        tagTextField.textAlignment = .center
+        tagTextField.returnKeyType = .done
+        tagTextField.clearButtonMode = .always
         tagTextField.translatesAutoresizingMaskIntoConstraints = false
         tagTextField.delegate = self
         addSubviewToScrollView(tagTextField)
 
         // Configure the layout bindings for the text field
-        nameTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        nameTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        nameTextField.heightAnchor.constraintEqualToConstant(40.0).active = true
-        nameTextField.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 8.0).active = true
+        nameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        nameTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        nameTextField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
+        nameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imageViewController.view.widthAnchor.constraintEqualToConstant(320.0).active = true
-        imageViewController.view.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        imageViewController.view.heightAnchor.constraintEqualToConstant(320.0).active = true
-        imageViewController.view.topAnchor.constraintEqualToAnchor(nameTextField.bottomAnchor, constant: 8.0).active = true
+        imageViewController.view.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageViewController.view.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imageViewController.view.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageViewController.view.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the ingredient table view
-        ingredientAmountsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        ingredientAmountsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        ingredientAmountsTableView.topAnchor.constraintEqualToAnchor(imageViewController.view.bottomAnchor, constant: 16.0).active = true
+        ingredientAmountsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        ingredientAmountsTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        ingredientAmountsTableView.topAnchor.constraint(equalTo: imageViewController.view.bottomAnchor, constant: 16.0).isActive = true
 
         // Configure the layout bindings for the step table view
-        stepsTableView.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        stepsTableView.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        stepsTableView.topAnchor.constraintEqualToAnchor(ingredientAmountsTableView.bottomAnchor, constant: 16.0).active = true
+        stepsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        stepsTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        stepsTableView.topAnchor.constraint(equalTo: ingredientAmountsTableView.bottomAnchor, constant: 16.0).isActive = true
 
         // Configre the layout bindings for the tags label
-        tagsLabel.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        tagsLabel.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        tagsLabel.heightAnchor.constraintEqualToConstant(30.0).active = true
-        tagsLabel.topAnchor.constraintEqualToAnchor(stepsTableView.bottomAnchor, constant: 16.0).active = true
+        tagsLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        tagsLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        tagsLabel.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+        tagsLabel.topAnchor.constraint(equalTo: stepsTableView.bottomAnchor, constant: 16.0).isActive = true
 
         // Configure the layout bindings for the tag view
-        tagsViewController.view.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        tagsViewController.view.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        tagsViewController.view.heightAnchor.constraintEqualToConstant(100.0).active = true
-        tagsViewController.view.topAnchor.constraintEqualToAnchor(tagsLabel.bottomAnchor, constant: 8.0).active = true
+        tagsViewController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        tagsViewController.view.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        tagsViewController.view.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
+        tagsViewController.view.topAnchor.constraint(equalTo: tagsLabel.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the tag text field
-        tagTextField.widthAnchor.constraintEqualToAnchor(scrollView.widthAnchor, constant: -16.0).active = true
-        tagTextField.centerXAnchor.constraintEqualToAnchor(scrollView.centerXAnchor).active = true
-        tagTextField.topAnchor.constraintEqualToAnchor(tagsViewController.view.bottomAnchor, constant: 8.0).active = true
+        tagTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
+        tagTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        tagTextField.topAnchor.constraint(equalTo: tagsViewController.view.bottomAnchor, constant: 8.0).isActive = true
 
-        addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
-        addStepButton = roundedSquareButton(self, action: #selector(RecipeViewController.addStep(_:)), controlEvents: .TouchUpInside, imageName: "addImage")
-        collapseStepsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleStepsVisibility(_:)), controlEvents: .TouchUpInside, imageName: "collapseImage")
+        addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .touchUpInside, imageName: "addImage")
+        collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .touchUpInside, imageName: "collapseImage")
+        addStepButton = roundedSquareButton(self, action: #selector(RecipeViewController.addStep(_:)), controlEvents: .touchUpInside, imageName: "addImage")
+        collapseStepsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleStepsVisibility(_:)), controlEvents: .touchUpInside, imageName: "collapseImage")
       }
 
 
@@ -255,51 +255,51 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    override func viewWillAppear(animated: Bool)
+    override func viewWillAppear(_ animated: Bool)
       {
         super.viewWillAppear(animated)
 
         // Register custom notifications
         observations = [
-          Observation(source: self, keypaths: ["editing"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.nameTextField.userInteractionEnabled = self.editing
-                self.nameTextField.borderStyle = self.editing ? .RoundedRect : .None
-                self.imageViewController.setUserInteractionEnabled(self.editing)
-                self.addIngredientButton.hidden = self.editing && self.ingredientsExpanded ? false : true
-                self.addStepButton.hidden = self.editing && self.stepsExpanded ? false : true
-                self.tagTextField.hidden = self.editing ? false : true
-                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraintEqualToConstant(self.editing ? 40 : 0)
+          Observation(source: self, keypaths: ["editing"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.nameTextField.isUserInteractionEnabled = self.isEditing
+                self.nameTextField.borderStyle = self.isEditing ? .roundedRect : .none
+                self.imageViewController.setUserInteractionEnabled(self.isEditing)
+                self.addIngredientButton.isHidden = self.isEditing && self.ingredientsExpanded ? false : true
+                self.addStepButton.isHidden = self.isEditing && self.stepsExpanded ? false : true
+                self.tagTextField.isHidden = self.isEditing ? false : true
+                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraint(equalToConstant: self.isEditing ? 40 : 0)
               }),
-          Observation(source: self, keypaths: ["ingredientsExpanded"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.addIngredientButton.hidden = self.editing && self.ingredientsExpanded ? false : true
+          Observation(source: self, keypaths: ["ingredientsExpanded"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.addIngredientButton.isHidden = self.isEditing && self.ingredientsExpanded ? false : true
               }),
-          Observation(source: self, keypaths: ["stepsExpanded"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.addStepButton.hidden = self.editing && self.stepsExpanded ? false : true
+          Observation(source: self, keypaths: ["stepsExpanded"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.addStepButton.isHidden = self.isEditing && self.stepsExpanded ? false : true
               }),
-          Observation(source: ingredientAmountsTableView, keypaths: ["contentSize"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.ingredientAmountsTableViewHeightConstraint = self.ingredientAmountsTableView.heightAnchor.constraintEqualToConstant(self.ingredientAmountsTableView.contentSize.height)
+          Observation(source: ingredientAmountsTableView, keypaths: ["contentSize"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.ingredientAmountsTableViewHeightConstraint = self.ingredientAmountsTableView.heightAnchor.constraint(equalToConstant: self.ingredientAmountsTableView.contentSize.height)
               }),
-          Observation(source: stepsTableView, keypaths: ["contentSize"], options: .Initial, block:
-              { (changes: [String : AnyObject]?) -> Void in
-                self.stepsTableViewHeightConstraint = self.stepsTableView.heightAnchor.constraintEqualToConstant(self.stepsTableView.contentSize.height)
+          Observation(source: stepsTableView, keypaths: ["contentSize"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.stepsTableViewHeightConstraint = self.stepsTableView.heightAnchor.constraint(equalToConstant: self.stepsTableView.contentSize.height)
               }),
           Observation(source: tagsViewController, keypaths: ["tags"], options: NSKeyValueObservingOptions(), block:
-              { (change: [String : AnyObject]?) -> Void in
+              { (change: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.recipe.tags = self.tagsViewController.tags
               }),
-          Observation(source: imageViewController, keypaths: ["image"], options: .Initial, block:
-              { (change: [String : AnyObject]?) -> Void in
+          Observation(source: imageViewController, keypaths: ["image"], options: .initial, block:
+              { (change: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.recipe.image = self.imageViewController.image
               })
         ]
       }
 
 
-    override func viewWillDisappear(animated: Bool)
+    override func viewWillDisappear(_ animated: Bool)
       {
         super.viewWillDisappear(animated)
 
@@ -319,7 +319,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    override func setEditing(editing: Bool, animated: Bool)
+    override func setEditing(_ editing: Bool, animated: Bool)
       {
         super.setEditing(editing, animated: animated)
 
@@ -328,9 +328,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         tagsViewController.setEditing(editing, animated: animated)
 
         // Animate the presentation or hiding of the tag text field
-          UIView.animateWithDuration(0.5, animations:
+          UIView.animate(withDuration: 0.5, animations:
               { () -> Void in
-                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraintEqualToConstant(self.editing ? 40 : 0)
+                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraint(equalToConstant: self.isEditing ? 40 : 0)
               }, completion:
               { (complete: Bool) -> Void in
                 self.updateScrollViewContentSize()
@@ -340,10 +340,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     // MARK: - UITextFieldDelegate
 
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
       {
         // Set the activeSubview to be the textField, if applicable
-        if editing {
+        if isEditing {
           activeSubview = textField
           return true
         }
@@ -351,14 +351,14 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func textFieldDidBeginEditing(textField: UITextField)
+    func textFieldDidBeginEditing(_ textField: UITextField)
       {
         // Users should not be able to interact with the imageView if they are editing a textField
         imageViewController.setUserInteractionEnabled(false);
       }
 
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
         switch textField {
           case nameTextField :
@@ -379,7 +379,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func textFieldDidEndEditing(textField: UITextField)
+    func textFieldDidEndEditing(_ textField: UITextField)
       {
         switch textField {
           case nameTextField :
@@ -409,41 +409,41 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     // MARK: - UITableViewDelegate
 
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
       {
         // If we're about to show the newly created ingredient cell
         if tableView === ingredientAmountsTableView && editingIngredientIndexPath == indexPath {
-          dispatch_async(dispatch_get_main_queue())
+          DispatchQueue.main.async
               { () -> Void in
-                let cell = tableView.cellForRowAtIndexPath(indexPath) as! IngredientAmountTableViewCell
+                let cell = tableView.cellForRow(at: indexPath) as! IngredientAmountTableViewCell
                 cell.nameTextField.becomeFirstResponder()
               }
         }
       }
 
 
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
       {
         switch tableView {
           case ingredientAmountsTableView :
             // Do nothing
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            tableView.deselectRow(at: indexPath, animated: true)
             return
 
           case stepsTableView :
             // Get the list of steps, and the index of the step we're interested in
-            let steps = recipe.steps.sort(stepsSortingBlock)
+            let steps = recipe.steps.sorted(by: stepsSortingBlock)
             let index = indexPath.row
             let step = steps[index]
             // Present a steps view controller
-            let stepsViewController = StepsViewController(steps: steps, index: index, editing: editing, context: managedObjectContext, completion:
+            let stepsViewController = StepsViewController(steps: steps, index: index, editing: isEditing, context: managedObjectContext, completion:
               { () in
                 // Update the label of the tableView cell
-                let cell = tableView.cellForRowAtIndexPath(indexPath)!
+                let cell = tableView.cellForRow(at: indexPath)!
                 cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
               })
-            showViewController(stepsViewController, sender: self)
-            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+            show(stepsViewController, sender: self)
+            tableView.deselectRow(at: indexPath, animated: true)
 
           default :
             fatalError("unexpected table view")
@@ -451,11 +451,11 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView?
       {
         if section == 0 {
           let view = UIView(frame: CGRect.zero)
-          view.backgroundColor = UIColor.whiteColor()
+          view.backgroundColor = UIColor.white
 
           var leftButton: UIButton!
           let label = UILabel(frame: CGRect.zero)
@@ -478,24 +478,24 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
           view.addSubview(leftButton)
           view.addSubview(rightButton)
 
-          label.textAlignment = .Center
+          label.textAlignment = .center
           label.translatesAutoresizingMaskIntoConstraints = false
           view.addSubview(label)
 
-          leftButton.widthAnchor.constraintEqualToConstant(30.0).active = true
-          leftButton.heightAnchor.constraintEqualToConstant(30.0).active = true
-          leftButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-          leftButton.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
+          leftButton.widthAnchor.constraint(equalToConstant: 30.0).isActive = true
+          leftButton.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+          leftButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+          leftButton.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
 
-          rightButton.widthAnchor.constraintEqualToConstant(30.0).active = true
-          rightButton.heightAnchor.constraintEqualToConstant(30.0).active = true
-          rightButton.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-          rightButton.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
+          rightButton.widthAnchor.constraint(equalToConstant: 30.0).isActive = true
+          rightButton.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+          rightButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+          rightButton.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
 
-          label.leftAnchor.constraintEqualToAnchor(leftButton.rightAnchor).active = true
-          label.rightAnchor.constraintEqualToAnchor(rightButton.leftAnchor).active = true
-          label.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
-          label.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
+          label.leftAnchor.constraint(equalTo: leftButton.rightAnchor).isActive = true
+          label.rightAnchor.constraint(equalTo: rightButton.leftAnchor).isActive = true
+          label.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+          label.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
           return view
         }
@@ -503,20 +503,20 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat
       { return section == 0 ? 30 : 0 }
 
 
-    func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath)
       {
         // Schedule a call to updateScrollViewContentSize after a slight delay
-        performSelector(#selector(BaseViewController.updateScrollViewContentSize), withObject: nil, afterDelay: 0.1)
+        perform(#selector(BaseViewController.updateScrollViewContentSize), with: nil, afterDelay: 0.1)
       }
 
 
     // MARK: - UITableViewDataSource
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int
+    func numberOfSections(in tableView: UITableView) -> Int
       {
         switch tableView {
 
@@ -532,7 +532,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
       {
         switch tableView {
 
@@ -565,7 +565,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
       {
         // Switch on the tableView
         switch tableView {
@@ -582,7 +582,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
                 }
                 // Otherwise return an ingredientAmountTableViewCell for the appropriate ingredientAmount
                 else {
-                  let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+                  let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
                   return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
                 }
 
@@ -591,7 +591,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
                 assert(newIngredientAmount, "unexpected state")
 
                 // Return an ingredientAmountTableViewCell for the appropriate ingredientAmount
-                let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+                let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
                 return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
 
               default:
@@ -599,8 +599,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
             }
 
           case stepsTableView :
-            let cell = UITableViewCell(style: .Value1, reuseIdentifier: nil)
-            let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
             cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
             cell.textLabel!.font = UIFont(name: "Helvetica", size: 16)
             cell.showsReorderControl = true
@@ -612,35 +612,35 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool
-      { return editing }
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
+      { return isEditing }
 
 
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
       {
         // We only expect to be modifying the table views when we're in editing mode
-        assert(editing == true, "unexpected state")
+        assert(isEditing == true, "unexpected state")
 
         // Begin the animation block
         tableView.beginUpdates()
 
         // Remove the appropriate row from the tableView
-        tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
 
         switch tableView {
           case ingredientAmountsTableView :
             // Delete the selected ingredientAmount
-            if editingStyle == .Delete {
-              let ingredientAmount = recipe.ingredientAmounts.sort(ingredientAmountsSortingBlock)[indexPath.row]
+            if editingStyle == .delete {
+              let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
               recipe.ingredientAmounts.remove(ingredientAmount)
-              managedObjectContext.deleteObject(ingredientAmount)
+              managedObjectContext.delete(ingredientAmount)
             }
           case stepsTableView :
             // Delete the selected step
-            if editingStyle == .Delete {
-              let step = recipe.steps.sort(stepsSortingBlock)[indexPath.row]
+            if editingStyle == .delete {
+              let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
               recipe.steps.remove(step)
-              managedObjectContext.deleteObject(step)
+              managedObjectContext.delete(step)
             }
           default :
             fatalError("unexpected table view")
@@ -651,11 +651,11 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool
-      { return editing }
+    func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool
+      { return isEditing }
 
 
-    func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath)
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
       {
         switch tableView {
           case ingredientAmountsTableView :
@@ -663,10 +663,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
           case stepsTableView :
             // Get handles on the steps and step numbers we're going to be working with
-            let sourceStep = recipe.steps.sort(stepsSortingBlock)[sourceIndexPath.row]
+            let sourceStep = recipe.steps.sorted(by: stepsSortingBlock)[sourceIndexPath.row]
             let sourceNumber = sourceStep.number
 
-            let destinationStep = recipe.steps.sort(stepsSortingBlock)[destinationIndexPath.row]
+            let destinationStep = recipe.steps.sorted(by: stepsSortingBlock)[destinationIndexPath.row]
             let destinationNumber = destinationStep.number
 
             // Determine which steps will be affected by the reordering
@@ -686,7 +686,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     // MARK: - Actions
 
-    override func save(sender: AnyObject?)
+    override func save(_ sender: AnyObject?)
       {
         // If there is new (and thus unsaved) ingredientAmount, add it to the recipe
         if (newIngredientAmount == true) {
@@ -700,13 +700,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    override func done(sender: AnyObject?)
+    override func done(_ sender: AnyObject?)
       {
         // If the active subview is a text field
-        if activeSubview!.isKindOfClass(UITextField) {
+        if activeSubview!.isKind(of: UITextField.self) {
           // Treat the done button like the return button
           let textField = activeSubview as! UITextField
-          textField.delegate!.textFieldShouldReturn!(textField)
+          let _ = textField.delegate!.textFieldShouldReturn!(textField)
         }
         // Or some non-text view
         else {
@@ -715,16 +715,16 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
-    func addIngredient(sender: AnyObject)
+    func addIngredient(_ sender: AnyObject)
       {
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
         if (newIngredientAmount == true) {
-          let cell = ingredientAmountsTableView.cellForRowAtIndexPath(NSIndexPath(forRow: 0, inSection: 0)) as! IngredientAmountTableViewCell
+          let cell = ingredientAmountsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! IngredientAmountTableViewCell
 
           // If the new ingredientAmount has a valid name, add it to the recipe
-          if let name = cell.nameTextField.text where name != "" {
+          if let name = cell.nameTextField.text, name != "" {
             addNewIngredientAmountToRecipe()
           }
           // Otherwise, return
@@ -735,14 +735,14 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
         // Flip the newIngredientAmount flag and set the editingIngredientIndexPath approriately
         newIngredientAmount = true;
-        editingIngredientIndexPath = NSIndexPath(forRow: 0, inSection: 0)
+        editingIngredientIndexPath = IndexPath(row: 0, section: 0)
 
         // Reload the ingredientAmountsTableView's data
         ingredientAmountsTableView.reloadData()
       }
 
 
-    func addStep(sender: AnyObject)
+    func addStep(_ sender: AnyObject)
       {
         assert(stepsExpanded, "Unexpected state - steps table view is collapsed")
 
@@ -754,24 +754,24 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
               self.stepsTableView.beginUpdates()
 
               // Insert the returned step into the managed object context, and update the recipe
-              self.managedObjectContext.insertObject(step)
+              self.managedObjectContext.insert(step)
               self.recipe.steps.insert(step)
 
               do { try self.managedObjectContext.save() }
               catch { fatalError("failed to save") }
 
               // Insert a new row into the table view
-              let indexPath = NSIndexPath(forRow: Int(step.number), inSection: 0)
-              self.stepsTableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+              let indexPath = IndexPath(row: Int(step.number), section: 0)
+              self.stepsTableView.insertRows(at: [indexPath], with: .automatic)
 
               // End the animation block
               self.stepsTableView.endUpdates()
             }
-        showViewController(stepViewController, sender: self)
+        show(stepViewController, sender: self)
       }
 
 
-    func toggleIngredientsVisibility(sender: AnyObject)
+    func toggleIngredientsVisibility(_ sender: AnyObject)
       {
         if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
           collapseIngredients()
@@ -786,20 +786,20 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       {
         let ingredients = self.ingredientAmountsTableView
 
-        UIView.animateWithDuration(0.5, animations:
+        UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(0)
+              self.collapseIngredientsButton.imageView!.transform = CGAffineTransform(rotationAngle: 0)
               // Expand the tableview
-              self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(ingredients.contentSize.height)
-              ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: ingredients.contentSize.height)
-              ingredients.scrollEnabled = true
+              self.ingredientAmountsTableViewHeightConstraint = ingredients?.heightAnchor.constraint(equalToConstant: (ingredients?.contentSize.height)!)
+              ingredients?.frame = CGRect(x: (ingredients?.frame.origin.x)!, y: (ingredients?.frame.origin.y)!, width: (ingredients?.frame.width)!, height: (ingredients?.contentSize.height)!)
+              ingredients?.isScrollEnabled = true
            },
           completion:
             { (complete: Bool) -> Void in
               // Adjust the content size of the scroll view
               self.ingredientsExpanded = true
-              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
+              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + ((ingredients?.contentSize.height)! - self.collapseIngredientsButton.frame.height))
             })
       }
 
@@ -808,25 +808,25 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       {
         let ingredients = self.ingredientAmountsTableView
 
-        UIView.animateWithDuration(0.5, animations:
+        UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseIngredientsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+              self.collapseIngredientsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
               // Collapse the tableview
-              ingredients.frame = CGRect(x: ingredients.frame.origin.x, y: ingredients.frame.origin.y, width: ingredients.frame.width, height: self.collapseIngredientsButton.frame.height)
-              ingredients.scrollEnabled = false
+              ingredients?.frame = CGRect(x: (ingredients?.frame.origin.x)!, y: (ingredients?.frame.origin.y)!, width: (ingredients?.frame.width)!, height: self.collapseIngredientsButton.frame.height)
+              ingredients?.isScrollEnabled = false
            },
           completion:
             { (compete: Bool) -> Void in
               // Update the height contraint of the ingredient amounts table view, and adjust the content size of the scroll view
               self.ingredientsExpanded = false
-              self.ingredientAmountsTableViewHeightConstraint = ingredients.heightAnchor.constraintEqualToConstant(self.collapseIngredientsButton.frame.height)
-              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (ingredients.contentSize.height - self.collapseIngredientsButton.frame.height))
+              self.ingredientAmountsTableViewHeightConstraint = ingredients?.heightAnchor.constraint(equalToConstant: self.collapseIngredientsButton.frame.height)
+              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - ((ingredients?.contentSize.height)! - self.collapseIngredientsButton.frame.height))
             })
       }
 
 
-    func toggleStepsVisibility(sender: AnyObject)
+    func toggleStepsVisibility(_ sender: AnyObject)
       {
         if stepsTableView.frame.height == stepsTableView.contentSize.height {
           collapseSteps()
@@ -841,19 +841,19 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       {
         let tableView = self.stepsTableView
 
-        UIView.animateWithDuration(0.5, animations:
+        UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(0)
+              self.collapseStepsButton.imageView!.transform = CGAffineTransform(rotationAngle: 0)
               // Expand the tableview
-              self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(tableView.contentSize.height)
-              tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: tableView.contentSize.height)
-              tableView.scrollEnabled = true
+              self.stepsTableViewHeightConstraint = tableView?.heightAnchor.constraint(equalToConstant: (tableView?.contentSize.height)!)
+              tableView?.frame = CGRect(x: (tableView?.frame.origin.x)!, y: (tableView?.frame.origin.y)!, width: (tableView?.frame.width)!, height: (tableView?.contentSize.height)!)
+              tableView?.isScrollEnabled = true
            }, completion:
             { (complete: Bool) -> Void in
               // Adjust the content size of the scroll view
               self.stepsExpanded = true
-              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + (tableView.contentSize.height - self.collapseStepsButton.frame.height))
+              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height + ((tableView?.contentSize.height)! - self.collapseStepsButton.frame.height))
             })
       }
 
@@ -863,20 +863,20 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
         let tableView = self.stepsTableView
 
-        UIView.animateWithDuration(0.5, animations:
+        UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseStepsButton.imageView!.transform = CGAffineTransformMakeRotation(CGFloat(-M_PI_2))
+              self.collapseStepsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
               // Collapse the table view
-              tableView.frame = CGRect(x: tableView.frame.origin.x, y: tableView.frame.origin.y, width: tableView.frame.width, height: self.collapseStepsButton.frame.height)
-              tableView.scrollEnabled = false
+              tableView?.frame = CGRect(x: (tableView?.frame.origin.x)!, y: (tableView?.frame.origin.y)!, width: (tableView?.frame.width)!, height: self.collapseStepsButton.frame.height)
+              tableView?.isScrollEnabled = false
            },
           completion:
             { (compete: Bool) -> Void in
               // Update the height contraint of the steps table view, and adjust the content size of the scroll view
               self.stepsExpanded = false
-              self.stepsTableViewHeightConstraint = tableView.heightAnchor.constraintEqualToConstant(self.collapseStepsButton.frame.height)
-              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - (tableView.contentSize.height - self.collapseStepsButton.frame.height))
+              self.stepsTableViewHeightConstraint = tableView?.heightAnchor.constraint(equalToConstant: self.collapseStepsButton.frame.height)
+              self.scrollView.contentSize = CGSize(width: self.view.frame.width, height: self.scrollView.contentSize.height - ((tableView?.contentSize.height)! - self.collapseStepsButton.frame.height))
             })
       }
 

@@ -31,7 +31,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
     var doneButton: UIBarButtonItem!
 
 
-    init(steps: [Step], index: Int, editing: Bool, context: NSManagedObjectContext, completion: () -> Void)
+    init(steps: [Step], index: Int, editing: Bool, context: NSManagedObjectContext, completion: @escaping () -> Void)
       {
         self.steps = steps
         self.initialIndex = index
@@ -39,7 +39,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         self.managedObjectContext = context
         self.completion = completion
 
-        self.pageViewController = UIPageViewController(transitionStyle: .PageCurl, navigationOrientation: .Horizontal, options: nil)
+        self.pageViewController = UIPageViewController(transitionStyle: .pageCurl, navigationOrientation: .horizontal, options: nil)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -59,7 +59,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
     override func loadView()
       {
         // Create the root view
-        let window = UIApplication.sharedApplication().windows.first!
+        let window = UIApplication.shared.windows.first!
         let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
 
         let offset = navigationBar.frame.origin.y + navigationBar.frame.height
@@ -69,24 +69,24 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
         // Configure the root view
         view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        view.backgroundColor = UIColor.whiteColor()
-        view.opaque = true
+        view.backgroundColor = UIColor.white
+        view.isOpaque = true
 
         // Configure the page view controller
         addChildViewController(pageViewController)
         let pageView = pageViewController.view
-        pageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(pageView)
+        pageView?.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageView!)
 
         // Configure the layout bindings for the page view controller
-        pageView.leftAnchor.constraintEqualToAnchor(view.leftAnchor).active = true
-        pageView.rightAnchor.constraintEqualToAnchor(view.rightAnchor).active = true
-        pageView.topAnchor.constraintEqualToAnchor(view.topAnchor).active = true
-        pageView.bottomAnchor.constraintEqualToAnchor(view.bottomAnchor).active = true
+        pageView?.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        pageView?.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        pageView?.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        pageView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: NSLocalizedString("Save", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .Plain, target: self, action: #selector(BaseViewController.done(_:)))
+        saveButton = UIBarButtonItem(title: NSLocalizedString("Save", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.save(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("Done", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.done(_:)))
       }
 
 
@@ -98,25 +98,25 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         setEditing(initialEditingState, animated: true)
 
         // Set the view controller of the page view controller
-        let viewController = StepViewController(step: steps[initialIndex], editing: editing, context: managedObjectContext)
+        let viewController = StepViewController(step: steps[initialIndex], editing: isEditing, context: managedObjectContext)
           { (step: Step) in
             if self.managedObjectContext.hasChanges {
               do { try self.managedObjectContext.save() }
               catch { fatalError("failed to save") }
             }
           }
-        pageViewController.setViewControllers([viewController], direction: .Forward, animated: true, completion: nil)
+        pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
       }
 
 
-    override func viewWillAppear(animated: Bool)
+    override func viewWillAppear(_ animated: Bool)
       {
         super.viewWillAppear(animated)
 
         // Register custom notifications
         observations = [
           Observation(source: self.activeViewController!, keypaths: ["activeSubview"], options: NSKeyValueObservingOptions(), block:
-            { (change: [String : AnyObject]?) -> Void in
+            { (change: [NSKeyValueChangeKey : Any]?) -> Void in
               if let _ = self.activeViewController?.activeSubview {
                 self.navigationItem.rightBarButtonItem = self.doneButton
               }
@@ -128,7 +128,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
       }
 
 
-    override func viewWillDisappear(animated: Bool)
+    override func viewWillDisappear(_ animated: Bool)
       {
         super.viewWillAppear(animated)
 
@@ -143,14 +143,14 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
 
 
-    override func setEditing(editing: Bool, animated: Bool)
+    override func setEditing(_ editing: Bool, animated: Bool)
       {
-        willChangeValueForKey("editing")
+        willChangeValue(forKey: "editing")
         super.setEditing(editing, animated: animated)
-        didChangeValueForKey("editing")
+        didChangeValue(forKey: "editing")
 
         navigationItem.setHidesBackButton(editing, animated: false)
-        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem()
+        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem
 
         activeViewController?.setEditing(editing, animated: animated)
       }
@@ -158,7 +158,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     // MARK: - UIPageViewControllerDataSource
 
-    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController?
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController?
       {
         // Get the currently displated step view controller
         let stepViewController = viewController as! StepViewController
@@ -167,7 +167,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // As long as it isn't for the final step
         if (index > 0) {
           // Return a step view controller for the next step
-          return StepViewController(step: steps[index - 1], editing: editing, context: managedObjectContext)
+          return StepViewController(step: steps[index - 1], editing: isEditing, context: managedObjectContext)
             { (step: Step) in
               if self.managedObjectContext.hasChanges {
                 do { try self.managedObjectContext.save() }
@@ -180,7 +180,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
       }
 
 
-    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController?
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController?
       {
         // Get the currently displated step view controller
         let stepViewController = viewController as! StepViewController
@@ -189,7 +189,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // As long as it isn't for the final step
         if (index < steps.count - 1) {
           // Return a step view controller for the next step
-          return StepViewController(step: steps[index + 1], editing: editing, context: managedObjectContext)
+          return StepViewController(step: steps[index + 1], editing: isEditing, context: managedObjectContext)
             { (step: Step) in
               if self.managedObjectContext.hasChanges {
                 do { try self.managedObjectContext.save() }
@@ -204,7 +204,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     // MARK: - UIPageViewControllerDelegate
 
-    func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool)
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool)
       {
         // De-register custom notifications for the previous StepViewController
         observations.removeAll()
@@ -212,7 +212,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // Register custom notifications for the new StepViewController
         observations = [
           Observation(source: self.activeViewController!, keypaths: ["activeSubview"], options: NSKeyValueObservingOptions(), block:
-            { (change: [String : AnyObject]?) -> Void in
+            { (change: [NSKeyValueChangeKey : Any]?) -> Void in
               if let _ = self.activeViewController?.activeSubview {
                 self.navigationItem.rightBarButtonItem = self.doneButton
               }
@@ -222,21 +222,21 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             })
         ]
 
-        activeViewController?.setEditing(editing, animated: false)
+        activeViewController?.setEditing(isEditing, animated: false)
       }
 
 
 
     // MARK: - Actions
 
-    func save(sender: AnyObject?)
+    func save(_ sender: AnyObject?)
       {
         activeViewController!.save(sender)
         setEditing(false, animated: true)
       }
 
 
-    func done(sender: AnyObject?)
+    func done(_ sender: AnyObject?)
       {
         activeViewController!.done(sender)
       }

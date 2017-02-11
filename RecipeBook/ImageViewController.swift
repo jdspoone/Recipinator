@@ -27,9 +27,9 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
       }
 
 
-    func setUserInteractionEnabled(enabled: Bool)
+    func setUserInteractionEnabled(_ enabled: Bool)
       {
-        imageView.userInteractionEnabled = enabled
+        imageView.isUserInteractionEnabled = enabled
       }
 
 
@@ -43,10 +43,10 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
       {
         // Configure the image view
         view = UIImageView(frame: CGRect.zero)
-        view.contentMode = .ScaleAspectFill
+        view.contentMode = .scaleAspectFill
         view.layer.cornerRadius = 5.0
         view.layer.borderWidth = 0.5
-        view.layer.borderColor = UIColor.lightGrayColor().CGColor
+        view.layer.borderColor = UIColor.lightGray.cgColor
         view.clipsToBounds = true
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ImageViewController.selectImage(_:))))
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -63,7 +63,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
 
     // MARK: - UIImagePickerControllerDelegate
 
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject])
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
       {
         // The info dictionary contains multiple representations of the timage, and this uses the original
         let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
@@ -75,17 +75,17 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
         image = selectedImage
 
         // Dismiss the picker
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
 
         // Have the image view resign as first responder
         imageView.resignFirstResponder()
       }
 
 
-    func imagePickerControllerDidCancel(picker: UIImagePickerController)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
       {
         // Dismiss the picker if the user cancelled
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
 
         // Have the image view resign as first responder
         imageView.resignFirstResponder()
@@ -94,10 +94,10 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
 
     // MARK: - Actions
 
-    func selectImage(sender: UITapGestureRecognizer)
+    func selectImage(_ sender: UITapGestureRecognizer)
       {
         // As long as the gesture has ended
-        if sender.state == .Ended {
+        if sender.state == .ended {
 
           // Hide the keyboard, if it is being presented
           self.imageView.becomeFirstResponder()
@@ -106,35 +106,35 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
           var actions = [UIAlertAction]()
 
           // Always configure a cancel action
-          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .Cancel, handler: nil))
+          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
 
           // Configure a camera button if a camera is available
-          if (UIImagePickerController.isSourceTypeAvailable(.Camera)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .Default, handler:
+          if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .default, handler:
                 { (action: UIAlertAction) in
                   // Present a UIImagePickerController for the photo library
                   let imagePickerController = UIImagePickerController()
-                  imagePickerController.sourceType = .Camera
+                  imagePickerController.sourceType = .camera
                   imagePickerController.delegate = self
-                  self.presentViewController(imagePickerController, animated: true, completion: nil)
+                  self.present(imagePickerController, animated: true, completion: nil)
                 }))
           }
 
           // Configure a photo library button if a photo library is available
-          if (UIImagePickerController.isSourceTypeAvailable(.PhotoLibrary)) {
-            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .Default, handler:
+          if (UIImagePickerController.isSourceTypeAvailable(.photoLibrary)) {
+            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .default, handler:
               { (action: UIAlertAction) in
                 // Present a UIImagePickerController for the camera
                 let imagePickerController = UIImagePickerController()
-                imagePickerController.sourceType = .PhotoLibrary
+                imagePickerController.sourceType = .photoLibrary
                 imagePickerController.delegate = self
-                self.presentViewController(imagePickerController, animated: true, completion: nil)
+                self.present(imagePickerController, animated: true, completion: nil)
               }))
           }
 
           // Configure a cancel button if the step has an associated image
           if let _ = image {
-            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .Default, handler:
+            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .default, handler:
                 { (action: UIAlertAction) in
                   // Remove the associated image
                   self.image = nil
@@ -143,13 +143,13 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
           }
 
           // Configure a UIAlertController
-          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .Alert)
+          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .alert)
           for action in actions {
             alertController.addAction(action)
           }
 
           // Present the UIAlertController
-          presentViewController(alertController, animated: true, completion: nil)
+          present(alertController, animated: true, completion: nil)
         }
       }
 

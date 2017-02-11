@@ -13,17 +13,17 @@ class BaseObject: NSManagedObject
 
     enum Property
       {
-        case Attribute
-        case ToOne(BaseObject.Type)
-        case ToMany(BaseObject.Type)
+        case attribute
+        case toOne(BaseObject.Type)
+        case toMany(BaseObject.Type)
       }
 
 
     init(name: String, context: NSManagedObjectContext, insert: Bool, referenceObject obj: BaseObject? = nil)
       {
-        let entityDescription = NSEntityDescription.entityForName(name, inManagedObjectContext: context)!
+        let entityDescription = NSEntityDescription.entity(forEntityName: name, in: context)!
 
-        super.init(entity: entityDescription, insertIntoManagedObjectContext: insert ? context : nil)
+        super.init(entity: entityDescription, insertInto: insert ? context : nil)
       }
 
 
@@ -35,9 +35,9 @@ class BaseObject: NSManagedObject
 
     // MARK: - NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }

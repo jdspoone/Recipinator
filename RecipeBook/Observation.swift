@@ -12,10 +12,10 @@ class Observation: NSObject
 
     let source: NSObject
     let keypaths: [String]
-    let block: ([String : AnyObject]?) -> Void
+    let block: ([NSKeyValueChangeKey : Any]?) -> Void
 
 
-    init(source: NSObject, keypaths: [String], options: NSKeyValueObservingOptions, block: ([String : AnyObject]?) -> Void)
+    init(source: NSObject, keypaths: [String], options: NSKeyValueObservingOptions, block: @escaping ([NSKeyValueChangeKey : Any]?) -> Void)
       {
         self.source = source
         self.keypaths = keypaths
@@ -39,7 +39,7 @@ class Observation: NSObject
       }
 
 
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>)
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?)
       {
         self.block(change)
       }

@@ -27,13 +27,13 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         self.parentTableView = parentTableView
         self.ingredientAmount = ingredientAmount
 
-        super.init(style: .Default, reuseIdentifier: "ingredientTableViewCell")
+        super.init(style: .default, reuseIdentifier: "ingredientTableViewCell")
 
         nameTextField = UITextField(frame: CGRect.zero)
         nameTextField.font = UIFont(name: "Helvetica", size: 16)
         nameTextField.placeholder = NSLocalizedString("NAME", comment: "")
         nameTextField.text = ingredientAmount?.ingredient.name
-        nameTextField.returnKeyType = .Done
+        nameTextField.returnKeyType = .done
         nameTextField.delegate = self
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
 
@@ -41,8 +41,8 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         amountTextField.font = UIFont(name: "Helvetica", size: 16)
         amountTextField.placeholder = NSLocalizedString("AMOUNT", comment: "")
         amountTextField.text = ingredientAmount?.amount
-        amountTextField.textAlignment = .Right
-        amountTextField.returnKeyType = .Done
+        amountTextField.textAlignment = .right
+        amountTextField.returnKeyType = .done
         amountTextField.delegate = self
         amountTextField.translatesAutoresizingMaskIntoConstraints = false
 
@@ -52,16 +52,16 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
         let leftIndentation: CGFloat = 16.0
         let rightIndentation: CGFloat = 8.0
 
-        nameTextField.widthAnchor.constraintEqualToAnchor(amountTextField.widthAnchor).active = true
+        nameTextField.widthAnchor.constraint(equalTo: amountTextField.widthAnchor).isActive = true
 
-        nameTextField.leftAnchor.constraintEqualToAnchor(leftAnchor, constant: leftIndentation).active = true
-        nameTextField.rightAnchor.constraintEqualToAnchor(amountTextField.leftAnchor).active = true
-        nameTextField.heightAnchor.constraintEqualToAnchor(heightAnchor).active = true
-        nameTextField.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
+        nameTextField.leftAnchor.constraint(equalTo: leftAnchor, constant: leftIndentation).isActive = true
+        nameTextField.rightAnchor.constraint(equalTo: amountTextField.leftAnchor).isActive = true
+        nameTextField.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        nameTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 
-        amountTextField.rightAnchor.constraintEqualToAnchor(rightAnchor, constant: -rightIndentation).active = true
-        amountTextField.heightAnchor.constraintEqualToAnchor(heightAnchor).active = true
-        amountTextField.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
+        amountTextField.rightAnchor.constraint(equalTo: rightAnchor, constant: -rightIndentation).isActive = true
+        amountTextField.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+        amountTextField.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
       }
 
     required init?(coder aDecoder: NSCoder)
@@ -72,19 +72,19 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
 
     // MARK: UITextFieldDelegate
 
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
       {
-        return recipeViewController.editing
+        return recipeViewController.isEditing
       }
 
 
-    func textFieldDidBeginEditing(textField: UITextField)
+    func textFieldDidBeginEditing(_ textField: UITextField)
       {
         recipeViewController.activeSubview = textField
       }
 
 
-    func textFieldShouldReturn(textField: UITextField) -> Bool
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
 
         // If the ingredientAmount is non-nil
@@ -127,7 +127,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
       }
 
 
-    func textFieldDidEndEditing(textField: UITextField)
+    func textFieldDidEndEditing(_ textField: UITextField)
       {
         // If the ingredientAmount is non-nil
         if let ingredientAmount = ingredientAmount {

@@ -33,13 +33,13 @@ class TagsViewController: UIViewController
       }
 
 
-    func shouldCreateTagWithName(name: String) -> Bool
+    func shouldCreateTagWithName(_ name: String) -> Bool
       {
-        let request = NSFetchRequest(entityName: "Tag")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Tag")
         request.predicate = NSPredicate(format: "name = %@", name)
 
         var results: [Tag] = []
-        do { results = try managedObjectContext.executeFetchRequest(request) as! [Tag] }
+        do { results = try managedObjectContext.fetch(request) as! [Tag] }
         catch let e { fatalError("error: \(e)") }
 
         if results.count == 0 {
@@ -52,18 +52,18 @@ class TagsViewController: UIViewController
       }
 
 
-    func addTagWithName(name: String)
+    func addTagWithName(_ name: String)
       {
         // Get a tag object for the given name
         let tag = Tag.withName(name, inContext: managedObjectContext)
 
         // Add the tag to the set of tags, if it is not already in there
         if (tags.contains(tag) == false) {
-          willChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
+          willChangeValue(forKey: "tags", withSetMutation: .union, using: [tag])
           tags.insert(tag)
-          didChangeValueForKey("tags", withSetMutation: .UnionSetMutation, usingObjects: [tag])
+          didChangeValue(forKey: "tags", withSetMutation: .union, using: [tag])
 
-          let tagView = TagView(tag: tag, editing: editing, controller: self)
+          let tagView = TagView(tag: tag, editing: isEditing, controller: self)
           view.addSubview(tagView)
 
           tagViewDictionary[tag] = tagView
@@ -73,14 +73,14 @@ class TagsViewController: UIViewController
       }
 
 
-    func removeTag(tag: Tag)
+    func removeTag(_ tag: Tag)
       {
         // Delete the specified tag
         tags.remove(tag)
 
-        willChangeValueForKey("tags", withSetMutation: .MinusSetMutation, usingObjects: [tag])
-        managedObjectContext.deleteObject(tag)
-        didChangeValueForKey("tags", withSetMutation: .MinusSetMutation, usingObjects: [tag])
+        willChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
+        managedObjectContext.delete(tag)
+        didChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
 
         tagViewDictionary[tag]!.removeFromSuperview()
 
@@ -95,14 +95,14 @@ class TagsViewController: UIViewController
         var row = 0, column = 0
 
         // Iterate over the tags
-        for tag in tags.sort(sortingBlock) {
+        for tag in tags.sorted(by: sortingBlock) {
 
           // Get the subview associated with the tag
           let tagView = tagViewDictionary[tag]!
 
           // Deactivate the old constraints
           if let left = tagView.leftConstraint, let top = tagView.topConstraint {
-            NSLayoutConstraint.deactivateConstraints([left, top])
+            NSLayoutConstraint.deactivate([left, top])
           }
 
           // If there isn't enough space in the current column, move to the next
@@ -117,29 +117,29 @@ class TagsViewController: UIViewController
 
           // Configure the constraint for the top of the view
           if row == 0 {
-            tagView.topConstraint = tagView.topAnchor.constraintEqualToAnchor(view.topAnchor, constant: tagViewSpacing)
+            tagView.topConstraint = tagView.topAnchor.constraint(equalTo: view.topAnchor, constant: tagViewSpacing)
           }
           else {
-            tagView.topConstraint = tagView.topAnchor.constraintEqualToAnchor(tagViewArrangement[row - 1][column].bottomAnchor, constant: tagViewSpacing)
+            tagView.topConstraint = tagView.topAnchor.constraint(equalTo: tagViewArrangement[row - 1][column].bottomAnchor, constant: tagViewSpacing)
           }
 
           // Configure the constraint for the left of the view
           if column == 0 {
-            tagView.leftConstraint = tagView.leftAnchor.constraintEqualToAnchor(view.leftAnchor, constant: tagViewSpacing)
+            tagView.leftConstraint = tagView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: tagViewSpacing)
           }
           else {
-            tagView.leftConstraint = tagView.leftAnchor.constraintEqualToAnchor(tagViewArrangement[row][column - 1].rightAnchor, constant: tagViewSpacing)
+            tagView.leftConstraint = tagView.leftAnchor.constraint(equalTo: tagViewArrangement[row][column - 1].rightAnchor, constant: tagViewSpacing)
           }
 
           // Activate the new constraints
-          NSLayoutConstraint.activateConstraints([tagView.leftConstraint!, tagView.topConstraint!])
+          NSLayoutConstraint.activate([tagView.leftConstraint!, tagView.topConstraint!])
 
           column += 1
         }
       }
 
 
-    func availableWidthInRow(row: Int) -> CGFloat
+    func availableWidthInRow(_ row: Int) -> CGFloat
       {
         var availableWidth = view.frame.width - tagViewSpacing
 
@@ -164,12 +164,12 @@ class TagsViewController: UIViewController
         view = UIView(frame: CGRect.zero)
         view.layer.cornerRadius = 5.0
         view.layer.borderWidth = 0.5
-        view.layer.borderColor = UIColor.lightGrayColor().CGColor
+        view.layer.borderColor = UIColor.lightGray.cgColor
         view.translatesAutoresizingMaskIntoConstraints = false
 
         // Build the tag subview dictionary
         for tag in tags {
-          let tagView = TagView(tag: tag, editing: editing, controller: self)
+          let tagView = TagView(tag: tag, editing: isEditing, controller: self)
           tagViewDictionary[tag] = tagView
           view.addSubview(tagView)
         }
@@ -180,7 +180,7 @@ class TagsViewController: UIViewController
       {
         super.viewDidLoad()
 
-        setEditing(editing, animated: true)
+        setEditing(isEditing, animated: true)
       }
 
 
@@ -192,7 +192,7 @@ class TagsViewController: UIViewController
       }
 
 
-    override func setEditing(editing: Bool, animated: Bool)
+    override func setEditing(_ editing: Bool, animated: Bool)
       {
         super.setEditing(editing, animated: animated)
 
@@ -222,7 +222,7 @@ class TagsViewController: UIViewController
         var deleteButton: UIButton!
 
         var width: CGFloat
-          { return nameLabel.intrinsicContentSize().width + nameLabel.intrinsicContentSize().height + (2 * spacing) }
+          { return nameLabel.intrinsicContentSize.width + nameLabel.intrinsicContentSize.height + (2 * spacing) }
 
         let spacing: CGFloat = 2.5
 
@@ -234,7 +234,7 @@ class TagsViewController: UIViewController
             super.init(frame: CGRect.zero)
             layer.cornerRadius = 5.0
             layer.borderWidth = 0.5
-            layer.borderColor = UIColor.lightGrayColor().CGColor
+            layer.borderColor = UIColor.lightGray.cgColor
             translatesAutoresizingMaskIntoConstraints = false
 
             nameLabel = UILabel(frame: CGRect.zero)
@@ -242,25 +242,25 @@ class TagsViewController: UIViewController
             nameLabel.translatesAutoresizingMaskIntoConstraints = false
             addSubview(nameLabel)
 
-            deleteButton = button(self, action: #selector(TagView.deleteTag(_:)), controlEvents: .TouchUpInside, imageName: "deleteImage")
+            deleteButton = button(self, action: #selector(TagView.deleteTag(_:)), controlEvents: .touchUpInside, imageName: "deleteImage")
             addSubview(deleteButton)
 
             // Establish layout constraints
-            nameLabelLeftConstraint = nameLabel.leftAnchor.constraintEqualToAnchor(leftAnchor, constant: spacing)
-            nameLabelRightConstraint = nameLabel.rightAnchor.constraintEqualToAnchor(deleteButton.leftAnchor, constant: -spacing)
+            nameLabelLeftConstraint = nameLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: spacing)
+            nameLabelRightConstraint = nameLabel.rightAnchor.constraint(equalTo: deleteButton.leftAnchor, constant: -spacing)
 
-            nameLabelWidthConstraint = nameLabel.widthAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().width)
-            nameLabelCenterXConstraint = nameLabel.centerXAnchor.constraintEqualToAnchor(centerXAnchor)
+            nameLabelWidthConstraint = nameLabel.widthAnchor.constraint(equalToConstant: nameLabel.intrinsicContentSize.width)
+            nameLabelCenterXConstraint = nameLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
 
-            nameLabel.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
+            nameLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 
-            deleteButton.widthAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().height).active = true
-            deleteButton.heightAnchor.constraintEqualToConstant(nameLabel.intrinsicContentSize().height).active = true
-            deleteButton.rightAnchor.constraintEqualToAnchor(rightAnchor).active = true
-            deleteButton.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
+            deleteButton.widthAnchor.constraint(equalToConstant: nameLabel.intrinsicContentSize.height).isActive = true
+            deleteButton.heightAnchor.constraint(equalToConstant: nameLabel.intrinsicContentSize.height).isActive = true
+            deleteButton.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+            deleteButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
 
-            widthAnchor.constraintEqualToConstant(width).active = true
-            heightAnchor.constraintEqualToAnchor(nameLabel.heightAnchor).active = true
+            widthAnchor.constraint(equalToConstant: width).isActive = true
+            heightAnchor.constraint(equalTo: nameLabel.heightAnchor).isActive = true
 
             setEditing(editing)
           }
@@ -272,16 +272,16 @@ class TagsViewController: UIViewController
           }
 
 
-        func setEditing(editing: Bool)
+        func setEditing(_ editing: Bool)
           {
-            deleteButton.hidden = editing ? false : true
+            deleteButton.isHidden = editing ? false : true
 
-            NSLayoutConstraint.deactivateConstraints(editing ? [nameLabelWidthConstraint, nameLabelCenterXConstraint] : [nameLabelLeftConstraint, nameLabelRightConstraint])
-            NSLayoutConstraint.activateConstraints(editing ? [nameLabelLeftConstraint, nameLabelRightConstraint] : [nameLabelWidthConstraint, nameLabelCenterXConstraint])
+            NSLayoutConstraint.deactivate(editing ? [nameLabelWidthConstraint, nameLabelCenterXConstraint] : [nameLabelLeftConstraint, nameLabelRightConstraint])
+            NSLayoutConstraint.activate(editing ? [nameLabelLeftConstraint, nameLabelRightConstraint] : [nameLabelWidthConstraint, nameLabelCenterXConstraint])
           }
 
 
-        func deleteTag(sender: UIButton)
+        func deleteTag(_ sender: UIButton)
           {
             tagsViewController!.removeTag(recipeTag)
           }

@@ -15,7 +15,7 @@ class Step : BaseObject
     @NSManaged var number: Int16
     @NSManaged var summary: String
     @NSManaged var detail: String
-    @NSManaged var imageData: NSData?
+    @NSManaged var imageData: Data?
 
     var image: UIImage?
       {
@@ -24,7 +24,7 @@ class Step : BaseObject
       }
 
 
-    init(number: Int16, summary: String, detail: String, imageData: NSData?, context: NSManagedObjectContext, insert: Bool = true)
+    init(number: Int16, summary: String, detail: String, imageData: Data?, context: NSManagedObjectContext, insert: Bool = true)
       {
         super.init(name: "Step", context: context, insert: insert)
 
@@ -38,18 +38,18 @@ class Step : BaseObject
     override class func properties() -> [String : Property]
       {
         return [
-          "summary" : .Attribute,
-          "detail" : .Attribute,
-          "imageData" : .Attribute
+          "summary" : .attribute,
+          "detail" : .attribute,
+          "imageData" : .attribute
         ]
       }
 
 
     // MARK: - NSManagedObject
 
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?)
+    override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
       {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertInto: context)
       }
 
   }
