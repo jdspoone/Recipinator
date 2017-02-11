@@ -261,10 +261,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
             case .tag:
               filteredRecipes = recipes.filter({ $0.tags.filter({ $0.name.lowercased().range(of: (searchText?.lowercased())!) != nil }).count > 0 })
           }
-
-          // Update the recipe table view
-          recipeTableView.reloadData()
         }
+        // Otherwise, clear the filtered recipes
+        else {
+          filteredRecipes = []
+        }
+
+        // Update the recipe table view
+        recipeTableView.reloadData()
 
         // Always return true
         return true
