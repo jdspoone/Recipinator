@@ -150,8 +150,10 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
           }
         }
 
-        // Set the parent RecipeViewController's activeSubview to nil
-        recipeViewController.activeSubview = nil
+        // Set the parent RecipeViewController's activeSubview to nil if we are still the active subview
+        if recipeViewController.activeSubview === textField {
+          recipeViewController.activeSubview = nil
+        }
       }
 
   }

@@ -397,9 +397,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
             fatalError("unexpected text field")
         }
 
-        // Enable user interaction with the imageView, and set the activeSubview to nil
+        // Enable user interaction with the imageView
         imageViewController.setUserInteractionEnabled(true)
-        activeSubview = nil
+
+        // Set the active subview to nil if we are still the active subview
+        if activeSubview === textField {
+          activeSubview = nil
+        }
       }
 
 
