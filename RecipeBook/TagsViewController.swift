@@ -58,7 +58,7 @@ class TagsViewController: UIViewController
         let tag = Tag.withName(name, inContext: managedObjectContext)
 
         // Add the tag to the set of tags, if it is not already in there
-        if (tags.contains(tag) == false) {
+        if tags.contains(tag) == false {
           willChangeValue(forKey: "tags", withSetMutation: .union, using: [tag])
           tags.insert(tag)
           didChangeValue(forKey: "tags", withSetMutation: .union, using: [tag])

@@ -114,7 +114,7 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
           }
 
           // Allow the user to end editing if the name text field is non-empty
-          else if (nameTextField.text != nil || nameTextField.text != "") {
+          else if nameTextField.text != nil || nameTextField.text != "" {
             textField.endEditing(true)
             return true
           }

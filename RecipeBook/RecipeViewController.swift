@@ -304,7 +304,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         super.viewWillDisappear(animated)
 
         // Execute the completion block as long as we're not presenting another view controller
-        if (presentedViewController == nil) {
+        if presentedViewController == nil {
           completion(recipe)
         }
       }
@@ -689,7 +689,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
     override func save(_ sender: AnyObject?)
       {
         // If there is new (and thus unsaved) ingredientAmount, add it to the recipe
-        if (newIngredientAmount == true) {
+        if newIngredientAmount == true {
           addNewIngredientAmountToRecipe()
         }
 
@@ -720,7 +720,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
         // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
-        if (newIngredientAmount == true) {
+        if newIngredientAmount == true {
           let cell = ingredientAmountsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! IngredientAmountTableViewCell
 
           // If the new ingredientAmount has a valid name, add it to the recipe

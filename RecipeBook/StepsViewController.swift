@@ -136,7 +136,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         observations.removeAll()
 
         // Execute the completion block as long as we're not presenting another view controller
-        if (presentedViewController == nil) {
+        if presentedViewController == nil {
           completion()
         }
       }
@@ -165,7 +165,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         let index = Int(stepViewController.step.number)
 
         // As long as it isn't for the final step
-        if (index > 0) {
+        if index > 0 {
           // Return a step view controller for the next step
           return StepViewController(step: steps[index - 1], editing: isEditing, context: managedObjectContext)
             { (step: Step) in
@@ -187,7 +187,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         let index = Int(stepViewController.step.number)
 
         // As long as it isn't for the final step
-        if (index < steps.count - 1) {
+        if index < steps.count - 1 {
           // Return a step view controller for the next step
           return StepViewController(step: steps[index + 1], editing: isEditing, context: managedObjectContext)
             { (step: Step) in

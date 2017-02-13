@@ -89,7 +89,7 @@ class BaseViewController: UIViewController
         let height = maxY + 8.0
 
         // As long as there are changes to be made
-        if (width != scrollView.contentSize.width || height != scrollView.contentSize.height) {
+        if width != scrollView.contentSize.width || height != scrollView.contentSize.height {
           // Animate a change to scrollView's contentSize
           UIView.animate(withDuration: 0.5, animations:
             {

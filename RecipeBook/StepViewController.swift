@@ -150,7 +150,7 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
         super.viewWillDisappear(animated)
 
         // Execute the completion block as long as we're not presenting another view controller
-        if (presentedViewController == nil) {
+        if presentedViewController == nil {
           completion(step)
         }
       }

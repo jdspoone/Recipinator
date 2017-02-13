@@ -109,7 +109,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
           actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
 
           // Configure a camera button if a camera is available
-          if (UIImagePickerController.isSourceTypeAvailable(.camera)) {
+          if UIImagePickerController.isSourceTypeAvailable(.camera) {
             actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .default, handler:
                 { (action: UIAlertAction) in
                   // Present a UIImagePickerController for the photo library
@@ -121,7 +121,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
           }
 
           // Configure a photo library button if a photo library is available
-          if (UIImagePickerController.isSourceTypeAvailable(.photoLibrary)) {
+          if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
             actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .default, handler:
               { (action: UIAlertAction) in
                 // Present a UIImagePickerController for the camera

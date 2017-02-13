@@ -34,7 +34,7 @@ class Tag: BaseObject
         catch let e { fatalError("errorL \(e)") }
 
         // If there are no ingredients with that name, return
-        if (results.count == 0) {
+        if results.count == 0 {
           return Tag(name: name, context: context)
         }
         else {

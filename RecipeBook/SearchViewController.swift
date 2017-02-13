@@ -191,7 +191,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         observations = [
           Observation(source: searchSegmentedControl, keypaths: ["selectedSegmentIndex"], options: .initial, block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
-                if (self.searching) {
+                if self.searching {
                   // Update the search category and search text field placeholder
                   switch self.searchSegmentedControl.selectedSegmentIndex {
                     case 0:
@@ -249,7 +249,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         searchText?.replaceSubrange(start ..< end, with: string);
 
         // If the string is non-empty
-        if (searchText != "") {
+        if searchText != "" {
           // Filter the list of recipes according to the current search category
           switch searchCategory {
             case .recipe:
