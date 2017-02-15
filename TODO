@@ -1,0 +1,11 @@
+RecipeViewController:
+  -the component textfields of the ingredientTableViewCells should have dynamic lengths
+  -as ingredients table view shrinks, steps table view should smoothly follow it up..
+    -will require unbinding some layout constraints and animating the frame of the steps table view
+  -implement ingredient reordering...
+
+ImageViewController:
+    -allow users to select a number of images for a given recipe/step
+    -give clear indication that you can select a photo when in editting mode
+      -when editing, display label above view with text "tap to select photo"?
+      -when editing, change default photo to one that says "tap to select photo"?
