@@ -86,7 +86,6 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
-
         // If the ingredientAmount is non-nil
         if let _ = ingredientAmount {
 
@@ -147,6 +146,16 @@ class IngredientAmountTableViewCell: UITableViewCell, UITextFieldDelegate
 
             default :
               fatalError("unexpected case")
+          }
+        }
+        // Otherwise
+        else {
+          // As long as we're looking at the nameTextField
+          if textField === nameTextField {
+            // And there's some text in it, add a new ingredientAmount to the RecipeViewController
+            if let text = textField.text, text != "" {
+              recipeViewController.addNewIngredientAmountToRecipe()
+            }
           }
         }
 

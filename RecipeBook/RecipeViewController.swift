@@ -129,6 +129,9 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
         // Set the newIngredientAmount flag to false
         newIngredientAmount = false
+
+        // Reload the tableView
+        ingredientAmountsTableView.reloadData()
       }
 
 
@@ -613,7 +616,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
-      { return isEditing }
+      {
+        // We only want to be able to edit tableViews when we aren't currently editing some text
+        return isEditing && activeSubview == nil
+      }
 
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
