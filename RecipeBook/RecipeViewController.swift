@@ -524,7 +524,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         switch tableView {
 
           case ingredientAmountsTableView :
-            return newIngredientAmount ? 2 : 1
+            return 1
 
           case stepsTableView :
             return 1
@@ -540,24 +540,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         switch tableView {
 
           case ingredientAmountsTableView :
-
-            // Switch on the section
-            switch section {
-
-              case 0:
-                // Section 0 should contain 1 row if we're adding a new ingredientAmount, and a row for each ingredientAmount otherwise
-                return newIngredientAmount ? 1 : recipe.ingredientAmounts.count
-
-              case 1:
-                // Sanity check
-                assert(newIngredientAmount, "unexpected state")
-
-                // If it exists, section 1 should contain a row for each ingredientAmount
-                return recipe.ingredientAmounts.count
-
-              default:
-                fatalError("unexpected section")
-            }
+            return recipe.ingredientAmounts.count;
 
           case stepsTableView :
             return recipe.steps.count
@@ -574,34 +557,12 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         switch tableView {
 
           case ingredientAmountsTableView :
-
-            // Switch on the section
-            switch indexPath.section {
-
-              case 0:
-                // If we're creating a new ingredientAmount, return an empty ingredientAmountTableViewCell for it
-                if newIngredientAmount {
-                  return IngredientAmountTableViewCell(parentTableView: tableView)
-                }
-                // Otherwise return an ingredientAmountTableViewCell for the appropriate ingredientAmount
-                else {
-                  let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
-                  return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
-                }
-
-              case 1:
-                // Sanity check
-                assert(newIngredientAmount, "unexpected state")
-
-                // Return an ingredientAmountTableViewCell for the appropriate ingredientAmount
-                let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
-                return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
-
-              default:
-                fatalError("unexpected section")
-            }
+            // Return an IngredientAmountTableViewCell for the appropriate IngredientAmount
+            let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
+            return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
 
           case stepsTableView :
+            // Configure and return a tableViewCell for the appropriate Step
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
             let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
             cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
@@ -694,13 +655,10 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     override func save(_ sender: AnyObject?)
       {
-        // If there is new (and thus unsaved) ingredientAmount, add it to the recipe
-        if newIngredientAmount == true {
-          addNewIngredientAmountToRecipe()
-        }
-
+        // Call super's implementation
         super.save(sender)
 
+        // Attempt to save the managedObjectContext
         do { try managedObjectContext.save() }
         catch { fatalError("failed to save") }
       }
@@ -721,30 +679,53 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
 
+    func alertTextFieldDidChange(_ textField: UITextField)
+      {
+        if let alertController = presentedViewController as? UIAlertController {
+          let submitAction = alertController.actions.last!
+          submitAction.isEnabled = textField.text != nil
+            ? (textField.text?.characters.count)! > 0
+            : false
+        }
+      }
+
+
     func addIngredient(_ sender: AnyObject)
       {
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
-        // If there already is a new ingredientAmount, we need to add it to the recipe before proceeding
-        if newIngredientAmount == true {
-          let cell = ingredientAmountsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! IngredientAmountTableViewCell
+        // Configure a UIAlertController
+        let alertController = UIAlertController(title: "New Ingredient", message: "Enter the name of a new ingredient", preferredStyle: .alert)
 
-          // If the new ingredientAmount has a valid name, add it to the recipe
-          if let name = cell.nameTextField.text, name != "" {
-            addNewIngredientAmountToRecipe()
-          }
-          // Otherwise, return
-          else {
-            return
-          }
-        }
+        // Add a textField to the alertController for the ingredient's name
+        alertController.addTextField(configurationHandler:
+            { (textField: UITextField) in
+              textField.placeholder = "Ingredient"
+              textField.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
+            })
 
-        // Flip the newIngredientAmount flag and set the editingIngredientIndexPath approriately
-        newIngredientAmount = true;
-        editingIngredientIndexPath = IndexPath(row: 0, section: 0)
+        // Add a cancel button to the alertController
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
 
-        // Reload the ingredientAmountsTableView's data
-        ingredientAmountsTableView.reloadData()
+        // Add a submit action to the alertController
+        let submitAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: .default, handler:
+            { (action: UIAlertAction) in
+              // Get the name of the ingredient from the textField
+              let name = alertController.textFields!.last!.text!
+
+              // Create a new ingredient and ingredientAmount, and add it to the recipe
+              let ingredient = Ingredient.withName(name, inContext: self.managedObjectContext)
+              let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: "", number: Int16(self.recipe.ingredientAmounts.count), context: self.managedObjectContext)
+              self.recipe.ingredientAmounts.insert(ingredientAmount)
+
+              // Update the ingredientAmountTableView
+              self.ingredientAmountsTableView.reloadData()
+            })
+        submitAction.isEnabled = false;
+        alertController.addAction(submitAction)
+
+        // Present the alertController
+        present(alertController, animated: true, completion: nil);
       }
 
 
