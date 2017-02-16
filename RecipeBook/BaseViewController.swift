@@ -80,9 +80,13 @@ class BaseViewController: UIViewController
       {
         // Determine the content rect containing all approved subviews
         var maxY: CGFloat = 0
+        // Iterate over all of the subviews
         for subview in scrollViewSubviews {
-          let candidate = subview.frame.origin.y + subview.frame.height
-          maxY = max(candidate, maxY)
+          // As long as the subview is not being hidden, update the maximum y coordinate
+          if subview.isHidden == false {
+            let candidate = subview.frame.origin.y + subview.frame.height
+            maxY = max(candidate, maxY)
+          }
         }
 
         let width = view.frame.width
