@@ -11,6 +11,9 @@ import CoreData
 class TagsViewController: UIViewController
   {
 
+    var titleLabel: UILabel!
+    var tagsView: UIView!
+
     var tags: Set<Tag>
     var managedObjectContext: NSManagedObjectContext
 
@@ -70,7 +73,7 @@ class TagsViewController: UIViewController
           didChangeValue(forKey: "tags", withSetMutation: .union, using: [tag])
 
           let tagView = TagView(tag: tag, editing: isEditing, controller: self)
-          view.addSubview(tagView)
+          tagsView.addSubview(tagView)
 
           tagViewDictionary[tag] = tagView
 
@@ -129,7 +132,7 @@ class TagsViewController: UIViewController
 
           // Configure the constraint for the top of the view
           if row == 0 {
-            tagView.topConstraint = tagView.topAnchor.constraint(equalTo: view.topAnchor, constant: tagViewSpacing)
+            tagView.topConstraint = tagView.topAnchor.constraint(equalTo: tagsView.topAnchor, constant: tagViewSpacing)
           }
           else {
             tagView.topConstraint = tagView.topAnchor.constraint(equalTo: tagViewArrangement[row - 1][column].bottomAnchor, constant: tagViewSpacing)
@@ -137,7 +140,7 @@ class TagsViewController: UIViewController
 
           // Configure the constraint for the left of the view
           if column == 0 {
-            tagView.leftConstraint = tagView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: tagViewSpacing)
+            tagView.leftConstraint = tagView.leftAnchor.constraint(equalTo: tagsView.leftAnchor, constant: tagViewSpacing)
           }
           else {
             tagView.leftConstraint = tagView.leftAnchor.constraint(equalTo: tagViewArrangement[row][column - 1].rightAnchor, constant: tagViewSpacing)
@@ -153,7 +156,7 @@ class TagsViewController: UIViewController
 
     func availableWidthInRow(_ row: Int) -> CGFloat
       {
-        var availableWidth = view.frame.width - tagViewSpacing
+        var availableWidth = tagsView.frame.width - tagViewSpacing
 
         for view in tagViewArrangement[row] {
           availableWidth -= (view.width + tagViewSpacing)
@@ -173,17 +176,43 @@ class TagsViewController: UIViewController
 
     override func loadView()
       {
-        view = UIView(frame: CGRect.zero)
-        view.layer.cornerRadius = 5.0
-        view.layer.borderWidth = 0.5
-        view.layer.borderColor = UIColor.lightGray.cgColor
+        // Configure the root view
+        view = UIView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
+
+        // Configure the tags label
+        titleLabel = UILabel(frame: .zero)
+        titleLabel.text = NSLocalizedString("TAGS", comment: "")
+        titleLabel.font = UIFont(name: "Helvetica", size: 18)
+        titleLabel.textAlignment = .center
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+
+        // Configure the tags view
+        tagsView = UIView(frame: .zero)
+        tagsView.layer.cornerRadius = 5.0
+        tagsView.layer.borderWidth = 0.5
+        tagsView.layer.borderColor = UIColor.lightGray.cgColor
+        tagsView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tagsView)
+
+        // Configure the layout bindings for the title label
+        titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        titleLabel.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        titleLabel.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
+
+        // Configure the layout bindings for the tags view
+        tagsView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tagsView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tagsView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8.0).isActive = true
+        tagsView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         // Build the tag subview dictionary
         for tag in tags {
           let tagView = TagView(tag: tag, editing: isEditing, controller: self)
           tagViewDictionary[tag] = tagView
-          view.addSubview(tagView)
+          tagsView.addSubview(tagView)
         }
       }
 
@@ -196,9 +225,9 @@ class TagsViewController: UIViewController
       }
 
 
-    override func viewWillLayoutSubviews()
+    override func viewDidLayoutSubviews()
       {
-        super.viewWillLayoutSubviews()
+        super.viewDidLayoutSubviews()
 
         updateSubviewConstraints()
       }
