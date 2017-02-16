@@ -194,7 +194,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         tagsViewController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         tagsViewController.view.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         tagsViewController.view.heightAnchor.constraint(equalToConstant: 200.0).isActive = true
-        tagsViewController.view.topAnchor.constraint(equalTo: stepsTableView.bottomAnchor, constant: 8.0).isActive = true
+        tagsViewController.view.topAnchor.constraint(equalTo: stepsTableView.bottomAnchor, constant: 16.0).isActive = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .touchUpInside, imageName: "addImage")
         collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .touchUpInside, imageName: "collapseImage")
