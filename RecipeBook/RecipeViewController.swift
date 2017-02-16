@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource
+class RecipeViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource
   {
 
     var recipe: Recipe
@@ -38,7 +38,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
       }
 
     var tagsViewController: TagsViewController!
-    var tagTextField: UITextField!
 
     var newIngredientAmount = false
 
@@ -169,18 +168,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         addChildViewController(tagsViewController)
         addSubviewToScrollView(tagsViewController.view)
 
-        // Configure the tag name text field
-        tagTextField = UITextField(frame: CGRect.zero)
-        tagTextField.font = UIFont(name: "Helvetica", size: 18)
-        tagTextField.borderStyle = .roundedRect
-        tagTextField.placeholder = NSLocalizedString("TAG NAME", comment: "")
-        tagTextField.textAlignment = .center
-        tagTextField.returnKeyType = .done
-        tagTextField.clearButtonMode = .always
-        tagTextField.translatesAutoresizingMaskIntoConstraints = false
-        tagTextField.delegate = self
-        addSubviewToScrollView(tagTextField)
-
         // Configure the layout bindings for the text field
         nameTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         nameTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
@@ -206,14 +193,8 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Configure the layout bindings for the tag view
         tagsViewController.view.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         tagsViewController.view.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        tagsViewController.view.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
+        tagsViewController.view.heightAnchor.constraint(equalToConstant: 200.0).isActive = true
         tagsViewController.view.topAnchor.constraint(equalTo: stepsTableView.bottomAnchor, constant: 8.0).isActive = true
-
-        // Configure the layout bindings for the tag text field
-        tagTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
-        tagTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        tagTextField.topAnchor.constraint(equalTo: tagsViewController.view.bottomAnchor, constant: 8.0).isActive = true
-        tagTextField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .touchUpInside, imageName: "addImage")
         collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .touchUpInside, imageName: "collapseImage")
@@ -240,10 +221,13 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.nameTextField.isUserInteractionEnabled = self.isEditing
                 self.nameTextField.borderStyle = self.isEditing ? .roundedRect : .none
-                self.imageViewController.setUserInteractionEnabled(self.isEditing)
+                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
                 self.addIngredientButton.isHidden = self.isEditing && self.ingredientsExpanded ? false : true
                 self.addStepButton.isHidden = self.isEditing && self.stepsExpanded ? false : true
-                self.tagTextField.isHidden = self.isEditing ? false : true
+              }),
+          Observation(source: self, keypaths: ["activeSubview"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
               }),
           Observation(source: self, keypaths: ["ingredientsExpanded"], options: .initial, block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
@@ -305,70 +289,35 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
 
     // MARK: - UITextFieldDelegate
 
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
-      {
-        // Set the activeSubview to be the textField, if applicable
-        if isEditing {
-          activeSubview = textField
-          return true
-        }
-        return false
-      }
-
-
-    func textFieldDidBeginEditing(_ textField: UITextField)
-      {
-        // Users should not be able to interact with the imageView if they are editing a textField
-        imageViewController.setUserInteractionEnabled(false);
-      }
-
-
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
-        switch textField {
-          case nameTextField :
-            // Ensure we have a non-empty string in the nameTextField before returning
-            if textField.text != nil && textField.text != "" {
-              textField.endEditing(true)
-              return true
-            }
-            return false
-
-          case tagTextField :
-            textField.endEditing(true)
-            return true
-
-          default :
-            fatalError("unexpected text field")
-        }
+        textField.resignFirstResponder()
+        return true
       }
 
 
-    func textFieldDidEndEditing(_ textField: UITextField)
+    override func textFieldDidEndEditing(_ textField: UITextField)
       {
-        switch textField {
-          case nameTextField :
-            // Update the recipe's name
-            recipe.name = textField.text!
-
-          case tagTextField :
-            // As long as we've got a non-empty string, add a tag
-            if textField.text != "" {
-              tagsViewController.addTagWithName(textField.text!)
-              textField.text = ""
-            }
-
-          default :
-            fatalError("unexpected text field")
-        }
-
-        // Enable user interaction with the imageView
-        imageViewController.setUserInteractionEnabled(true)
-
-        // Set the active subview to nil if we are still the active subview
+        // As along as the textField is the activeSubview
         if activeSubview === textField {
-          activeSubview = nil
+
+          // Switch on the textField
+          switch textField {
+
+            // If it's the nameTextField, update the recipe's name
+            case nameTextField:
+              if let text = textField.text {
+                recipe.name = text
+              }
+              break;
+
+            // Otherwise, break
+            default:
+              break;
+          }
         }
+
+        super.textFieldDidEndEditing(textField)
       }
 
 
@@ -623,21 +572,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Attempt to save the managedObjectContext
         do { try managedObjectContext.save() }
         catch { fatalError("failed to save") }
-      }
-
-
-    override func done(_ sender: AnyObject?)
-      {
-        // If the active subview is a text field
-        if activeSubview!.isKind(of: UITextField.self) {
-          // Treat the done button like the return button
-          let textField = activeSubview as! UITextField
-          let _ = textField.delegate!.textFieldShouldReturn!(textField)
-        }
-        // Or some non-text view
-        else {
-          super.done(sender)
-        }
       }
 
 

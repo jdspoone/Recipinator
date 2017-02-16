@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDelegate
+class StepViewController: BaseViewController
   {
 
     var step: Step
@@ -135,7 +135,11 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
                 self.summaryTextField.isUserInteractionEnabled = self.isEditing
                 self.summaryTextField.borderStyle = self.isEditing ? .roundedRect : .none
                 self.detailTextView.isEditable = self.isEditing
-                self.imageViewController.setUserInteractionEnabled(self.isEditing)
+                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
+              }),
+          Observation(source: self, keypaths: ["activeSubview"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
               }),
           Observation(source: imageViewController, keypaths: ["image"], options: .initial, block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
@@ -156,68 +160,49 @@ class StepViewController: BaseViewController, UITextFieldDelegate, UITextViewDel
       }
 
 
-
     // MARK: - UITextFieldDelegate
-
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
-      {
-        // Set the activeSubview to be the textField, if applicable
-        if isEditing {
-          activeSubview = textField
-          return true
-        }
-        return false
-      }
-
 
     func textFieldDidBeginEditing(_ textField: UITextField)
       {
-        activeSubview = textField
+        imageViewController.setUserInteractionEnabled(false);
       }
 
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
-        textField.endEditing(true)
+        textField.resignFirstResponder()
         return true;
       }
 
 
-    func textFieldDidEndEditing(_ textField: UITextField)
+    override func textFieldDidEndEditing(_ textField: UITextField)
       {
         step.summary = textField.text!
 
-        if activeSubview === textField {
-          activeSubview = nil
-        }
+        super.textFieldDidEndEditing(textField)
       }
 
 
     // MARK: - UITextViewDelegate
 
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool
-      {
-        if isEditing {
-          activeSubview = textView
-          return true
-        }
-        return false
-      }
-
-
     func textViewDidBeginEditing(_ textView: UITextView)
       {
-        activeSubview = textView
+        imageViewController.setUserInteractionEnabled(false)
       }
 
 
-    func textViewDidEndEditing(_ textView: UITextView)
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool
+      {
+        textView.resignFirstResponder()
+        return true
+      }
+
+
+    override func textViewDidEndEditing(_ textView: UITextView)
       {
         step.detail = textView.text!
 
-        if activeSubview === textView {
-          activeSubview = nil
-        }
+        super.textViewDidEndEditing(textView)
       }
 
   }

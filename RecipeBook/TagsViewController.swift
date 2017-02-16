@@ -8,11 +8,14 @@ import UIKit
 import CoreData
 
 
-class TagsViewController: UIViewController
+class TagsViewController: UIViewController, UITextFieldDelegate
   {
+
+    var observations = Set<Observation>()
 
     var titleLabel: UILabel!
     var tagsView: UIView!
+    var tagTextField: UITextField!
 
     var tags: Set<Tag>
     var managedObjectContext: NSManagedObjectContext
@@ -196,6 +199,18 @@ class TagsViewController: UIViewController
         tagsView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tagsView)
 
+        // Configure the tag text field
+        tagTextField = UITextField(frame: CGRect.zero)
+        tagTextField.font = UIFont(name: "Helvetica", size: 18)
+        tagTextField.borderStyle = .roundedRect
+        tagTextField.placeholder = NSLocalizedString("TAG NAME", comment: "")
+        tagTextField.textAlignment = .center
+        tagTextField.returnKeyType = .done
+        tagTextField.clearButtonMode = .always
+        tagTextField.translatesAutoresizingMaskIntoConstraints = false
+        tagTextField.delegate = self
+        view.addSubview(tagTextField)
+
         // Configure the layout bindings for the title label
         titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
@@ -206,7 +221,13 @@ class TagsViewController: UIViewController
         tagsView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         tagsView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         tagsView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8.0).isActive = true
-        tagsView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tagsView.bottomAnchor.constraint(equalTo: tagTextField.topAnchor, constant: -8.0).isActive = true
+
+        // Configure the layout bindings for the tag text field
+        tagTextField.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        tagTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tagTextField.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tagTextField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
 
         // Build the tag subview dictionary
         for tag in tags {
@@ -217,12 +238,35 @@ class TagsViewController: UIViewController
       }
 
 
-    override func viewDidLoad()
+    override func viewWillAppear(_ animated: Bool)
       {
-        super.viewDidLoad()
+        super.viewWillAppear(animated)
 
-        setEditing(isEditing, animated: true)
+        // Register custom observations
+        observations = [
+          Observation(source: self, keypaths: ["editing"], options: .initial, block:
+              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
+
+                // Show/hide the tagTextField
+                self.tagTextField.isHidden = self.isEditing ? false : true
+
+                // Set the editing states of the various tagViews
+                for (_, tagView) in self.tagViewDictionary {
+                  tagView.setEditing(self.isEditing)
+                }
+              }),
+        ]
       }
+
+
+    override func viewWillDisappear(_ animated: Bool)
+      {
+        super.viewWillDisappear(animated)
+
+        // De-register custom observations
+        observations.removeAll()
+      }
+
 
 
     override func viewDidLayoutSubviews()
@@ -235,11 +279,39 @@ class TagsViewController: UIViewController
 
     override func setEditing(_ editing: Bool, animated: Bool)
       {
+        // Enable key-value observation for the editing property
+        willChangeValue(forKey: "editing")
         super.setEditing(editing, animated: animated)
+        didChangeValue(forKey: "editing")
+      }
 
-        for (_, tagView) in tagViewDictionary {
-          tagView.setEditing(editing)
+
+    // MARK: - UITextFieldDelegate
+
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
+      {
+        // Call the parent RecipeViewController's implementation
+        return recipeViewController.textFieldShouldBeginEditing(textField)
+      }
+
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool
+      {
+        textField.resignFirstResponder()
+        return true
+      }
+
+
+    func textFieldDidEndEditing(_ textField: UITextField)
+      {
+        // As long as we have a non-empty string, add a tag
+        if let text = textField.text, text != "" {
+          addTagWithName(text)
+          textField.text = ""
         }
+
+        // Call the parent RecipeViewController's implementation
+        recipeViewController.textFieldDidEndEditing(textField)
       }
 
 

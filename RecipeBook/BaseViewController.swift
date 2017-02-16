@@ -13,7 +13,7 @@ import UIKit
 import CoreData
 
 
-class BaseViewController: UIViewController
+class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDelegate
   {
 
     var observations = Set<Observation>()
@@ -197,6 +197,47 @@ class BaseViewController: UIViewController
       }
 
 
+    // MARK: - UITextFieldDelegate
+
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool
+      {
+        // Set the activeSubview to be the textField, if applicable
+        if isEditing {
+          activeSubview = textField
+          return true
+        }
+        return false
+      }
+
+
+    func textFieldDidEndEditing(_ textField: UITextField)
+      {
+        if activeSubview === textField {
+          activeSubview = nil
+        }
+      }
+
+
+    // MARK: - UITextViewDelegate
+
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool
+      {
+        if isEditing {
+          activeSubview = textView
+          return true
+        }
+        return false
+      }
+
+
+    func textViewDidEndEditing(_ textView: UITextView)
+      {
+        if activeSubview === textView {
+          activeSubview = nil
+        }
+      }
+
+
     // MARK: - NSNotificationCenter
 
     func keyboardWillMove(_ notification: Notification)
@@ -284,8 +325,23 @@ class BaseViewController: UIViewController
 
     func done(_ sender: AnyObject?)
       {
-        // Have the activeSubview resign as first responder, if applicable
-        activeSubview?.resignFirstResponder()
+        // If the activeSubview is a textField
+        if let textField = activeSubview as? UITextField {
+          // Ask it's delegate if we can return, and then have it resign as the first responder
+          if textField.delegate!.textFieldShouldReturn!(textField) {
+           textField.resignFirstResponder()
+          }
+        }
+        // Otherwise, if the activeSubview is a textView
+        if let textView = activeSubview as? UITextView {
+          if textView.delegate!.textViewShouldEndEditing!(textView) {
+            textView.resignFirstResponder()
+          }
+        }
+        // Otherwise it's some non-text view
+        else {
+          activeSubview?.resignFirstResponder()
+        }
       }
 
   }
