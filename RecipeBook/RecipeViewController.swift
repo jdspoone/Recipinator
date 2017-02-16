@@ -74,20 +74,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         }
       }
 
-    var tagTextFieldHeightConstraint: NSLayoutConstraint!
-      {
-        // Deactivate the old constraint if applicable
-        willSet{
-          if tagTextFieldHeightConstraint != nil {
-            NSLayoutConstraint.deactivate([tagTextFieldHeightConstraint])
-          }
-        }
-        // Activate the new constraint
-        didSet {
-          NSLayoutConstraint.activate([tagTextFieldHeightConstraint])
-        }
-      }
-
 
     var addIngredientButton: UIButton!
     var collapseIngredientsButton: UIButton!
@@ -242,6 +228,7 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         tagTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         tagTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         tagTextField.topAnchor.constraint(equalTo: tagsViewController.view.bottomAnchor, constant: 8.0).isActive = true
+        tagTextField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
 
         addIngredientButton = roundedSquareButton(self, action: #selector(RecipeViewController.addIngredient(_:)), controlEvents: .touchUpInside, imageName: "addImage")
         collapseIngredientsButton = roundedSquareButton(self, action: #selector(RecipeViewController.toggleIngredientsVisibility(_:)), controlEvents: .touchUpInside, imageName: "collapseImage")
@@ -272,7 +259,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
                 self.addIngredientButton.isHidden = self.isEditing && self.ingredientsExpanded ? false : true
                 self.addStepButton.isHidden = self.isEditing && self.stepsExpanded ? false : true
                 self.tagTextField.isHidden = self.isEditing ? false : true
-                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraint(equalToConstant: self.isEditing ? 40 : 0)
               }),
           Observation(source: self, keypaths: ["ingredientsExpanded"], options: .initial, block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
@@ -329,15 +315,6 @@ class RecipeViewController: BaseViewController, UITextFieldDelegate, UITableView
         // Set the editing state of the various table views
         stepsTableView.setEditing(editing, animated: animated)
         tagsViewController.setEditing(editing, animated: animated)
-
-        // Animate the presentation or hiding of the tag text field
-          UIView.animate(withDuration: 0.5, animations:
-              { () -> Void in
-                self.tagTextFieldHeightConstraint = self.tagTextField.heightAnchor.constraint(equalToConstant: self.isEditing ? 40 : 0)
-              }, completion:
-              { (complete: Bool) -> Void in
-                self.updateScrollViewContentSize()
-              })
       }
 
 
