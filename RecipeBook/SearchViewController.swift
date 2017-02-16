@@ -275,6 +275,16 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       }
 
 
+    func textFieldShouldClear(_ textField: UITextField) -> Bool
+      {
+        // Clear the filtered recipes and update the table view
+        filteredRecipes = [];
+        recipeTableView.reloadData()
+
+        return true
+      }
+
+
     // MARK: - UITableViewDataSource
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
