@@ -24,6 +24,12 @@ class TagsViewController: UIViewController
 
     let tagViewSpacing: CGFloat = 5.0
 
+    var recipeViewController: RecipeViewController
+      {
+        return parent as! RecipeViewController
+      }
+
+
     init(tags: Set<Tag>, context: NSManagedObjectContext)
       {
         self.tags = tags
@@ -75,16 +81,22 @@ class TagsViewController: UIViewController
 
     func removeTag(_ tag: Tag)
       {
-        // Delete the specified tag
+        // Remove the given tag from our set of tags and the recipe it was attached to
         tags.remove(tag)
+        recipeViewController.recipe.tags.remove(tag)
 
-        willChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
-        managedObjectContext.delete(tag)
-        didChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
-
+        // Remove the view for the tag
         tagViewDictionary[tag]!.removeFromSuperview()
 
+        // Update the constraints of the subviews
         updateSubviewConstraints()
+
+        // Ensure we don't have any orphan Tags hanging about
+        if tag.objectIDs(forRelationshipNamed: "recipesUsedIn").count == 0 {
+          willChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
+          managedObjectContext.delete(tag)
+          didChangeValue(forKey: "tags", withSetMutation: .minus, using: [tag])
+        }
       }
 
 
