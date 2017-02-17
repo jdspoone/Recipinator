@@ -288,7 +288,9 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     // MARK: - UITableViewDataSource
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
-      { return searching ? filteredRecipes.count : recipes.count }
+      {
+        return searching ? filteredRecipes.count : recipes.count
+      }
 
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
@@ -308,7 +310,9 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
 
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
-      { return true }
+      {
+        return true
+      }
 
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
