@@ -743,7 +743,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     func collapseSteps()
       {
-
         let tableView = self.stepsTableView
 
         UIView.animate(withDuration: 0.5, animations:
