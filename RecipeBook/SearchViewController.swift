@@ -124,6 +124,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         // Configure the recipe table view
         recipeTableView = UITableView(frame: CGRect.zero, style: .plain)
+        recipeTableView.cellLayoutMarginsFollowReadableWidth = false
         recipeTableView.bounces = false
         recipeTableView.rowHeight = 50
         recipeTableView.dataSource = self

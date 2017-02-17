@@ -146,6 +146,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
+        ingredientAmountsTableView.cellLayoutMarginsFollowReadableWidth = false;
         ingredientAmountsTableView.bounces = false
         ingredientAmountsTableView.rowHeight = 50
         ingredientAmountsTableView.delegate = self
@@ -155,6 +156,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
         // Configure the step table view
         stepsTableView = UITableView(frame: CGRect.zero)
+        stepsTableView.cellLayoutMarginsFollowReadableWidth = false;
         stepsTableView.bounces = false
         stepsTableView.rowHeight = 50
         stepsTableView.allowsSelectionDuringEditing = true
