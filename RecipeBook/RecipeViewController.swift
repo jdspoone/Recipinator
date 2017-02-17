@@ -658,11 +658,14 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     func toggleIngredientsVisibility(_ sender: AnyObject)
       {
-        if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
-          collapseIngredients()
-        }
-        else {
-          expandIngredients()
+        // As long as the recipe has some ingredientAmounts
+        if recipe.ingredientAmounts.count > 0 {
+          if ingredientAmountsTableView.frame.height == ingredientAmountsTableView.contentSize.height {
+            collapseIngredients()
+          }
+          else {
+            expandIngredients()
+          }
         }
       }
 
@@ -713,11 +716,14 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     func toggleStepsVisibility(_ sender: AnyObject)
       {
-        if stepsTableView.frame.height == stepsTableView.contentSize.height {
-          collapseSteps()
-        }
-        else {
-          expandSteps()
+        // As long as the recipe has some steps
+        if recipe.steps.count > 0 {
+          if stepsTableView.frame.height == stepsTableView.contentSize.height {
+            collapseSteps()
+          }
+          else {
+            expandSteps()
+          }
         }
       }
 
