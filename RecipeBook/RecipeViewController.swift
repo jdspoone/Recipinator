@@ -261,8 +261,8 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       {
         super.viewWillDisappear(animated)
 
-        // Execute the completion block as long as we're not presenting another view controller
-        if presentedViewController == nil {
+        // Execute the completion block if we're moving from the parent view controller
+        if isMovingFromParentViewController {
           completion(recipe)
         }
       }
