@@ -363,8 +363,10 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         // Create a RecipeViewController for the selected recipe, and present it
         let recipeViewController = RecipeViewController(recipe: recipe, editing: false, context: managedObjectContext)
             { (recipe: Recipe?) -> Void in
+              tableView.beginUpdates()
               list[indexPath.row] = recipe!
               tableView.reloadRows(at: [indexPath], with: .none)
+              tableView.endUpdates()
             }
         show(recipeViewController, sender: self)
       }
