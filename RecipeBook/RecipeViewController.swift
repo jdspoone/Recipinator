@@ -591,7 +591,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
         // Configure a UIAlertController
-        let alertController = UIAlertController(title: "New Ingredient", message: "Enter the name of a new ingredient", preferredStyle: .alert)
+        let alertController = UIAlertController(title: NSLocalizedString("NEW INGREDIENT", comment: ""), message: NSLocalizedString("ENTER THE NAME OF THE NEW INGREDIENT", comment: ""), preferredStyle: .alert)
 
         // Add a textField to the alertController for the ingredient's name
         alertController.addTextField(configurationHandler:
@@ -604,7 +604,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         alertController.addAction(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
 
         // Add a submit action to the alertController
-        let submitAction = UIAlertAction(title: NSLocalizedString("Ok", comment: ""), style: .default, handler:
+        let submitAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler:
             { (action: UIAlertAction) in
               // Get the name of the ingredient from the textField
               let name = alertController.textFields!.last!.text!
