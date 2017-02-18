@@ -22,4 +22,4 @@ Written by Jeff Spooner
 
 - - -
 
-If you have any questions or comments regarding the app, please contact me at: <jdspoone@icloud.com>
+If you have any questions or comments regarding the app, please contact me at: <recipinator@gmail.com>
