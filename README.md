@@ -1,4 +1,5 @@
 # Recipinator
+
 Written by Jeff Spooner
 
 
@@ -16,9 +17,9 @@ Written by Jeff Spooner
 
 **Progamming stuff!**
 
-* Written in Swift 3
-* Uses CoreData with NSManagedObject subclasses
-* All user interfaces are have been generated programmatically
+* Written in Swift 3!
+* All user interfaces are have been generated programmatically, no IB required!
+* Uses CoreData with NSManagedObject subclasses!
 
 - - -
 
