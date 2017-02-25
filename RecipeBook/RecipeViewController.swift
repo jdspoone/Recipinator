@@ -594,7 +594,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
                 // Attempt to save the managed object context
                 do { try self.managedObjectContext.save() }
-                catch { fatalError("failed to save") }
+                catch let e { fatalError("failed to save: \(e)") }
               })
           show(imageCollectionViewController, sender: self)
         }
@@ -671,7 +671,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
               self.recipe.steps.insert(step)
 
               do { try self.managedObjectContext.save() }
-              catch { fatalError("failed to save") }
+              catch let e { fatalError("failed to save: \(e)") }
 
               // Insert a new row into the table view
               let indexPath = IndexPath(row: Int(step.number), section: 0)

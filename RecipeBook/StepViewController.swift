@@ -213,7 +213,7 @@ class StepViewController: BaseViewController
 
                 // Attempt to save the managed object context
                 do { try self.managedObjectContext.save() }
-                catch { fatalError("failed to save") }
+                catch let e { fatalError("failed to save: \(e)") }
               })
           show(imageCollectionViewController, sender: self)
         }

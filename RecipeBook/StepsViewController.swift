@@ -102,7 +102,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
           { (step: Step) in
             if self.managedObjectContext.hasChanges {
               do { try self.managedObjectContext.save() }
-              catch { fatalError("failed to save") }
+              catch let e { fatalError("failed to save: \(e)") }
             }
           }
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
@@ -171,7 +171,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             { (step: Step) in
               if self.managedObjectContext.hasChanges {
                 do { try self.managedObjectContext.save() }
-                catch { fatalError("failed to save") }
+                catch let e { fatalError("failed to save: \(e)") }
               }
             }
         }
@@ -193,7 +193,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             { (step: Step) in
               if self.managedObjectContext.hasChanges {
                 do { try self.managedObjectContext.save() }
-                catch { fatalError("failed to save") }
+                catch let e { fatalError("failed to save: \(e)") }
               }
             }
         }
