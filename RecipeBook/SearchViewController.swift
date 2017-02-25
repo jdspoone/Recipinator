@@ -378,7 +378,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     func addRecipe(_ sender: UIBarButtonItem)
       {
         // Create a RecipeViewController with no associated recipe, and present it
-        let recipeViewController = RecipeViewController(recipe: Recipe(name: "", imageData: nil, ingredientAmounts: [], steps: [], tags: [], context: managedObjectContext), editing: true, context: managedObjectContext)
+        let recipeViewController = RecipeViewController(recipe: Recipe(name: "", images: [], ingredientAmounts: [], steps: [], tags: [], context: managedObjectContext), editing: true, context: managedObjectContext)
             { (recipe: Recipe) -> Void in
               self.recipes.append(recipe)
 

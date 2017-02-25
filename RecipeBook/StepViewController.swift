@@ -14,11 +14,12 @@ class StepViewController: BaseViewController
     var step: Step
     var completion: (Step) -> Void
 
+    let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
 
     var numberLabel: UILabel!
     var summaryTextField: UITextField!
     var detailTextView: UITextView!
-    var imageViewController: ImageViewController!
+    var imageView: UIImageView!
 
 
     init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: @escaping ((Step) -> Void))
@@ -34,7 +35,7 @@ class StepViewController: BaseViewController
       {
         summaryTextField.text = step.summary
         detailTextView.text = step.detail
-        imageViewController.imageView.image = step.image ?? UIImage(named: "defaultImage")
+        imageView.image = step.images.sorted(by: imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
       }
 
 
@@ -77,9 +78,16 @@ class StepViewController: BaseViewController
         addSubviewToScrollView(detailTextView)
 
         // Configure the image view
-        imageViewController = ImageViewController(image: step.image)
-        addChildViewController(imageViewController)
-        addSubviewToScrollView(imageViewController.imageView)
+        imageView = UIImageView(frame: .zero)
+        imageView.isUserInteractionEnabled = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 5.0
+        imageView.layer.borderWidth = 0.5
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
+        imageView.clipsToBounds = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:))))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(imageView)
 
         // Configure the layout bindings for the number label
         numberLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -100,10 +108,10 @@ class StepViewController: BaseViewController
         detailTextView.topAnchor.constraint(equalTo: summaryTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imageViewController.imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageViewController.imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        imageViewController.imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageViewController.imageView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
       }
 
 
@@ -135,15 +143,6 @@ class StepViewController: BaseViewController
                 self.summaryTextField.isUserInteractionEnabled = self.isEditing
                 self.summaryTextField.borderStyle = self.isEditing ? .roundedRect : .none
                 self.detailTextView.isEditable = self.isEditing
-                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
-              }),
-          Observation(source: self, keypaths: ["activeSubview"], options: .initial, block:
-              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
-                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
-              }),
-          Observation(source: imageViewController, keypaths: ["image"], options: .initial, block:
-              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
-                self.step.image = self.imageViewController.image
               })
         ]
       }
@@ -153,20 +152,14 @@ class StepViewController: BaseViewController
       {
         super.viewWillDisappear(animated)
 
-        // Execute the completion block as long as we're not presenting another view controller
-        if presentedViewController == nil {
+        // Execute the completion block if we're moving from the parent view controller
+        if isMovingFromParentViewController {
           completion(step)
         }
       }
 
 
     // MARK: - UITextFieldDelegate
-
-    func textFieldDidBeginEditing(_ textField: UITextField)
-      {
-        imageViewController.setUserInteractionEnabled(false);
-      }
-
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool
       {
@@ -185,12 +178,6 @@ class StepViewController: BaseViewController
 
     // MARK: - UITextViewDelegate
 
-    func textViewDidBeginEditing(_ textView: UITextView)
-      {
-        imageViewController.setUserInteractionEnabled(false)
-      }
-
-
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool
       {
         textView.resignFirstResponder()
@@ -203,6 +190,38 @@ class StepViewController: BaseViewController
         step.detail = textView.text!
 
         super.textViewDidEndEditing(textView)
+      }
+
+
+    // MARK: - Actions
+
+    func selectImage(_ sender: UITapGestureRecognizer)
+      {
+        // Ensure the active subview resigns as first responder
+        activeSubview?.resignFirstResponder()
+
+        // If we're editing, or if the recipe has no images
+        if isEditing || step.images.count == 0 {
+          // Configure and show an ImageCollectionViewController
+          let imageCollectionViewController = ImageCollectionViewController(images: step.images, editing: true, context: managedObjectContext, completion:
+              { (images: Set<Image>) in
+                // Update the recipe's set of images
+                self.step.images = images
+
+                // Update the image view's image
+                self.imageView.image = self.step.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+
+                // Attempt to save the managed object context
+                do { try self.managedObjectContext.save() }
+                catch { fatalError("failed to save") }
+              })
+          show(imageCollectionViewController, sender: self)
+        }
+        // Otherwise, show an ImagePageViewController
+        else {
+          let imagePageViewController = ImagePageViewController(images: step.images, index: 0)
+          show(imagePageViewController, sender: self)
+        }
       }
 
   }

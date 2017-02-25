@@ -11,15 +11,18 @@ Written by Jeff Spooner
 * Create new recipes!
 * List the ingredients required for a recipe!
 * List the steps for a recipe!
-* Associate tags with a recipe!
+* Associate multiple images with any given recipe or step!
+* Associate tags with any given recipe!
 * Search for recipes by name, component ingredients, or tag!
 
 
 **Progamming stuff!**
 
-* Written in Swift 3!
-* All user interfaces are have been generated programmatically, no IB required!
-* Uses CoreData with NSManagedObject subclasses!
+* Written in Swift 3
+* Uses CoreData
+  - NSManagedObject subclasses!
+  - Non-trivial CoreData Migration!
+* All user interfaces are have been generated programmatically
 
 - - -
 

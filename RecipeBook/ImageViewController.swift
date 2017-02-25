@@ -1,25 +1,51 @@
 /*
 
   Written by Jeff Spooner
-  
+
+  UIViewController subclass for displaying a single image.
+  Intended to be presented by a UIPageViewController.
+
 */
 
 import UIKit
 
 
-class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate
+class ImageViewController: UIViewController
   {
 
-    
-
-    var image: UIImage?
+    var image: Image
     var imageView: UIImageView!
+
+    var imageViewWidthConstraint: NSLayoutConstraint!
       {
-        return view as! UIImageView
+        // Deactivate the old constraint if applicable
+        willSet {
+          if imageViewWidthConstraint != nil {
+            NSLayoutConstraint.deactivate([imageViewWidthConstraint])
+          }
+        }
+        // Activate the new constraint
+        didSet {
+          NSLayoutConstraint.activate([imageViewWidthConstraint])
+        }
+      }
+
+    var imageViewHeightConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet {
+          if imageViewHeightConstraint != nil {
+            NSLayoutConstraint.deactivate([imageViewHeightConstraint])
+          }
+        }
+        // Activate the new constraint
+        didSet {
+          NSLayoutConstraint.activate([imageViewHeightConstraint])
+        }
       }
 
 
-    init(image: UIImage?)
+    init(image: Image)
       {
         self.image = image
 
@@ -27,9 +53,46 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
       }
 
 
-    func setUserInteractionEnabled(_ enabled: Bool)
+    func updateImageViewLayoutConstraints()
       {
-        imageView.isUserInteractionEnabled = enabled
+        // We're using the parent's view throughout this method instead of our own view because 
+        // there are cases where this method will be called and our own view will be empty
+        let parentView = parent!.view!
+
+        // Determine if we're in portrait or landscape mode
+        // NOTE: - We're doing this because when querying the current device for its orientation,
+        //         it's possible that isPortrait == isLandscape
+        let isPortrait = parentView.frame.width < parentView.frame.height
+
+        let size = image.image!.size
+        let aspectRatio = size.width / size.height
+
+        // Animate
+        UIView.animate(withDuration: 0.5, animations: {
+
+          // Get the width and height of the parent view
+          let viewWidth = self.parent!.view.frame.width
+          let viewHeight = self.parent!.view.frame.height
+
+          // Define variables for the width and height of the image view
+          var width: CGFloat
+          var height: CGFloat
+
+          // If the device is in portrait orientation, update the height
+          if isPortrait {
+            width = viewWidth
+            height = viewWidth / aspectRatio
+          }
+          // Otherwise the device is in landscape orientation, update the width
+          else {
+            width = viewHeight * aspectRatio
+            height = viewHeight
+          }
+
+          // Update the width and height constraints of the image view
+          self.imageViewWidthConstraint = self.imageView.widthAnchor.constraint(equalToConstant: width)
+          self.imageViewHeightConstraint = self.imageView.heightAnchor.constraint(equalToConstant: height)
+        })
       }
 
 
@@ -41,15 +104,19 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
 
     override func loadView()
       {
+        // Configure the root view
+        view = UIView(frame: .zero)
+
         // Configure the image view
-        view = UIImageView(frame: CGRect.zero)
-        view.contentMode = .scaleAspectFill
-        view.layer.cornerRadius = 5.0
-        view.layer.borderWidth = 0.5
-        view.layer.borderColor = UIColor.lightGray.cgColor
-        view.clipsToBounds = true
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ImageViewController.selectImage(_:))))
-        view.translatesAutoresizingMaskIntoConstraints = false
+        imageView = UIImageView(frame: .zero)
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+
+        // Configure the constant layout bindings for the image view
+        imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
       }
 
 
@@ -57,100 +124,44 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate, UI
       {
         super.viewDidLoad()
 
-        imageView.image = image
+        // Set the image view's image
+        imageView.image = image.image
       }
 
 
-    // MARK: - UIImagePickerControllerDelegate
-
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any])
+    override func viewWillAppear(_ animated: Bool)
       {
-        // The info dictionary contains multiple representations of the timage, and this uses the original
-        let selectedImage = info[UIImagePickerControllerOriginalImage] as! UIImage
+        super.viewWillAppear(animated)
 
-        // Set imageView to display the selected image
-        imageView.image = selectedImage
-
-        // Store the selected image in the editing recipe
-        image = selectedImage
-
-        // Dismiss the picker
-        dismiss(animated: true, completion: nil)
-
-        // Have the image view resign as first responder
-        imageView.resignFirstResponder()
+        // Register to observe changes to the device's orientation
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
       }
 
 
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController)
+    override func viewDidAppear(_ animated: Bool)
       {
-        // Dismiss the picker if the user cancelled
-        dismiss(animated: true, completion: nil)
+        super.viewDidAppear(animated)
 
-        // Have the image view resign as first responder
-        imageView.resignFirstResponder()
+        // Configure the dynamic layout bindings for the image view
+        updateImageViewLayoutConstraints()
       }
 
 
-    // MARK: - Actions
-
-    func selectImage(_ sender: UITapGestureRecognizer)
+    override func viewWillDisappear(_ animated: Bool)
       {
-        // As long as the gesture has ended
-        if sender.state == .ended {
+        super.viewWillDisappear(animated)
 
-          // Hide the keyboard, if it is being presented
-          self.imageView.becomeFirstResponder()
+        // De-register to observe changes to the device's orientation
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+      }
 
-          // Configure a number of UIAlertActions
-          var actions = [UIAlertAction]()
 
-          // Always configure a cancel action
-          actions.append(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
+    // MARK: - NSNotificationCenter
 
-          // Configure a camera button if a camera is available
-          if UIImagePickerController.isSourceTypeAvailable(.camera) {
-            actions.append(UIAlertAction(title: NSLocalizedString("CAMERA", comment: ""), style: .default, handler:
-                { (action: UIAlertAction) in
-                  // Present a UIImagePickerController for the photo library
-                  let imagePickerController = UIImagePickerController()
-                  imagePickerController.sourceType = .camera
-                  imagePickerController.delegate = self
-                  self.present(imagePickerController, animated: true, completion: nil)
-                }))
-          }
-
-          // Configure a photo library button if a photo library is available
-          if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-            actions.append(UIAlertAction(title: NSLocalizedString("PHOTO LIBRARY", comment: ""), style: .default, handler:
-              { (action: UIAlertAction) in
-                // Present a UIImagePickerController for the camera
-                let imagePickerController = UIImagePickerController()
-                imagePickerController.sourceType = .photoLibrary
-                imagePickerController.delegate = self
-                self.present(imagePickerController, animated: true, completion: nil)
-              }))
-          }
-
-          // Configure a cancel button if the step has an associated image
-          if let _ = image {
-            actions.append(UIAlertAction(title: NSLocalizedString("DELETE IMAGE", comment: ""), style: .default, handler:
-                { (action: UIAlertAction) in
-                  // Remove the associated image
-                  self.image = nil
-                  self.imageView.image = nil
-                }))
-          }
-
-          // Configure a UIAlertController
-          let alertController = UIAlertController(title: NSLocalizedString("IMAGE SELECTION", comment: ""), message: NSLocalizedString("CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE.", comment: ""), preferredStyle: .alert)
-          for action in actions {
-            alertController.addAction(action)
-          }
-
-          // Present the UIAlertController
-          present(alertController, animated: true, completion: nil)
-        }
+    func deviceOrientationDidChange(_ notification: Notification)
+      {
+        // Re-configure the dynamic layout bindings for the image view
+        updateImageViewLayoutConstraints()
       }
 
   }

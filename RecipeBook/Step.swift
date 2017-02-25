@@ -15,23 +15,17 @@ class Step : BaseObject
     @NSManaged var number: Int16
     @NSManaged var summary: String
     @NSManaged var detail: String
-    @NSManaged var imageData: Data?
-
-    var image: UIImage?
-      {
-        get { return imageData != nil ? UIImage(data: imageData!) : nil }
-        set { imageData = newValue != nil ? UIImageJPEGRepresentation(newValue!, 1.0) : nil }
-      }
+    @NSManaged var images: Set<Image>
 
 
-    init(number: Int16, summary: String, detail: String, imageData: Data?, context: NSManagedObjectContext, insert: Bool = true)
+    init(number: Int16, summary: String, detail: String, images: Set<Image>, context: NSManagedObjectContext, insert: Bool = true)
       {
         super.init(name: "Step", context: context, insert: insert)
 
         self.number = number
         self.summary = summary
         self.detail = detail
-        self.imageData = imageData
+        self.images = images
       }
 
 
@@ -40,7 +34,7 @@ class Step : BaseObject
         return [
           "summary" : .attribute,
           "detail" : .attribute,
-          "imageData" : .attribute
+          "images" : .toMany(Image.self),
         ]
       }
 

@@ -13,24 +13,17 @@ class Recipe: BaseObject
   {
 
     @NSManaged var name: String
-    @NSManaged var imageData: Data?
+    @NSManaged var images: Set<Image>
     @NSManaged var ingredientAmounts: Set<IngredientAmount>
     @NSManaged var steps: Set<Step>
     @NSManaged var tags: Set<Tag>
 
-    var image: UIImage?
-      {
-        get { return imageData != nil ? UIImage(data: imageData!) : nil }
-        set { imageData = newValue != nil ? UIImageJPEGRepresentation(newValue!, 1.0) : nil }
-      }
-
-
-    init(name: String, imageData: Data?, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext, insert: Bool = true)
+    init(name: String, images: Set<Image>, ingredientAmounts: Set<IngredientAmount>, steps: Set<Step>, tags: Set<Tag>, context: NSManagedObjectContext, insert: Bool = true)
       {
         super.init(name: "Recipe", context: context, insert: insert)
 
         self.name = name
-        self.imageData = imageData
+        self.images = images
         self.ingredientAmounts = ingredientAmounts
         self.steps = steps
         self.tags = tags
@@ -41,7 +34,7 @@ class Recipe: BaseObject
       {
         return [
           "name" : .attribute,
-          "imageData" : .attribute,
+          "images" : .toMany(Image.self),
           "ingredientAmounts" : .toMany(IngredientAmount.self),
           "steps" : .toMany(Step.self)
         ]

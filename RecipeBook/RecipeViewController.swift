@@ -15,11 +15,12 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
     let completion: (Recipe) -> Void
 
     // Use reverse ordering for the ingredientAmounts as we add them from the top of the tableView
+    let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
     let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number > $1.number }
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
-    var imageViewController: ImageViewController!
+    var imageView: UIImageView!
 
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
@@ -93,7 +94,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
     func restoreState()
       {
         nameTextField.text = recipe.name
-        imageViewController.imageView.image = recipe.image ?? UIImage(named: "defaultImage")
+        imageView.image = recipe.images.sorted(by: imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
       }
 
 
@@ -140,9 +141,16 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         addSubviewToScrollView(nameTextField)
 
         // Configure the image view
-        imageViewController = ImageViewController(image: recipe.image)
-        addChildViewController(imageViewController)
-        addSubviewToScrollView(imageViewController.imageView)
+        imageView = UIImageView(frame: .zero)
+        imageView.isUserInteractionEnabled = true
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 5.0
+        imageView.layer.borderWidth = 0.5
+        imageView.layer.borderColor = UIColor.lightGray.cgColor
+        imageView.clipsToBounds = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:))))
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(imageView)
 
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
@@ -177,15 +185,15 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         nameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imageViewController.view.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageViewController.view.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        imageViewController.view.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageViewController.view.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imageView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the ingredient table view
         ingredientAmountsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         ingredientAmountsTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        ingredientAmountsTableView.topAnchor.constraint(equalTo: imageViewController.view.bottomAnchor, constant: 16.0).isActive = true
+        ingredientAmountsTableView.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16.0).isActive = true
 
         // Configure the layout bindings for the step table view
         stepsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -223,13 +231,8 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.nameTextField.isUserInteractionEnabled = self.isEditing
                 self.nameTextField.borderStyle = self.isEditing ? .roundedRect : .none
-                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
                 self.addIngredientButton.isHidden = self.isEditing && self.ingredientsExpanded ? false : true
                 self.addStepButton.isHidden = self.isEditing && self.stepsExpanded ? false : true
-              }),
-          Observation(source: self, keypaths: ["activeSubview"], options: .initial, block:
-              { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
-                self.imageViewController.setUserInteractionEnabled(self.isEditing && self.activeSubview == nil)
               }),
           Observation(source: self, keypaths: ["ingredientsExpanded"], options: .initial, block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
@@ -251,10 +254,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
               { (change: [NSKeyValueChangeKey : Any]?) -> Void in
                 self.recipe.tags = self.tagsViewController.tags
               }),
-          Observation(source: imageViewController, keypaths: ["image"], options: .initial, block:
-              { (change: [NSKeyValueChangeKey : Any]?) -> Void in
-                self.recipe.image = self.imageViewController.image
-              })
         ]
       }
 
@@ -577,6 +576,36 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       }
 
 
+    func selectImage(_ sender: UITapGestureRecognizer)
+      {
+        // Ensure the active subview resigns as first responder
+        activeSubview?.resignFirstResponder()
+
+        // If we're editing, or if the recipe has no images
+        if isEditing || recipe.images.count == 0 {
+          // Configure and show an ImageCollectionViewController
+          let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, editing: true, context: managedObjectContext, completion:
+              { (images: Set<Image>) in
+                // Update the recipe's set of images
+                self.recipe.images = images
+
+                // Update the image view's image
+                self.imageView.image = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+
+                // Attempt to save the managed object context
+                do { try self.managedObjectContext.save() }
+                catch { fatalError("failed to save") }
+              })
+          show(imageCollectionViewController, sender: self)
+        }
+        // Otherwise, show an ImagePageViewController
+        else {
+          let imagePageViewController = ImagePageViewController(images: recipe.images, index: 0)
+          show(imagePageViewController, sender: self)
+        }
+      }
+
+
     func alertTextFieldDidChange(_ textField: UITextField)
       {
         if let alertController = presentedViewController as? UIAlertController {
@@ -631,15 +660,14 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       {
         assert(stepsExpanded, "Unexpected state - steps table view is collapsed")
 
-        let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", imageData: nil, context: managedObjectContext, insert: false)
+        let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", images: [], context: managedObjectContext)
         let stepViewController = StepViewController(step: step, editing: true, context: managedObjectContext)
             { (step: Step) -> Void in
 
               // Begin the animation block
               self.stepsTableView.beginUpdates()
 
-              // Insert the returned step into the managed object context, and update the recipe
-              self.managedObjectContext.insert(step)
+              // Update the recipe
               self.recipe.steps.insert(step)
 
               do { try self.managedObjectContext.save() }
