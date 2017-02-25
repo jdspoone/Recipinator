@@ -195,7 +195,7 @@ class StepViewController: BaseViewController
 
     // MARK: - Actions
 
-    func selectImage(_ sender: UITapGestureRecognizer)
+    func selectImage(_ sender: AnyObject?)
       {
         // Ensure the active subview resigns as first responder
         activeSubview?.resignFirstResponder()

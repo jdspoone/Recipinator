@@ -84,7 +84,7 @@ class TagView: UIView
       }
 
 
-    func deleteTag(_ sender: UIButton)
+    func deleteTag(_ sender: AnyObject?)
       {
         tagsViewController!.removeTag(recipeTag)
       }

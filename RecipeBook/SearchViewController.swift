@@ -375,7 +375,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     // MARK: - Actions
 
-    func addRecipe(_ sender: UIBarButtonItem)
+    func addRecipe(_ sender: AnyObject?)
       {
         // Create a RecipeViewController with no associated recipe, and present it
         let recipeViewController = RecipeViewController(recipe: Recipe(name: "", images: [], ingredientAmounts: [], steps: [], tags: [], context: managedObjectContext), editing: true, context: managedObjectContext)
@@ -393,11 +393,11 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       }
 
 
-    func search(_ sender: UIBarButtonItem)
+    func search(_ sender: AnyObject?)
       { setSearching(true, animated: true) }
 
 
-    func cancelSearch(_ sender: UIBarButtonItem)
+    func cancelSearch(_ sender: AnyObject?)
       { setSearching(false, animated: true) }
 
   }

@@ -576,7 +576,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       }
 
 
-    func selectImage(_ sender: UITapGestureRecognizer)
+    func selectImage(_ sender: AnyObject?)
       {
         // Ensure the active subview resigns as first responder
         activeSubview?.resignFirstResponder()
@@ -617,7 +617,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       }
 
 
-    func addIngredient(_ sender: AnyObject)
+    func addIngredient(_ sender: AnyObject?)
       {
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
@@ -656,7 +656,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       }
 
 
-    func addStep(_ sender: AnyObject)
+    func addStep(_ sender: AnyObject?)
       {
         assert(stepsExpanded, "Unexpected state - steps table view is collapsed")
 
@@ -742,7 +742,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       }
 
 
-    func toggleStepsVisibility(_ sender: AnyObject)
+    func toggleStepsVisibility(_ sender: AnyObject?)
       {
         // As long as the recipe has some steps
         if recipe.steps.count > 0 {
