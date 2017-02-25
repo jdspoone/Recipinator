@@ -16,7 +16,6 @@ class StepViewController: BaseViewController
 
     let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
 
-    var numberLabel: UILabel!
     var summaryTextField: UITextField!
     var detailTextView: UITextView!
     var imageView: UIImageView!
@@ -48,14 +47,6 @@ class StepViewController: BaseViewController
     override func loadView()
       {
         super.loadView()
-
-        // Configure the number label
-        numberLabel = UILabel(frame: CGRect.zero)
-        numberLabel.text = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
-        numberLabel.font = UIFont(name: "Helvetica", size: 18)
-        numberLabel.textAlignment = .center
-        numberLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(numberLabel)
 
         // Configure the summary text field
         summaryTextField = UITextField(frame: CGRect.zero)
@@ -89,17 +80,11 @@ class StepViewController: BaseViewController
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(imageView)
 
-        // Configure the layout bindings for the number label
-        numberLabel.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
-        numberLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        numberLabel.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
-        numberLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
-
         // Configure the layout bindings for the summary text field
         summaryTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         summaryTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         summaryTextField.heightAnchor.constraint(equalToConstant: 30.0).isActive = true
-        summaryTextField.topAnchor.constraint(equalTo: numberLabel.bottomAnchor, constant: 8.0).isActive = true
+        summaryTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the detail text view
         detailTextView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -118,6 +103,9 @@ class StepViewController: BaseViewController
     override func viewDidLoad()
       {
         super.viewDidLoad()
+
+        // Set the title of the navigation item
+        navigationItem.title = "Step \(step.number + 1)"
 
         restoreState()
       }

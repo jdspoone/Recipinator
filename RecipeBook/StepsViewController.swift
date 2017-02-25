@@ -22,9 +22,9 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     var pageViewController: UIPageViewController
 
-    var activeViewController: BaseViewController?
+    var activeViewController: StepViewController?
       {
-        get { return pageViewController.viewControllers!.first as? BaseViewController }
+        get { return pageViewController.viewControllers!.first as? StepViewController }
       }
 
     var saveButton: UIBarButtonItem!
@@ -98,7 +98,8 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         setEditing(initialEditingState, animated: true)
 
         // Set the view controller of the page view controller
-        let viewController = StepViewController(step: steps[initialIndex], editing: isEditing, context: managedObjectContext)
+        let initialStep = steps[initialIndex]
+        let viewController = StepViewController(step: initialStep, editing: isEditing, context: managedObjectContext)
           { (step: Step) in
             if self.managedObjectContext.hasChanges {
               do { try self.managedObjectContext.save() }
@@ -106,6 +107,9 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             }
           }
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
+
+        // Set the title of the navigation item
+        navigationItem.title = "Step \(initialStep.number + 1)"
       }
 
 
@@ -222,7 +226,11 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             })
         ]
 
-        activeViewController?.setEditing(isEditing, animated: false)
+        // Update the editing state of the active view controller
+        activeViewController!.setEditing(isEditing, animated: false)
+
+        // Update the navigation controller's title
+        navigationItem.title = "Step \(activeViewController!.step.number + 1)"
       }
 
 
