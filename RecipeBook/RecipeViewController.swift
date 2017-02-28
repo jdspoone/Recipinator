@@ -12,7 +12,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
   {
 
     var recipe: Recipe
-    let completion: (Recipe) -> Void
 
     // Use reverse ordering for the ingredientAmounts as we add them from the top of the tableView
     let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
@@ -80,10 +79,9 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     // MARK: -
 
-    init(recipe: Recipe, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Recipe) -> Void)
+    init(recipe: Recipe, editing: Bool, context: NSManagedObjectContext)
       {
         self.recipe = recipe
-        self.completion = completion
 
         super.init(editing: editing, context: context)
       }
@@ -260,9 +258,9 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       {
         super.viewWillDisappear(animated)
 
-        // Execute the completion block if we're moving from the parent view controller
+        // If we're moving from the parent view controller, end editing
         if isMovingFromParentViewController {
-          completion(recipe)
+          endEditing(self)
         }
       }
 

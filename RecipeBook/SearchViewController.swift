@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
+class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
   {
     enum SearchCategory: Int {
       case recipe = 0
@@ -20,8 +20,8 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     var searchCategory = SearchCategory.recipe
 
-    var recipes = [Recipe]()
-    var filteredRecipes = [Recipe]()
+    var fetchRequest: NSFetchRequest<NSFetchRequestResult>!
+    var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>!
 
     var managedObjectContext: NSManagedObjectContext
 
@@ -39,11 +39,23 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
     var searchTextFieldHeightConstraint: NSLayoutConstraint!
     var recipeTableViewTopConstraint: NSLayoutConstraint!
 
+
     init(context: NSManagedObjectContext)
       {
         self.managedObjectContext = context
 
         super.init(nibName: nil, bundle: nil)
+      }
+
+
+    func updateFetchedObjects()
+      {
+        // Attempt to fetch the various recipes
+        do { try fetchedResultsController.performFetch() }
+        catch let e { fatalError("error: \(e)") }
+
+        // Update the table view
+        recipeTableView.reloadData()
       }
 
 
@@ -66,18 +78,29 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         // Activate the various layout constraints
         NSLayoutConstraint.activate([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
 
+        // Set the search text field's text to the empty string
         searchTextField.text = ""
 
-        filteredRecipes = []
-
-        recipeTableView.reloadData()
-
+        // If we're searching
         if searching {
-          searchTextField.becomeFirstResponder();
+
+          // Set the fetch request's predicate to reject everything
+          fetchRequest.predicate = NSPredicate(value: false)
+
+          // Make the search text field first responder
+          searchTextField.becomeFirstResponder()
         }
         else {
-          let _ = searchTextField.endEditing(true);
+
+          // Set the fetch request's predicate to nil
+          fetchRequest.predicate = nil
+
+          // Force the search text field to resign first responder status
+          let _ = searchTextField.endEditing(true)
         }
+
+        // Update the fetched results controller's list of fetched objects accordingly
+        updateFetchedObjects()
       }
 
 
@@ -164,17 +187,16 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
       {
         super.viewDidLoad()
 
-        // Fetch all of the recipes from CoreData store
-        do {
-          let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Recipe")
-          request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        // Configure our initial fetch request
+        fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Recipe")
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
 
-          let resultsController = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
-          try resultsController.performFetch()
-          if let fetchedObjects = resultsController.fetchedObjects, fetchedObjects.count > 0 {
-            recipes = fetchedObjects as! [Recipe]
-          }
-        }
+        // Configure the fetched results controller
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+
+        // Attempt to fetch all recipes
+        do { try fetchedResultsController.performFetch() }
         catch let e { fatalError("error: \(e)") }
 
         // Configure the navigation item
@@ -190,30 +212,39 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         // Register observations
         observations = [
-          Observation(source: searchSegmentedControl, keypaths: ["selectedSegmentIndex"], options: .initial, block:
+          Observation(source: searchSegmentedControl, keypaths: ["selectedSegmentIndex"], options: NSKeyValueObservingOptions(), block:
               { (changes: [NSKeyValueChangeKey : Any]?) -> Void in
-                if self.searching {
-                  // Update the search category and search text field placeholder
-                  switch self.searchSegmentedControl.selectedSegmentIndex {
-                    case 0:
-                      self.searchCategory = .recipe
-                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY NAME", comment: "")
-                    case 1:
-                      self.searchCategory = .ingredient
-                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY INGREDIENT", comment: "")
-                    case 2:
-                      self.searchCategory = .tag
-                      self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY TAG", comment: "")
-                    default:
-                      fatalError("unexpected case")
-                  }
 
-                  // Reset the contents of search text field and the list of filtered recipes
-                  self.searchTextField.text! = ""
-                  self.filteredRecipes = []
-                  self.recipeTableView.reloadData()
+                // Sanity check
+                assert(self.searching, "unexpected state")
+
+                // Switch on the selected segment index
+                switch self.searchSegmentedControl.selectedSegmentIndex {
+                  case 0:
+                    self.searchCategory = .recipe
+                    self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY NAME", comment: "")
+
+                  case 1:
+                    self.searchCategory = .ingredient
+                    self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY INGREDIENT", comment: "")
+
+                  case 2:
+                    self.searchCategory = .tag
+                    self.searchTextField.placeholder = NSLocalizedString("SEARCH RECIPES BY TAG", comment: "")
+
+                  default:
+                    fatalError("unexpected case")
                 }
-              })
+
+                // Clear the search text field
+                self.searchTextField.text = ""
+
+                // Set the fetch request's predicate to reject everything
+                self.fetchRequest.predicate = NSPredicate(value: false)
+
+                // Update the fetched results controller's list of fetched objects accordingly
+                self.updateFetchedObjects()
+            })
         ]
       }
 
@@ -224,6 +255,59 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
         // De-register observations
         observations.removeAll()
+      }
+
+
+    // MARK: - NSFetchedResultsControllerDelegate
+
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>)
+      {
+        // Begin the animation block
+        recipeTableView.beginUpdates()
+      }
+
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?)
+      {
+        let recipe = anObject as! Recipe
+
+        // Switch on the type of change
+        switch type {
+
+          case .insert:
+            // Add a new row to the table
+            recipeTableView.insertRows(at: [newIndexPath!], with: .fade)
+
+          case .update:
+            // Get the cell at the given index
+            let cell = recipeTableView.cellForRow(at: indexPath!)!
+
+            // Update the cell's title
+            cell.textLabel!.text = recipe.name != "" ? recipe.name : NSLocalizedString("UNNAMED RECIPE", comment: "")
+            cell.textLabel!.font = UIFont(name: "Helvetica", size: 18)
+
+            // Reload the row at the given index path
+            recipeTableView.reloadRows(at: [indexPath!], with: .none)
+
+          case .delete:
+            // Remove the row at the given index path
+            recipeTableView.deleteRows(at: [indexPath!], with: .fade)
+
+          case .move:
+            // Reload all of the rows between the given index paths
+            var rows: [IndexPath] = []
+            for row in indexPath!.row ... newIndexPath!.row {
+              rows.append(IndexPath(row: row, section: 0))
+            }
+            recipeTableView.reloadRows(at: rows, with: .fade)
+        }
+      }
+
+
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>)
+      {
+        // End the animation block
+        recipeTableView.endUpdates()
       }
 
 
@@ -246,30 +330,31 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         let end = textField.text!.characters.index(textField.text!.startIndex, offsetBy: range.location + range.length)
 
         // Determine what the search string will be after this update
-        var searchText = String(textField.text!)
-        searchText?.replaceSubrange(start ..< end, with: string);
+        var searchText = String(textField.text!)!
+        searchText.replaceSubrange(start ..< end, with: string);
 
         // If the string is non-empty
         if searchText != "" {
-          // Filter the list of recipes according to the current search category
+
+          // Switch on the search category, updating the fetch request's predicate accordingly
           switch searchCategory {
             case .recipe:
-              filteredRecipes = recipes.filter({ $0.name.lowercased().range(of: (searchText?.lowercased())!) != nil })
+              fetchRequest.predicate = NSPredicate(format: "%K contains[c] %@", argumentArray: ["name", searchText])
 
             case .ingredient:
-              filteredRecipes = recipes.filter({ $0.ingredientAmounts.filter({ $0.ingredient.name.lowercased().range(of: (searchText?.lowercased())!) != nil }).count > 0 })
+              fetchRequest.predicate = NSPredicate(format: "ANY %K contains[c] %@", argumentArray: ["ingredientAmounts.ingredient.name", searchText])
 
             case .tag:
-              filteredRecipes = recipes.filter({ $0.tags.filter({ $0.name.lowercased().range(of: (searchText?.lowercased())!) != nil }).count > 0 })
+              fetchRequest.predicate = NSPredicate(format: "ANY %K contains[c] %@", argumentArray: ["tags.name", searchText])
           }
         }
-        // Otherwise, clear the filtered recipes
+        // Otherwise, set the fetch request's predicate to reject everything
         else {
-          filteredRecipes = []
+          fetchRequest.predicate = NSPredicate(value: false)
         }
 
-        // Update the recipe table view
-        recipeTableView.reloadData()
+        // Update the fetched results controller's list of fetched objects accordingly
+        updateFetchedObjects()
 
         // Always return true
         return true
@@ -278,9 +363,11 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     func textFieldShouldClear(_ textField: UITextField) -> Bool
       {
-        // Clear the filtered recipes and update the table view
-        filteredRecipes = [];
-        recipeTableView.reloadData()
+          // Set the fetch request's predicate to reject everything
+          fetchRequest.predicate = NSPredicate(value: false)
+
+        // Update the fetched results controller's list of fetched objects accordingly
+        updateFetchedObjects()
 
         return true
       }
@@ -290,7 +377,7 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int
       {
-        return searching ? filteredRecipes.count : recipes.count
+        return fetchedResultsController.fetchedObjects!.count
       }
 
 
@@ -299,13 +386,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
         // Ideally we want to dequeue a reusable cell here instead...
         let cell = UITableViewCell(style: .default, reuseIdentifier: "RecipeTableViewCell")
 
-        let list = searching ? filteredRecipes : recipes
-        let recipe = list[indexPath.row]
+        // Get the recipe for the index path
+        let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
 
         // Configure the cell
         cell.textLabel!.text = recipe.name != "" ? recipe.name : NSLocalizedString("UNNAMED RECIPE", comment: "")
         cell.textLabel!.font = UIFont(name: "Helvetica", size: 18)
 
+        // Return the cell
         return cell
       }
 
@@ -318,36 +406,22 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath)
       {
-        if editingStyle == .delete {
+        // Switch on the editing style
+        switch editingStyle {
 
-          // Begin the animation block
-          tableView.beginUpdates()
+          case .delete:
+            // Retrieve the recipe at the given index
+            let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
 
-          // Delete the appropriate row from the tableView
-          tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            // Delete the recipe from the managed object context
+            managedObjectContext.delete(recipe)
 
-          // Remove the recipe from the list, and update the managed object context
-          var recipe: Recipe
-          if searching {
-            recipe = filteredRecipes.remove(at: indexPath.row)
-            recipes.remove(at: recipes.index(of: recipe)!)
-          }
-          else {
-            recipe = recipes.remove(at: indexPath.row)
-          }
+            // Attempt to save the managed object context
+            do { try managedObjectContext.save() }
+            catch let e { fatalError("error: \(e)") }
 
-          // Delete the recipe from the managedObjectContext
-          managedObjectContext.delete(recipe)
-
-          // Save the managed object context
-          do { try managedObjectContext.save() }
-          catch let e { fatalError("error: \(e)") }
-
-          // End the animation block
-          tableView.endUpdates()
-        }
-        else {
-          fatalError("unexpected editing style: \(editingStyle)")
+          default:
+            fatalError("unexpected editing style: \(editingStyle)")
         }
       }
 
@@ -356,19 +430,14 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
       {
-        var list = searching ? filteredRecipes : recipes
+        // Deselect the given row
+        recipeTableView.deselectRow(at: indexPath, animated: true)
 
         // Get the selected recipe
-        let recipe = list[indexPath.row]
+        let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
 
         // Create a RecipeViewController for the selected recipe, and present it
         let recipeViewController = RecipeViewController(recipe: recipe, editing: false, context: managedObjectContext)
-            { (recipe: Recipe?) -> Void in
-              tableView.beginUpdates()
-              list[indexPath.row] = recipe!
-              tableView.reloadRows(at: [indexPath], with: .none)
-              tableView.endUpdates()
-            }
         show(recipeViewController, sender: self)
       }
 
@@ -377,27 +446,24 @@ class SearchViewController: UIViewController, UITextFieldDelegate, UITableViewDa
 
     func addRecipe(_ sender: AnyObject?)
       {
-        // Create a RecipeViewController with no associated recipe, and present it
-        let recipeViewController = RecipeViewController(recipe: Recipe(name: "", images: [], ingredientAmounts: [], steps: [], tags: [], context: managedObjectContext), editing: true, context: managedObjectContext)
-            { (recipe: Recipe) -> Void in
-              self.recipes.append(recipe)
+        // Create a new recipe
+        let recipe = Recipe(name: "", images: [], ingredientAmounts: [], steps: [], tags: [], context: managedObjectContext)
 
-              do { try self.managedObjectContext.save() }
-              catch let e { fatalError("error: \(e)") }
-
-              self.recipeTableView.beginUpdates()
-              self.recipeTableView.insertRows(at: [IndexPath(row: self.recipes.count - 1, section: 0)], with: .fade)
-              self.recipeTableView.endUpdates()
-            }
+        // Configure and show a RecipeViewController for the new recipe
+        let recipeViewController = RecipeViewController(recipe: recipe, editing: true, context: managedObjectContext)
         show(recipeViewController, sender: self)
       }
 
 
     func search(_ sender: AnyObject?)
-      { setSearching(true, animated: true) }
+      {
+        setSearching(true, animated: true)
+      }
 
 
     func cancelSearch(_ sender: AnyObject?)
-      { setSearching(false, animated: true) }
+      {
+        setSearching(false, animated: true)
+      }
 
   }
