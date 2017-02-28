@@ -42,8 +42,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     var newIngredientAmount = false
 
-    var editingIngredientIndexPath: IndexPath?
-
 
     var ingredientAmountsTableViewHeightConstraint: NSLayoutConstraint!
       {
@@ -323,19 +321,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
 
     // MARK: - UITableViewDelegate
-
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
-      {
-        // If we're about to show the newly created ingredient cell
-        if tableView === ingredientAmountsTableView && editingIngredientIndexPath == indexPath {
-          DispatchQueue.main.async
-              { () -> Void in
-                let cell = tableView.cellForRow(at: indexPath) as! IngredientAmountTableViewCell
-                cell.nameTextField.becomeFirstResponder()
-              }
-        }
-      }
-
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
       {
