@@ -490,18 +490,37 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
         switch tableView {
           case ingredientAmountsTableView :
-            // Delete the selected ingredientAmount
+
             if editingStyle == .delete {
-              let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
-              recipe.ingredientAmounts.remove(ingredientAmount)
-              managedObjectContext.delete(ingredientAmount)
+              // Delete the selected ingredient amount
+              let selected = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
+              recipe.ingredientAmounts.remove(selected)
+              managedObjectContext.delete(selected)
+
+              // Iterate over the remaining ingredient amounts
+              for (index, ingredientAmount) in recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock).reversed().enumerated() {
+                // Update the the remaining ingredient amounts
+                if ingredientAmount.number != Int16(index) {
+                  ingredientAmount.number = Int16(index)
+                }
+              }
+
             }
           case stepsTableView :
-            // Delete the selected step
             if editingStyle == .delete {
-              let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
-              recipe.steps.remove(step)
-              managedObjectContext.delete(step)
+
+              // Delete the selected step
+              let selected = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
+              recipe.steps.remove(selected)
+              managedObjectContext.delete(selected)
+
+              // Iterate over the remaining steps
+              for (index, step) in recipe.steps.sorted(by: stepsSortingBlock).enumerated() {
+                // Update the remaining steps
+                if step.number != Int16(index) {
+                  step.number = Int16(index)
+                }
+              }
             }
           default :
             fatalError("unexpected table view")
