@@ -3,7 +3,7 @@
 Written by Jeff Spooner
 
 
-**Recipinator is an iOS app for organizing your recipes!**
+**Recipinator is an iOS app for organizing your recipes, available [here](https://itunes.apple.com/us/app/recipinator/id1199983262)!**
 
 
 **Notable Features!**
