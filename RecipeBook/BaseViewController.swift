@@ -25,7 +25,7 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
     var scrollViewBottomConstraint: NSLayoutConstraint!
     var scrollViewHeightConstraint: NSLayoutConstraint?
 
-    var saveButton: UIBarButtonItem!
+    var endEditingButton: UIBarButtonItem!
     var doneButton: UIBarButtonItem!
 
     var defaultEditingState: Bool = true
@@ -43,9 +43,11 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
 
           if let _ = activeSubview {
             navigationItem.rightBarButtonItem = doneButton
+            navigationItem.hidesBackButton = true
           }
           else {
-            navigationItem.rightBarButtonItem = saveButton
+            navigationItem.rightBarButtonItem = endEditingButton
+            navigationItem.hidesBackButton = false
           }
         }
       }
@@ -141,8 +143,8 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
         scrollViewBottomConstraint.isActive = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: NSLocalizedString("SAVE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.done(_:)))
+        endEditingButton = UIBarButtonItem(title: NSLocalizedString("END EDITING", comment: ""), style: .plain, target: self, action: #selector(self.endEditing(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(self.done(_:)))
       }
 
 
@@ -192,8 +194,7 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
         super.setEditing(editing, animated: animated)
         didChangeValue(forKey: "editing")
 
-        navigationItem.setHidesBackButton(editing, animated: false)
-        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem
+        navigationItem.rightBarButtonItem = editing ? endEditingButton : editButtonItem
       }
 
 
@@ -313,34 +314,42 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
 
     // MARK: Actions
 
-    func save(_ sender: AnyObject?)
+    func endEditing(_ sender: AnyObject?)
       {
-        // Have the activeSubview resign as first responder, if applicable
-        activeSubview?.resignFirstResponder()
+        assert(activeSubview == nil, "unexpected state")
 
         // Set the editing state to false
         setEditing(false, animated: true)
+
+        // Attempt to save the managedObjectContext
+        do { try managedObjectContext.save() }
+        catch let e { fatalError("failed to save: \(e)") }
       }
 
 
     func done(_ sender: AnyObject?)
       {
-        // If the activeSubview is a textField
-        if let textField = activeSubview as? UITextField {
-          // Ask it's delegate if we can return, and then have it resign as the first responder
-          if textField.delegate!.textFieldShouldReturn!(textField) {
-           textField.resignFirstResponder()
+        // If the active subview is non-nil
+        if let subview = activeSubview {
+
+          // If the activeSubview is a textField
+          if let textField = subview as? UITextField {
+            // Ask it's delegate if we can return, and then have it resign as the first responder
+            if textField.delegate!.textFieldShouldReturn!(textField) {
+             textField.resignFirstResponder()
+            }
           }
-        }
-        // Otherwise, if the activeSubview is a textView
-        if let textView = activeSubview as? UITextView {
-          if textView.delegate!.textViewShouldEndEditing!(textView) {
-            textView.resignFirstResponder()
+          // Otherwise, if the activeSubview is a textView
+          else if let textView = subview as? UITextView {
+            // Ask it's delegate if we can end editing, and then have it resign as the first responder
+            if textView.delegate!.textViewShouldEndEditing!(textView) {
+              textView.resignFirstResponder()
+            }
           }
-        }
-        // Otherwise it's some non-text view
-        else {
-          activeSubview?.resignFirstResponder()
+          // Otherwise it's some non-text view, so have it resign as first responder
+          else {
+            subview.resignFirstResponder()
+          }
         }
       }
 

@@ -12,7 +12,7 @@ class StepViewController: BaseViewController
   {
 
     var step: Step
-    var completion: (Step) -> Void
+    var completion: ((Step) -> Void)?
 
     let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
 
@@ -21,7 +21,7 @@ class StepViewController: BaseViewController
     var imageView: UIImageView!
 
 
-    init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: @escaping ((Step) -> Void))
+    init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: ((Step) -> Void)? = nil)
       {
         self.step = step
         self.completion = completion
@@ -140,9 +140,10 @@ class StepViewController: BaseViewController
       {
         super.viewWillDisappear(animated)
 
-        // Execute the completion block if we're moving from the parent view controller
+        // If we're moving from the parentViewController, end editing and call the completion callback
         if isMovingFromParentViewController {
-          completion(step)
+          endEditing(self)
+          completion?(step)
         }
       }
 
@@ -191,17 +192,10 @@ class StepViewController: BaseViewController
         // If we're editing, or if the recipe has no images
         if isEditing || step.images.count == 0 {
           // Configure and show an ImageCollectionViewController
-          let imageCollectionViewController = ImageCollectionViewController(images: step.images, editing: true, context: managedObjectContext, completion:
+          let imageCollectionViewController = ImageCollectionViewController(images: step.images, imageOwner: step, editing: true, context: managedObjectContext, completion:
               { (images: Set<Image>) in
-                // Update the recipe's set of images
-                self.step.images = images
-
                 // Update the image view's image
                 self.imageView.image = self.step.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
-
-                // Attempt to save the managed object context
-                do { try self.managedObjectContext.save() }
-                catch let e { fatalError("failed to save: \(e)") }
               })
           show(imageCollectionViewController, sender: self)
         }

@@ -328,18 +328,17 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
           case ingredientAmountsTableView :
             // Do nothing
             tableView.deselectRow(at: indexPath, animated: true)
-            return
 
           case stepsTableView :
             // Get the list of steps, and the index of the step we're interested in
             let steps = recipe.steps.sorted(by: stepsSortingBlock)
             let index = indexPath.row
-            let step = steps[index]
+
             // Present a steps view controller
             let stepsViewController = StepsViewController(steps: steps, index: index, editing: isEditing, context: managedObjectContext, completion:
-              { () in
+              { (step: Step) in
                 // Update the label of the tableView cell
-                let cell = tableView.cellForRow(at: indexPath)!
+                let cell = tableView.cellForRow(at: IndexPath(row: Int(step.number), section: 0))!
                 cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
               })
             show(stepsViewController, sender: self)
@@ -550,17 +549,6 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     // MARK: - Actions
 
-    override func save(_ sender: AnyObject?)
-      {
-        // Call super's implementation
-        super.save(sender)
-
-        // Attempt to save the managedObjectContext
-        do { try managedObjectContext.save() }
-        catch { fatalError("failed to save") }
-      }
-
-
     func selectImage(_ sender: AnyObject?)
       {
         // Ensure the active subview resigns as first responder
@@ -569,17 +557,10 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         // If we're editing, or if the recipe has no images
         if isEditing || recipe.images.count == 0 {
           // Configure and show an ImageCollectionViewController
-          let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, editing: true, context: managedObjectContext, completion:
+          let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, imageOwner: recipe, editing: true, context: managedObjectContext, completion:
               { (images: Set<Image>) in
-                // Update the recipe's set of images
-                self.recipe.images = images
-
                 // Update the image view's image
                 self.imageView.image = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
-
-                // Attempt to save the managed object context
-                do { try self.managedObjectContext.save() }
-                catch let e { fatalError("failed to save: \(e)") }
               })
           show(imageCollectionViewController, sender: self)
         }
@@ -645,18 +626,16 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       {
         assert(stepsExpanded, "Unexpected state - steps table view is collapsed")
 
+        // Create a new step, and add it to the recipe's set of steps
         let step = Step(number: Int16(recipe.steps.count), summary: "", detail: "", images: [], context: managedObjectContext)
+        recipe.steps.insert(step)
+
+        // Configure and show a StepViewController for the new step
         let stepViewController = StepViewController(step: step, editing: true, context: managedObjectContext)
             { (step: Step) -> Void in
 
               // Begin the animation block
               self.stepsTableView.beginUpdates()
-
-              // Update the recipe
-              self.recipe.steps.insert(step)
-
-              do { try self.managedObjectContext.save() }
-              catch let e { fatalError("failed to save: \(e)") }
 
               // Insert a new row into the table view
               let indexPath = IndexPath(row: Int(step.number), section: 0)

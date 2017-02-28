@@ -18,7 +18,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
     var initialIndex: Int
     var initialEditingState: Bool
     var managedObjectContext: NSManagedObjectContext
-    var completion: () -> Void
+    var completion: (Step) -> Void
 
     var pageViewController: UIPageViewController
 
@@ -27,11 +27,11 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         get { return pageViewController.viewControllers!.first as? StepViewController }
       }
 
-    var saveButton: UIBarButtonItem!
+    var endEditingButton: UIBarButtonItem!
     var doneButton: UIBarButtonItem!
 
 
-    init(steps: [Step], index: Int, editing: Bool, context: NSManagedObjectContext, completion: @escaping () -> Void)
+    init(steps: [Step], index: Int, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Step) -> Void)
       {
         self.steps = steps
         self.initialIndex = index
@@ -85,8 +85,8 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         pageView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
 
         // Create the navigation bar buttons
-        saveButton = UIBarButtonItem(title: NSLocalizedString("SAVE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.save(_:)))
-        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(BaseViewController.done(_:)))
+        endEditingButton = UIBarButtonItem(title: NSLocalizedString("END EDITING", comment: ""), style: .plain, target: self, action: #selector(self.endEditing(_:)))
+        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(self.done(_:)))
       }
 
 
@@ -123,9 +123,11 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
             { (change: [NSKeyValueChangeKey : Any]?) -> Void in
               if let _ = self.activeViewController?.activeSubview {
                 self.navigationItem.rightBarButtonItem = self.doneButton
+                self.navigationItem.hidesBackButton = true
               }
               else {
-                self.navigationItem.rightBarButtonItem = self.saveButton
+                self.navigationItem.rightBarButtonItem = self.endEditingButton
+                self.navigationItem.hidesBackButton = false
               }
             })
         ]
@@ -139,9 +141,14 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // De-register custom notifications
         observations.removeAll()
 
-        // Execute the completion block as long as we're not presenting another view controller
-        if presentedViewController == nil {
-          completion()
+        // If we're currently presenting a step view controller, and we're moving to the parent view controller
+        if let activeViewController = activeViewController, isMovingToParentViewController {
+
+          // Have it end editing
+          activeViewController.endEditing(self)
+
+          // Execute our completion callback
+          completion(activeViewController.step)
         }
       }
 
@@ -153,8 +160,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         super.setEditing(editing, animated: animated)
         didChangeValue(forKey: "editing")
 
-        navigationItem.setHidesBackButton(editing, animated: false)
-        navigationItem.rightBarButtonItem = editing ? saveButton : editButtonItem
+        navigationItem.rightBarButtonItem = editing ? endEditingButton : editButtonItem
 
         activeViewController?.setEditing(editing, animated: animated)
       }
@@ -172,12 +178,6 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         if index > 0 {
           // Return a step view controller for the next step
           return StepViewController(step: steps[index - 1], editing: isEditing, context: managedObjectContext)
-            { (step: Step) in
-              if self.managedObjectContext.hasChanges {
-                do { try self.managedObjectContext.save() }
-                catch let e { fatalError("failed to save: \(e)") }
-              }
-            }
         }
 
         return nil
@@ -194,12 +194,6 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         if index < steps.count - 1 {
           // Return a step view controller for the next step
           return StepViewController(step: steps[index + 1], editing: isEditing, context: managedObjectContext)
-            { (step: Step) in
-              if self.managedObjectContext.hasChanges {
-                do { try self.managedObjectContext.save() }
-                catch let e { fatalError("failed to save: \(e)") }
-              }
-            }
         }
 
         return nil
@@ -207,6 +201,20 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
 
     // MARK: - UIPageViewControllerDelegate
+
+    func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController])
+      {
+        // As long as we're currently presenting a step view controller
+        if let activeViewController = activeViewController, activeViewController.isEditing {
+
+          // Have it end editing
+          activeViewController.endEditing(self)
+
+          // Execute our completion callback
+          completion(activeViewController.step)
+        }
+      }
+
 
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool)
       {
@@ -221,7 +229,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
                 self.navigationItem.rightBarButtonItem = self.doneButton
               }
               else {
-                self.navigationItem.rightBarButtonItem = self.saveButton
+                self.navigationItem.rightBarButtonItem = self.endEditingButton
               }
             })
         ]
@@ -237,10 +245,13 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
 
     // MARK: - Actions
 
-    func save(_ sender: AnyObject?)
+    func endEditing(_ sender: AnyObject?)
       {
-        activeViewController!.save(sender)
+        // Set the editing state to false
         setEditing(false, animated: true)
+
+        // Have the active view controller end editing
+        activeViewController!.endEditing(sender)
       }
 
 

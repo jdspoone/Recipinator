@@ -20,6 +20,8 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
 
     var managedObjectContext: NSManagedObjectContext
 
+    var imageOwner: BaseObject
+
     var images: Set<Image>
     var sortedImages: [Image]
       { return images.sorted(by: { $0.index < $1.index }) }
@@ -38,15 +40,16 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
     var addButton: UIBarButtonItem!
     var cameraButton: UIBarButtonItem!
     var deleteButton: UIBarButtonItem!
-    var doneButton: UIBarButtonItem!
+    var endEditingButton: UIBarButtonItem!
 
     var reuseIdentifier: String
       { return "ImageCollectionViewCell" }
 
 
-    init(images: Set<Image>, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Set<Image>) -> Void)
+    init(images: Set<Image>, imageOwner: BaseObject, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Set<Image>) -> Void)
       {
         self.images = images
+        self.imageOwner = imageOwner
         self.initialEditing = editing
         self.managedObjectContext = context
         self.completion = completion
@@ -76,7 +79,7 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.addImage(_:)))
         deleteButton = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(self.deleteSelected(_:)))
-        doneButton = UIBarButtonItem(title: NSLocalizedString("DONE", comment: ""), style: .plain, target: self, action: #selector(self.done(_:)))
+        endEditingButton = UIBarButtonItem(title: NSLocalizedString("END EDITING", comment: ""), style: .plain, target: self, action: #selector(self.endEditing(_:)))
 
         // Configure the toolbar
         toolbar = UIToolbar(frame: .zero)
@@ -115,8 +118,7 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         didChangeValue(forKey: "isEditing")
 
         // Update the navigation item
-        navigationItem.setHidesBackButton(editing, animated: false)
-        navigationItem.rightBarButtonItem = editing ? doneButton : editButtonItem
+        navigationItem.rightBarButtonItem = editing ? endEditingButton : editButtonItem
 
         // Toggle multiple selection on the collection view
         collectionView!.allowsMultipleSelection = editing
@@ -169,8 +171,9 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         // De-register custom observations
         observations.removeAll()
 
-        // Execute the compltion callback if the presentedViewController is nil, and we're moving from the parentViewController
+        // If the presentedViewController is nil and we're moving from the parentViewController, end editing and call the completion callback
         if presentedViewController == nil && isMovingFromParentViewController {
+          endEditing(self)
           completion(images)
         }
       }
@@ -256,11 +259,25 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
 
     // MARK: - Actions
 
-    func done(_ sender: AnyObject?)
+    func endEditing(_ sender: AnyObject?)
       {
-        assert(isEditing, "unexpected state - isEditing is \(isEditing)")
+        // Update the image owner's set of images
+        if let recipe = imageOwner as? Recipe {
+          recipe.images = images
+        }
+        else if let step = imageOwner as? Step {
+          step.images = images
+        }
+        else {
+          fatalError("unexepected imageOwner")
+        }
 
+        // Set the editing state to false
         setEditing(false, animated: true)
+
+        // Attempt to save the managedObjectContext
+        do { try managedObjectContext.save() }
+        catch let e { fatalError("failed to save: \(e)") }
       }
 
 
