@@ -610,7 +610,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         // Add a textField to the alertController for the ingredient's name
         alertController.addTextField(configurationHandler:
             { (textField: UITextField) in
-              textField.placeholder = "Ingredient"
+              textField.placeholder = NSLocalizedString("INGREDIENT", comment: "")
               textField.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
             })
 

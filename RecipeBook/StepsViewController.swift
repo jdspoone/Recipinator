@@ -109,7 +109,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
 
         // Set the title of the navigation item
-        navigationItem.title = "Step \(initialStep.number + 1)"
+        navigationItem.title = NSLocalizedString("STEP", comment: "") + " \(initialStep.number + 1)"
       }
 
 
@@ -238,7 +238,7 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         activeViewController!.setEditing(isEditing, animated: false)
 
         // Update the navigation controller's title
-        navigationItem.title = "Step \(activeViewController!.step.number + 1)"
+        navigationItem.title = NSLocalizedString("STEP", comment: "") + " \(activeViewController!.step.number + 1)"
       }
 
 

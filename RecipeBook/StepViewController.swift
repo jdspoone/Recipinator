@@ -105,7 +105,7 @@ class StepViewController: BaseViewController
         super.viewDidLoad()
 
         // Set the title of the navigation item
-        navigationItem.title = "Step \(step.number + 1)"
+        navigationItem.title = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
 
         restoreState()
       }
