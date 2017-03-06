@@ -63,6 +63,18 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
       }
 
 
+    func deselectAll()
+      {
+        // Iterate over the set of currently selected indices and deselect them
+        for index in selectedImageIndices {
+          collectionView!.deselectItem(at: IndexPath(row: index, section: 0), animated: true)
+        }
+
+        // Clear the selected indices set
+        selectedImageIndices.removeAll()
+      }
+
+
     // MARK: - UIViewController
 
     required init?(coder aDecoder: NSCoder)
@@ -123,15 +135,8 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         // Toggle multiple selection on the collection view
         collectionView!.allowsMultipleSelection = editing
 
-        // Iterate over the the set of selected indices
-        for index in selectedImageIndices {
-          // Deselect each selected cell
-          let indexPath = IndexPath(row: index, section: 0)
-          collectionView!.deselectItem(at: indexPath, animated: animated)
-        }
-
-        // Clear the set of selected indices
-        selectedImageIndices.removeAll()
+        // Deselect any currently selected images
+        deselectAll()
       }
 
 
@@ -227,6 +232,42 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         cell.imageView.image = sortedImages[indexPath.row].image
 
         return cell
+      }
+
+
+    override func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool
+      {
+        // As long as we're in editing mode, deselect any currently selected images
+        if isEditing {
+          deselectAll()
+        }
+
+        return isEditing
+      }
+
+
+    override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath)
+      {
+        assert(isEditing, "unexpected state")
+
+        let sourceIndex = sourceIndexPath.row
+        let destinationIndex = destinationIndexPath.row
+
+        // Get the image we're trying to move
+        let selectedImage = sortedImages[sourceIndex]
+
+        // Determine the images that will be affected by the move
+        let movedImages = images.filter { (image: Image) -> Bool in
+          return sourceIndex < destinationIndex
+            ? Int(image.index) <= destinationIndex && Int(image.index) > sourceIndex
+            : Int(image.index) >= destinationIndex && Int(image.index) < sourceIndex
+        }
+
+        // Update the indices of the various images
+        selectedImage.index = Int16(destinationIndex)
+        for image in movedImages {
+          image.index += sourceIndex < destinationIndex ? -1 : 1
+        }
       }
 
 

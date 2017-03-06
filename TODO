@@ -2,9 +2,6 @@ SearchViewController
   -re-implement as a subclass of BaseViewController
     -will remove some redundancy
 
-ImageCollectionViewController
-  -implement image re-ordering
-
 ImageViewController:
   -implement zooming and scrolling
   -add ability to show/hide navigation bar with tap
