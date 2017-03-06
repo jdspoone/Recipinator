@@ -19,6 +19,7 @@ class StepViewController: BaseViewController
     var summaryTextField: UITextField!
     var detailTextView: UITextView!
     var imageView: UIImageView!
+    var noImageLabel: UILabel!
 
 
     init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: ((Step) -> Void)? = nil)
@@ -34,7 +35,10 @@ class StepViewController: BaseViewController
       {
         summaryTextField.text = step.summary
         detailTextView.text = step.detail
-        imageView.image = step.images.sorted(by: imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+
+        let firstImage = step.images.sorted(by: self.imageSortingBlock).first?.image
+        imageView.image = firstImage ?? UIImage(named: "defaultImage")
+        noImageLabel.isHidden = firstImage != nil
       }
 
 
@@ -80,6 +84,14 @@ class StepViewController: BaseViewController
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(imageView)
 
+        // Configure the no image label
+        noImageLabel = UILabel(frame: .zero)
+        noImageLabel.text = NSLocalizedString("NO PHOTO SELECTED", comment: "") 
+        noImageLabel.textAlignment = .center
+        noImageLabel.font = UIFont(name: "Helvetica", size: 24)
+        noImageLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(noImageLabel)
+
         // Configure the layout bindings for the summary text field
         summaryTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         summaryTextField.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
@@ -97,6 +109,12 @@ class StepViewController: BaseViewController
         imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
         imageView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
+
+        // Configure the layout bindings for the no image label
+        noImageLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
+        noImageLabel.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
+        noImageLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
+        noImageLabel.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
       }
 
 
@@ -195,7 +213,9 @@ class StepViewController: BaseViewController
           let imageCollectionViewController = ImageCollectionViewController(images: step.images, imageOwner: step, editing: true, context: managedObjectContext, completion:
               { (images: Set<Image>) in
                 // Update the image view's image
-                self.imageView.image = self.step.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+                let firstImage = self.step.images.sorted(by: self.imageSortingBlock).first?.image
+                self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
+                self.noImageLabel.isHidden = firstImage != nil
               })
           show(imageCollectionViewController, sender: self)
         }

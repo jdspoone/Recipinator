@@ -20,6 +20,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
 
     var nameTextField: UITextField!
     var imageView: UIImageView!
+    var noImageLabel: UILabel!
 
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
@@ -90,7 +91,10 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
     func restoreState()
       {
         nameTextField.text = recipe.name
-        imageView.image = recipe.images.sorted(by: imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+
+        let firstImage = recipe.images.sorted(by: self.imageSortingBlock).first?.image
+        imageView.image = firstImage ?? UIImage(named: "defaultImage")
+        noImageLabel.isHidden = firstImage != nil
       }
 
 
@@ -148,6 +152,14 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(imageView)
 
+        // Configure the no image label
+        noImageLabel = UILabel(frame: .zero)
+        noImageLabel.text = NSLocalizedString("NO PHOTO SELECTED", comment: "") 
+        noImageLabel.textAlignment = .center
+        noImageLabel.font = UIFont(name: "Helvetica", size: 24)
+        noImageLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(noImageLabel)
+
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
         ingredientAmountsTableView.cellLayoutMarginsFollowReadableWidth = false;
@@ -185,6 +197,12 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
         imageView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
+
+        // Configure the layout bindings for the no image label
+        noImageLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
+        noImageLabel.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
+        noImageLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
+        noImageLabel.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
 
         // Configure the layout bindings for the ingredient table view
         ingredientAmountsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -577,7 +595,9 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
           let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, imageOwner: recipe, editing: true, context: managedObjectContext, completion:
               { (images: Set<Image>) in
                 // Update the image view's image
-                self.imageView.image = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image ?? UIImage(named: "defaultImage")
+                let firstImage = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image
+                self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
+                self.noImageLabel.isHidden = firstImage != nil
               })
           show(imageCollectionViewController, sender: self)
         }
