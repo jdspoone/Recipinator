@@ -1,0 +1,67 @@
+/* 
+
+  Created by Jeffrey Spooner on 2017-03-05.
+
+*/
+
+"NAME" = "이름";
+
+"RECIPE" = "레시피";
+
+"RECIPES" = "레시피";
+
+"RECIPE NAME" = "레시피 이름";
+
+"INGREDIENT" = "재료";
+
+"AMOUNT" = "수량";
+
+"STEP" = "순서";
+
+"TAG" = "태그";
+
+"TAGS" = "태그";
+
+"TAG NAME" = "태그 이름";
+
+"INGREDIENTS" = "재료";
+
+"STEPS" = "순서";
+
+"CANCEL" = "취소";
+
+"CAMERA" = "카메라";
+
+"PHOTO LIBRARY" = "사진첩";
+
+"DELETE" = "삭제";
+
+"DELETE IMAGE" = "이미지 삭제";
+
+"IMAGE SELECTION" = "이미지 선택";
+
+"CHOOSE THE IMAGE SOURCE YOU'D LIKE TO USE." = "사용하고자 하는 이미지 고르기.";
+
+"SEARCH RECIPES BY NAME" = "이름으로 레시피 찾기";
+
+"SEARCH RECIPES BY INGREDIENT" = "재료로 레시피 찾기";
+
+"SEARCH RECIPES BY TAG" = "태그로 레시피 찾기";
+
+"UNNAMED RECIPE" = "이름없는 레시피";
+
+"SUMMARY" = "요약";
+
+"SAVE" = "저장";
+
+"DONE" = "끝";
+
+"NEW INGREDIENT" = "새로운 재료";
+
+"ENTER THE NAME OF THE NEW INGREDIENT" = "새로운 재료의 이름 넣기";
+
+"OK" = "확인";
+
+"END EDITING" = "수정 끝내기";
+
+"NO PHOTO SELECTED" = "선택된 사진 없음";
