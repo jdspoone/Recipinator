@@ -42,8 +42,6 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
 
     var tagsViewController: TagsViewController!
 
-    var newIngredientAmount = false
-
 
     var ingredientAmountsTableViewHeightConstraint: NSLayoutConstraint!
       {
@@ -97,28 +95,6 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         let firstImage = recipe.images.sorted(by: self.imageSortingBlock).first?.image
         imageView.image = firstImage ?? UIImage(named: "defaultImage")
         noImageLabel.isHidden = firstImage != nil
-      }
-
-
-    func addNewIngredientAmountToRecipe()
-      {
-        assert(newIngredientAmount == true, "unexpected state - newIngredientAmount is false")
-
-        // Get the tableViewCell for the new ingredientAmount
-        let cell = ingredientAmountsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as! IngredientAmountTableViewCell
-        let name = cell.nameTextField.text!
-        let amount = cell.amountTextField.text!
-
-        // Create a new ingredient and ingredientAmount, and add it to the recipe
-        let ingredient = Ingredient.withName(name, inContext: managedObjectContext)
-        let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: amount, number: Int16(recipe.ingredientAmounts.count), context: managedObjectContext)
-        recipe.ingredientAmounts.insert(ingredientAmount)
-
-        // Set the newIngredientAmount flag to false
-        newIngredientAmount = false
-
-        // Reload the tableView
-        ingredientAmountsTableView.reloadData()
       }
 
 
