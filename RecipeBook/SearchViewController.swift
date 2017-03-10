@@ -20,8 +20,8 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
 
     var searchCategory = SearchCategory.recipe
 
-    var fetchRequest: NSFetchRequest<NSFetchRequestResult>!
-    var fetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>!
+    var fetchRequest: NSFetchRequest<Recipe>!
+    var fetchedResultsController: NSFetchedResultsController<Recipe>!
 
     var managedObjectContext: NSManagedObjectContext
 
@@ -188,7 +188,7 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         super.viewDidLoad()
 
         // Configure our initial fetch request
-        fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Recipe")
+        fetchRequest = NSFetchRequest<Recipe>(entityName: "Recipe")
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
 
         // Configure the fetched results controller
@@ -387,7 +387,7 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         let cell = UITableViewCell(style: .default, reuseIdentifier: "RecipeTableViewCell")
 
         // Get the recipe for the index path
-        let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
+        let recipe = fetchedResultsController.object(at: indexPath)
 
         // Configure the cell
         cell.textLabel!.text = recipe.name != "" ? recipe.name : NSLocalizedString("UNNAMED RECIPE", comment: "")
@@ -411,7 +411,7 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
 
           case .delete:
             // Retrieve the recipe at the given index
-            let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
+            let recipe = fetchedResultsController.object(at: indexPath) 
 
             // Delete the recipe from the managed object context
             managedObjectContext.delete(recipe)
@@ -434,7 +434,7 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         recipeTableView.deselectRow(at: indexPath, animated: true)
 
         // Get the selected recipe
-        let recipe = fetchedResultsController.object(at: indexPath) as! Recipe
+        let recipe = fetchedResultsController.object(at: indexPath) 
 
         // Create a RecipeViewController for the selected recipe, and present it
         let recipeViewController = RecipeViewController(recipe: recipe, editing: false, context: managedObjectContext)
