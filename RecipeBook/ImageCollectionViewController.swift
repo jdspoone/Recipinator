@@ -16,8 +16,6 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
 
     var observations = Set<Observation>()
 
-    let completion: (Set<Image>) -> Void
-
     var managedObjectContext: NSManagedObjectContext
 
     var imageOwner: BaseObject
@@ -46,13 +44,12 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
       { return "ImageCollectionViewCell" }
 
 
-    init(images: Set<Image>, imageOwner: BaseObject, editing: Bool, context: NSManagedObjectContext, completion: @escaping (Set<Image>) -> Void)
+    init(images: Set<Image>, imageOwner: BaseObject, editing: Bool, context: NSManagedObjectContext)
       {
         self.images = images
         self.imageOwner = imageOwner
         self.initialEditing = editing
         self.managedObjectContext = context
-        self.completion = completion
 
         // Configure the flow layout
         let layout = UICollectionViewFlowLayout()
@@ -179,7 +176,6 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         // If the presentedViewController is nil and we're moving from the parentViewController, end editing and call the completion callback
         if presentedViewController == nil && isMovingFromParentViewController {
           endEditing(self)
-          completion(images)
         }
       }
 

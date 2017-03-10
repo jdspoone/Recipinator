@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class StepViewController: BaseViewController
+class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
   {
 
     var step: Step
@@ -18,6 +18,8 @@ class StepViewController: BaseViewController
 
     var summaryTextField: UITextField!
     var detailTextView: UITextView!
+
+    var imagesFetchedResultsController: NSFetchedResultsController<Image>!
     var imageView: UIImageView!
     var noImageLabel: UILabel!
 
@@ -122,6 +124,19 @@ class StepViewController: BaseViewController
       {
         super.viewDidLoad()
 
+        // Configure the images fetch request
+        let imagesFetchRequest = NSFetchRequest<Image>(entityName: "Image")
+        imagesFetchRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+        imagesFetchRequest.predicate = NSPredicate(format: "%K  == %@", argumentArray: ["stepUsedIn", step.objectID])
+
+        // Configure the images fetched results controller
+        imagesFetchedResultsController = NSFetchedResultsController(fetchRequest: imagesFetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        imagesFetchedResultsController.delegate = self
+
+        // Attempt to fetch the images associated with this step
+        do { try imagesFetchedResultsController.performFetch() }
+        catch let e { fatalError("error: \(e)") }
+
         // Set the title of the navigation item
         navigationItem.title = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
 
@@ -163,6 +178,17 @@ class StepViewController: BaseViewController
           endEditing(self)
           completion?(step)
         }
+      }
+
+
+    // MARK: - NSFetchedResultsControllerDelegate
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?)
+      {
+        // Update the image view's image, and show/hide the no image label
+        let firstImage = self.step.images.sorted(by: self.imageSortingBlock).first?.image
+        self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
+        self.noImageLabel.isHidden = firstImage != nil
       }
 
 
@@ -210,13 +236,7 @@ class StepViewController: BaseViewController
         // If we're editing, or if the recipe has no images
         if isEditing || step.images.count == 0 {
           // Configure and show an ImageCollectionViewController
-          let imageCollectionViewController = ImageCollectionViewController(images: step.images, imageOwner: step, editing: true, context: managedObjectContext, completion:
-              { (images: Set<Image>) in
-                // Update the image view's image
-                let firstImage = self.step.images.sorted(by: self.imageSortingBlock).first?.image
-                self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
-                self.noImageLabel.isHidden = firstImage != nil
-              })
+          let imageCollectionViewController = ImageCollectionViewController(images: step.images, imageOwner: step, editing: true, context: managedObjectContext)
           show(imageCollectionViewController, sender: self)
         }
         // Otherwise, show an ImagePageViewController

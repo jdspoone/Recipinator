@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class RecipeViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource
+class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
     var recipe: Recipe
@@ -19,6 +19,8 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
+
+    var imagesFetchedResultsController: NSFetchedResultsController<Image>!
     var imageView: UIImageView!
     var noImageLabel: UILabel!
 
@@ -231,6 +233,21 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
       {
         super.viewDidLoad()
 
+        // Configure the images fetch request
+        let imagesFetchRequest = NSFetchRequest<Image>(entityName: "Image")
+        imagesFetchRequest.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+        imagesFetchRequest.predicate = NSPredicate(format: "%K  == %@", argumentArray: ["recipeUsedIn", recipe.objectID])
+
+        // Configure the images fetched results controller
+        imagesFetchedResultsController = NSFetchedResultsController(fetchRequest: imagesFetchRequest, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
+        imagesFetchedResultsController.delegate = self
+
+        // Attempt to fetch the images associated with this recipe
+        do {
+          try imagesFetchedResultsController.performFetch()
+        }
+        catch let e { fatalError("error: \(e)") }
+
         restoreState()
       }
 
@@ -299,6 +316,25 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         // Set the editing state of the various table views
         stepsTableView.setEditing(editing, animated: animated)
         tagsViewController.setEditing(editing, animated: animated)
+      }
+
+
+    // MARK: - NSFetchedResultsControllerDelegate
+
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?)
+      {
+        // Switch on the controller
+        switch controller {
+
+          case imagesFetchedResultsController:
+            // Update the image view's image, and show/hide the no image label
+            let firstImage = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image
+            self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
+            self.noImageLabel.isHidden = firstImage != nil
+
+          default:
+            fatalError("unexpected fetched results controller")
+        }
       }
 
 
@@ -592,13 +628,7 @@ class RecipeViewController: BaseViewController, UITableViewDelegate, UITableView
         // If we're editing, or if the recipe has no images
         if isEditing || recipe.images.count == 0 {
           // Configure and show an ImageCollectionViewController
-          let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, imageOwner: recipe, editing: true, context: managedObjectContext, completion:
-              { (images: Set<Image>) in
-                // Update the image view's image
-                let firstImage = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image
-                self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
-                self.noImageLabel.isHidden = firstImage != nil
-              })
+          let imageCollectionViewController = ImageCollectionViewController(images: recipe.images, imageOwner: recipe, editing: true, context: managedObjectContext)
           show(imageCollectionViewController, sender: self)
         }
         // Otherwise, show an ImagePageViewController
