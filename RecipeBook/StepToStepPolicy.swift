@@ -17,11 +17,8 @@ class StepToStepPolicy: NSEntityMigrationPolicy
         // Get the user info dictionary
         let userInfo = mapping.userInfo!
 
-        // Get the model version
-        let modelVersion = userInfo["modelVersion"] as! String
-
         // Migrate to version 2
-        if Int(modelVersion) == 2 {
+        if let sourceVersion = userInfo["sourceVersion"] as? String {
 
           // Get the source keys and values
           let sourceKeys = Array(sourceInstance.entity.attributesByName.keys)
@@ -40,28 +37,37 @@ class StepToStepPolicy: NSEntityMigrationPolicy
             }
           }
 
-          // Initialize an empty set
-          var images = Set<NSManagedObject>()
+          // Switch on the source version
+          switch sourceVersion {
 
-          // If the source instance has associated image data
-          if let imageData = sourceValues["imageData"] as? NSData {
+            case "v1.1":
+              // Initialize an empty set
+              var images = Set<NSManagedObject>()
 
-            // Create a new image object
-            let image = NSEntityDescription.insertNewObject(forEntityName: "Image", into: manager.destinationContext)
+              // If the source instance has associated image data
+              if let imageData = sourceValues["imageData"] as? NSData {
 
-            // Set the attributes of the new image object
-            image.setValue(0, forKey: "index")
-            image.setValue(imageData, forKey: "imageData")
+                // Create a new image object
+                let image = NSEntityDescription.insertNewObject(forEntityName: "Image", into: manager.destinationContext)
 
-            // Set the relationships of the new image object
-            image.setValue(destinationInstance, forKey: "stepUsedIn")
+                // Set the attributes of the new image object
+                image.setValue(0, forKey: "index")
+                image.setValue(imageData, forKey: "imageData")
 
-            // Add the new image to the set of images
-            images.insert(image)
+                // Set the relationships of the new image object
+                image.setValue(destinationInstance, forKey: "stepUsedIn")
+
+                // Add the new image to the set of images
+                images.insert(image)
+              }
+
+              // Update the destination instance's image relationship
+              destinationInstance.setValue(images, forKey: "images")
+
+            default:
+              break
+
           }
-
-          // Update the destination instance's image relationship
-          destinationInstance.setValue(images, forKey: "images")
 
           // Associate the data between the source and destination instances
           manager.associate(sourceInstance: sourceInstance, withDestinationInstance: destinationInstance, for: mapping)
