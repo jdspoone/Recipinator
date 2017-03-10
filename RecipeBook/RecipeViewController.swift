@@ -33,6 +33,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
       }
 
     var stepsTableView: UITableView!
+    let stepsTableViewReuseIdentifier = "StepsTableViewCell"
     var stepsExpanded: Bool = true
       {
         // Enable key-value observation
@@ -156,6 +157,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         stepsTableView.allowsSelectionDuringEditing = true
         stepsTableView.delegate = self
         stepsTableView.dataSource = self
+        stepsTableView.register(UITableViewCell.self, forCellReuseIdentifier: stepsTableViewReuseIdentifier)
         stepsTableView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(stepsTableView)
 
@@ -487,7 +489,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
 
           case stepsTableView :
             // Configure and return a tableViewCell for the appropriate Step
-            let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            let cell = tableView.dequeueReusableCell(withIdentifier: stepsTableViewReuseIdentifier)!
             let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
             cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
             cell.textLabel!.font = UIFont(name: "Helvetica", size: 16)
