@@ -40,6 +40,7 @@ class StepToStepPolicy: NSEntityMigrationPolicy
           // Switch on the source version
           switch sourceVersion {
 
+            // Migrating from v1.1 to v1.2
             case "v1.1":
               // Initialize an empty set
               var images = Set<NSManagedObject>()
@@ -66,7 +67,6 @@ class StepToStepPolicy: NSEntityMigrationPolicy
 
             default:
               break
-
           }
 
           // Associate the data between the source and destination instances
@@ -76,7 +76,47 @@ class StepToStepPolicy: NSEntityMigrationPolicy
         else {
           try super.createDestinationInstances(forSource: sourceInstance, in: mapping, manager: manager)
         }
+      }
 
+
+    override func createRelationships(forDestination destinationInstance: NSManagedObject, in mapping: NSEntityMapping, manager: NSMigrationManager) throws
+      {
+        // Get the user info dictionary
+        let userInfo = mapping.userInfo!
+
+        // Get the source version
+        let sourceVersion = userInfo["sourceVersion"] as? String
+
+        // If a source version was specified
+        if let sourceVersion = sourceVersion {
+
+          // Get the source note
+          let sourceStep = manager.sourceInstances(forEntityMappingName: mapping.name, destinationInstances: [destinationInstance]).first!
+
+          // Get the source note's relationship keys and values
+          let sourceRelationshipKeys = Array(sourceStep.entity.relationshipsByName.keys)
+          let sourceRelationshipValues = sourceStep.dictionaryWithValues(forKeys: sourceRelationshipKeys)
+
+          // Switch on the source version
+          switch sourceVersion {
+
+            // Migrating from v1.2 to v1.3
+            case "v1.2":
+
+              // Get the first element of source instance's recipesUsedIn set, there should only be 1
+              let sourceRecipe = (sourceRelationshipValues["recipesUsedIn"] as! Set<NSManagedObject>).first!
+
+              // Get the corresponding destination recipe
+              let destinationRecipe = manager.destinationInstances(forEntityMappingName: "RecipeToRecipe", sourceInstances: [sourceRecipe]).first!
+
+              // Set the destination instance's recipeUsedIn relationship
+              destinationInstance.setValue(destinationRecipe, forKey: "recipeUsedIn")
+
+            default:
+              break
+          }
+
+        }
       }
 
   }

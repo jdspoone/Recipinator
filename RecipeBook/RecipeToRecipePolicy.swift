@@ -67,7 +67,6 @@ class RecipeToRecipePolicy: NSEntityMigrationPolicy
 
             default:
               break;
-
           }
 
           // Associate the data between the source and destination instances
