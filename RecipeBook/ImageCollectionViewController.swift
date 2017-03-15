@@ -36,7 +36,6 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
     var toolbar: UIToolbar!
 
     var addButton: UIBarButtonItem!
-    var cameraButton: UIBarButtonItem!
     var deleteButton: UIBarButtonItem!
     var endEditingButton: UIBarButtonItem!
 

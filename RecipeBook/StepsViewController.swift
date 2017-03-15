@@ -100,12 +100,6 @@ class StepsViewController: UIViewController, UIPageViewControllerDataSource, UIP
         // Set the view controller of the page view controller
         let initialStep = steps[initialIndex]
         let viewController = StepViewController(step: initialStep, editing: isEditing, context: managedObjectContext)
-          { (step: Step) in
-            if self.managedObjectContext.hasChanges {
-              do { try self.managedObjectContext.save() }
-              catch let e { fatalError("failed to save: \(e)") }
-            }
-          }
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
 
         // Set the title of the navigation item
