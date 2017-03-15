@@ -75,6 +75,7 @@
 		1FCFEE751E7357F400ADDAC7 /* v1.2-to-v1.3.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = "v1.2-to-v1.3.xcmappingmodel"; sourceTree = "<group>"; };
 		1FD2DC861E5D1511000D0ED4 /* ImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		1FD2DC881E5D1615000D0ED4 /* ImagePageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePageViewController.swift; sourceTree = "<group>"; };
+		1FD951001E79D86100DB8B8C /* RecipeBook-v1.4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "RecipeBook-v1.4.xcdatamodel"; sourceTree = "<group>"; };
 		1FFA67C21C55676D00C4F458 /* Ingredient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ingredient.swift; sourceTree = "<group>"; };
 		1FFF521D1C3319D5006A99C2 /* RecipeBook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipeBook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1FFF52201C3319D5006A99C2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -472,11 +473,12 @@
 		1F0E91681C669F0500DD2446 /* RecipeBook.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				1FD951001E79D86100DB8B8C /* RecipeBook-v1.4.xcdatamodel */,
 				1FCFEE741E7353C500ADDAC7 /* RecipeBook-v1.3.xcdatamodel */,
 				1F18EBBF1E5B992F005C85EF /* RecipeBook-v1.2.xcdatamodel */,
 				1F0E91691C669F0500DD2446 /* RecipeBook-v1.1.xcdatamodel */,
 			);
-			currentVersion = 1FCFEE741E7353C500ADDAC7 /* RecipeBook-v1.3.xcdatamodel */;
+			currentVersion = 1FD951001E79D86100DB8B8C /* RecipeBook-v1.4.xcdatamodel */;
 			path = RecipeBook.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
