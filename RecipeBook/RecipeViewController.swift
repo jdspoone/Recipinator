@@ -21,8 +21,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
     var nameTextField: UITextField!
 
     var imagesFetchedResultsController: NSFetchedResultsController<Image>!
-    var imageView: UIImageView!
-    var noImageLabel: UILabel!
+    var imagePreviewPageViewController: ImagePreviewPageViewController!
 
     var ingredientAmountsTableView: UITableView!
     var ingredientsExpanded: Bool = true
@@ -92,10 +91,6 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
     func restoreState()
       {
         nameTextField.text = recipe.name
-
-        let firstImage = recipe.images.sorted(by: self.imageSortingBlock).first?.image
-        imageView.image = firstImage ?? UIImage(named: "defaultImage")
-        noImageLabel.isHidden = firstImage != nil
       }
 
 
@@ -119,25 +114,13 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         nameTextField.delegate = self
         addSubviewToScrollView(nameTextField)
 
-        // Configure the image view
-        imageView = UIImageView(frame: .zero)
-        imageView.isUserInteractionEnabled = true
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 5.0
-        imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = UIColor.lightGray.cgColor
-        imageView.clipsToBounds = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:))))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(imageView)
-
-        // Configure the no image label
-        noImageLabel = UILabel(frame: .zero)
-        noImageLabel.text = NSLocalizedString("NO PHOTO SELECTED", comment: "") 
-        noImageLabel.textAlignment = .center
-        noImageLabel.font = UIFont(name: "Helvetica", size: 24)
-        noImageLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(noImageLabel)
+        // Configure the image preview page view controller
+        imagePreviewPageViewController = ImagePreviewPageViewController(images: recipe.images)
+        addChildViewController(imagePreviewPageViewController)
+        imagePreviewPageViewController.didMove(toParentViewController: self)
+        let imagePreview = imagePreviewPageViewController.view!
+        imagePreview.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(imagePreview)
 
         // Configure the ingredient table view
         ingredientAmountsTableView = UITableView(frame: CGRect.zero)
@@ -172,22 +155,16 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         nameTextField.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
         nameTextField.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 8.0).isActive = true
 
-        // Configure the layout bindings for the image view
-        imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageView.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
-
-        // Configure the layout bindings for the no image label
-        noImageLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
-        noImageLabel.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
-        noImageLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
-        noImageLabel.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
+        // Configure the layout bindings for the image preview
+        imagePreview.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imagePreview.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imagePreview.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imagePreview.topAnchor.constraint(equalTo: nameTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the ingredient table view
         ingredientAmountsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
         ingredientAmountsTableView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        ingredientAmountsTableView.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 16.0).isActive = true
+        ingredientAmountsTableView.topAnchor.constraint(equalTo: imagePreview.bottomAnchor, constant: 16.0).isActive = true
 
         // Configure the layout bindings for the step table view
         stepsTableView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -225,6 +202,10 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
           try imagesFetchedResultsController.performFetch()
         }
         catch let e { fatalError("error: \(e)") }
+
+        // Configure a gesture recognizer on the image preview view controller
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:)))
+        imagePreviewPageViewController.view!.addGestureRecognizer(gestureRecognizer)
 
         restoreState()
       }
@@ -305,10 +286,8 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         switch controller {
 
           case imagesFetchedResultsController:
-            // Update the image view's image, and show/hide the no image label
-            let firstImage = self.recipe.images.sorted(by: self.imageSortingBlock).first?.image
-            self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
-            self.noImageLabel.isHidden = firstImage != nil
+            // Update the image preview view controller
+            imagePreviewPageViewController.updateImages(newImages: recipe.images)
 
           default:
             fatalError("unexpected fetched results controller")
@@ -611,7 +590,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         }
         // Otherwise, show an ImagePageViewController
         else {
-          let imagePageViewController = ImagePageViewController(images: recipe.images, index: 0)
+          let imagePageViewController = ImagePageViewController(images: recipe.images, index: imagePreviewPageViewController.currentIndex!)
           show(imagePageViewController, sender: self)
         }
       }

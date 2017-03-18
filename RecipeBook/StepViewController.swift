@@ -20,8 +20,7 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
     var detailTextView: UITextView!
 
     var imagesFetchedResultsController: NSFetchedResultsController<Image>!
-    var imageView: UIImageView!
-    var noImageLabel: UILabel!
+    var imagePreviewPageViewController: ImagePreviewPageViewController!
 
 
     init(step: Step, editing: Bool, context: NSManagedObjectContext, completion: ((Step) -> Void)? = nil)
@@ -37,10 +36,6 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
       {
         summaryTextField.text = step.summary
         detailTextView.text = step.detail
-
-        let firstImage = step.images.sorted(by: self.imageSortingBlock).first?.image
-        imageView.image = firstImage ?? UIImage(named: "defaultImage")
-        noImageLabel.isHidden = firstImage != nil
       }
 
 
@@ -74,25 +69,13 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
         detailTextView.delegate = self
         addSubviewToScrollView(detailTextView)
 
-        // Configure the image view
-        imageView = UIImageView(frame: .zero)
-        imageView.isUserInteractionEnabled = true
-        imageView.contentMode = .scaleAspectFill
-        imageView.layer.cornerRadius = 5.0
-        imageView.layer.borderWidth = 0.5
-        imageView.layer.borderColor = UIColor.lightGray.cgColor
-        imageView.clipsToBounds = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:))))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(imageView)
-
-        // Configure the no image label
-        noImageLabel = UILabel(frame: .zero)
-        noImageLabel.text = NSLocalizedString("NO PHOTO SELECTED", comment: "") 
-        noImageLabel.textAlignment = .center
-        noImageLabel.font = UIFont(name: "Helvetica", size: 24)
-        noImageLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubviewToScrollView(noImageLabel)
+        // Configure the image preview page view controller
+        imagePreviewPageViewController = ImagePreviewPageViewController(images: step.images)
+        addChildViewController(imagePreviewPageViewController)
+        imagePreviewPageViewController.didMove(toParentViewController: self)
+        let imagePreview = imagePreviewPageViewController.view!
+        imagePreview.translatesAutoresizingMaskIntoConstraints = false
+        addSubviewToScrollView(imagePreview)
 
         // Configure the layout bindings for the summary text field
         summaryTextField.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -16.0).isActive = true
@@ -107,16 +90,10 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
         detailTextView.topAnchor.constraint(equalTo: summaryTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imageView.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
-        imageView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
-
-        // Configure the layout bindings for the no image label
-        noImageLabel.widthAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
-        noImageLabel.centerXAnchor.constraint(equalTo: imageView.centerXAnchor).isActive = true
-        noImageLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
-        noImageLabel.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
+        imagePreview.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imagePreview.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
+        imagePreview.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imagePreview.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
       }
 
 
@@ -139,6 +116,10 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
 
         // Set the title of the navigation item
         navigationItem.title = NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
+
+        // Configure a gesture recognizer on the image preview view controller
+        let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:)))
+        imagePreviewPageViewController.view!.addGestureRecognizer(gestureRecognizer)
 
         restoreState()
       }
@@ -185,10 +166,8 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
 
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?)
       {
-        // Update the image view's image, and show/hide the no image label
-        let firstImage = self.step.images.sorted(by: self.imageSortingBlock).first?.image
-        self.imageView.image = firstImage ?? UIImage(named: "defaultImage")
-        self.noImageLabel.isHidden = firstImage != nil
+        // Update the image preview view controller
+        imagePreviewPageViewController.updateImages(newImages: step.images)
       }
 
 
@@ -241,7 +220,7 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
         }
         // Otherwise, show an ImagePageViewController
         else {
-          let imagePageViewController = ImagePageViewController(images: step.images, index: 0)
+          let imagePageViewController = ImagePageViewController(images: step.images, index: imagePreviewPageViewController.currentIndex!)
           show(imagePageViewController, sender: self)
         }
       }
