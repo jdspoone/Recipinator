@@ -13,9 +13,8 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
 
     var recipe: Recipe
 
-    // Use reverse ordering for the ingredientAmounts as we add them from the top of the tableView
     let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
-    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number > $1.number }
+    let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number < $1.number }
     let stepsSortingBlock: (Step, Step) -> Bool = { return $0.number < $1.number }
 
     var nameTextField: UITextField!
@@ -24,6 +23,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
     var imagePreviewPageViewController: ImagePreviewPageViewController!
 
     var ingredientAmountsTableView: UITableView!
+    let ingredientAmountsReuseIdentifier = "IngredientAmountsTableViewCell"
     var ingredientsExpanded: Bool = true
       {
         // Enable key-value observation
@@ -127,8 +127,10 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         ingredientAmountsTableView.cellLayoutMarginsFollowReadableWidth = false;
         ingredientAmountsTableView.bounces = false
         ingredientAmountsTableView.rowHeight = 50
+        ingredientAmountsTableView.allowsSelectionDuringEditing = true
         ingredientAmountsTableView.delegate = self
         ingredientAmountsTableView.dataSource = self
+        ingredientAmountsTableView.register(IngredientAmountTableViewCell.self, forCellReuseIdentifier: ingredientAmountsReuseIdentifier)
         ingredientAmountsTableView.translatesAutoresizingMaskIntoConstraints = false
         addSubviewToScrollView(ingredientAmountsTableView)
 
@@ -273,6 +275,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         super.setEditing(editing, animated: animated)
 
         // Set the editing state of the various table views
+        ingredientAmountsTableView.setEditing(editing, animated: animated)
         stepsTableView.setEditing(editing, animated: animated)
         tagsViewController.setEditing(editing, animated: animated)
       }
@@ -335,7 +338,11 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
       {
         switch tableView {
           case ingredientAmountsTableView :
-            // Do nothing
+            // Get the ingredient amount that was just selected
+            let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
+
+            // Edit that ingredient amount
+            editIngredientAmount(ingredientAmount, at: indexPath)
             tableView.deselectRow(at: indexPath, animated: true)
 
           case stepsTableView :
@@ -462,12 +469,26 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         switch tableView {
 
           case ingredientAmountsTableView :
-            // Return an IngredientAmountTableViewCell for the appropriate IngredientAmount
+            // Dequeue and configure a table view cell for the ingredient amount
+            let cell = tableView.dequeueReusableCell(withIdentifier: ingredientAmountsReuseIdentifier)!
             let ingredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[indexPath.row]
-            return IngredientAmountTableViewCell(parentTableView: tableView, ingredientAmount: ingredientAmount)
+            cell.textLabel!.text = ingredientAmount.ingredient.name
+
+            if ingredientAmount.amount != "" {
+              cell.detailTextLabel!.text = ingredientAmount.amount
+              cell.detailTextLabel!.textColor = .black
+              cell.detailTextLabel!.font = UIFont.systemFont(ofSize: 17)
+            }
+            else {
+              cell.detailTextLabel!.text = "Amount"
+              cell.detailTextLabel!.textColor = .lightGray
+              cell.detailTextLabel!.font = UIFont.italicSystemFont(ofSize: 17)
+            }
+
+            return cell
 
           case stepsTableView :
-            // Configure and return a tableViewCell for the appropriate Step
+            // Dequeue and configure a table view cell for the step
             let cell = tableView.dequeueReusableCell(withIdentifier: stepsTableViewReuseIdentifier)!
             let step = recipe.steps.sorted(by: stepsSortingBlock)[indexPath.row]
             cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
@@ -509,7 +530,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
               managedObjectContext.delete(selected)
 
               // Iterate over the remaining ingredient amounts
-              for (index, ingredientAmount) in recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock).reversed().enumerated() {
+              for (index, ingredientAmount) in recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock).enumerated() {
                 // Update the the remaining ingredient amounts
                 if ingredientAmount.number != Int16(index) {
                   ingredientAmount.number = Int16(index)
@@ -550,7 +571,21 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
       {
         switch tableView {
           case ingredientAmountsTableView :
-            fatalError("ingredient amount reordering has not been implemented")
+            // Get handles on the ingredient amounts we're going to be working with
+            let sourceIngredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[sourceIndexPath.row]
+            let sourceNumber = sourceIngredientAmount.number
+
+            let destinationIngredientAmount = recipe.ingredientAmounts.sorted(by: ingredientAmountsSortingBlock)[destinationIndexPath.row]
+            let destinationNumber = destinationIngredientAmount.number
+
+            // Determine which ingredient amounts will be affected by the reordering
+            let movedIngredientAmounts = recipe.ingredientAmounts.filter({ return sourceNumber < destinationNumber ? $0.number <= destinationNumber && $0.number > sourceNumber : $0.number >= destinationNumber && $0.number < sourceNumber })
+
+            // Update the order of the steps
+            sourceIngredientAmount.number = destinationIngredientAmount.number
+            for ingredientAmount in movedIngredientAmounts {
+              ingredientAmount.number += sourceNumber < destinationNumber ? -1 : 1
+            }
 
           case stepsTableView :
             // Get handles on the steps and step numbers we're going to be working with
@@ -596,53 +631,91 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
       }
 
 
-    func alertTextFieldDidChange(_ textField: UITextField)
+    func ingredientNameDidChange(_ textField: UITextField)
       {
         if let alertController = presentedViewController as? UIAlertController {
           let submitAction = alertController.actions.last!
-          submitAction.isEnabled = textField.text != nil
-            ? (textField.text?.characters.count)! > 0
-            : false
+          submitAction.isEnabled = textField.text != nil ? (textField.text?.characters.count)! > 0 : false
         }
       }
 
 
-    func addIngredient(_ sender: AnyObject?)
+    func editIngredientAmount(_ ingredientAmount: IngredientAmount? = nil, at indexPath: IndexPath?  = nil)
       {
+        // Sanity check
         assert(ingredientsExpanded, "Unexpected state - ingredients table view is collapsed")
 
-        // Configure a UIAlertController
-        let alertController = UIAlertController(title: NSLocalizedString("NEW INGREDIENT", comment: ""), message: NSLocalizedString("ENTER THE NAME OF THE NEW INGREDIENT", comment: ""), preferredStyle: .alert)
+        // Configure an alert controller
+        let alertController = UIAlertController(title: NSLocalizedString(ingredientAmount == nil ? "NEW INGREDIENT" : "EDIT INGREDIENT", comment: ""), message: nil, preferredStyle: .alert)
 
-        // Add a textField to the alertController for the ingredient's name
+        // Add a text field to the controller for the ingredient name
         alertController.addTextField(configurationHandler:
             { (textField: UITextField) in
+              textField.text = ingredientAmount?.ingredient.name
               textField.placeholder = NSLocalizedString("INGREDIENT", comment: "")
-              textField.addTarget(self, action: #selector(self.alertTextFieldDidChange(_:)), for: .editingChanged)
+              textField.textAlignment = .center
+              textField.addTarget(self, action: #selector(self.ingredientNameDidChange(_:)), for: .editingChanged)
             })
 
-        // Add a cancel button to the alertController
+        // Add a text field to the controller for the ingredient amount
+        alertController.addTextField(configurationHandler:
+            { (textField: UITextField) in
+              textField.text = ingredientAmount?.amount
+              textField.placeholder = NSLocalizedString("AMOUNT", comment: "")
+              textField.textAlignment = .center
+            })
+
+        // Add a cancel button
         alertController.addAction(UIAlertAction(title: NSLocalizedString("CANCEL", comment: ""), style: .cancel, handler: nil))
 
         // Add a submit action to the alertController
         let submitAction = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler:
             { (action: UIAlertAction) in
-              // Get the name of the ingredient from the textField
-              let name = alertController.textFields!.last!.text!
 
-              // Create a new ingredient and ingredientAmount, and add it to the recipe
+              // Get the name and amount of the ingredient
+              let name = alertController.textFields!.first!.text!
+              let amount = alertController.textFields!.last!.text!
+
+              // Sanity check
+              assert(name != "", "unexpected state")
+
+              // Get the ingredient associated with the ingredient amount
               let ingredient = Ingredient.withName(name, inContext: self.managedObjectContext)
-              let ingredientAmount = IngredientAmount(ingredient: ingredient, amount: "", number: Int16(self.recipe.ingredientAmounts.count), context: self.managedObjectContext)
-              self.recipe.ingredientAmounts.insert(ingredientAmount)
 
-              // Update the ingredientAmountTableView
-              self.ingredientAmountsTableView.reloadData()
+              // If we weren't given an ingredient amount as a parameter, create one and add it to the recipe
+              if ingredientAmount == nil {
+                let newIngredientAmount = IngredientAmount(ingredient: ingredient, amount: amount, number: Int16(self.recipe.ingredientAmounts.count), context: self.managedObjectContext)
+                self.recipe.ingredientAmounts.insert(newIngredientAmount)
+              }
+              // Otherwise update the existing ingredient amount
+              else {
+                ingredientAmount!.ingredient = ingredient
+                ingredientAmount!.amount = amount
+              }
+
+              // If we're editing an existing ingredient amount, reload the row at the given index path
+              if let indexPath = indexPath {
+                self.ingredientAmountsTableView.reloadRows(at: [indexPath], with: .none)
+              }
+              // Otherwise, insert a new row at the end of the table view for the new ingredient amount
+              else {
+                let newIndexPath = IndexPath(row: self.recipe.ingredientAmounts.count - 1, section: 0)
+                self.ingredientAmountsTableView.insertRows(at: [newIndexPath], with: .none)
+              }
             })
-        submitAction.isEnabled = false;
+        // The submit action should only be initially enabled if we're editing an existing ingredient amount
+        submitAction.isEnabled = ingredientAmount != nil;
         alertController.addAction(submitAction)
 
         // Present the alertController
-        present(alertController, animated: true, completion: nil);
+        present(alertController, animated: true, completion: nil)
+      }
+
+
+    func addIngredient(_ sender: AnyObject?)
+      {
+        // Create a new ingredient amount
+        editIngredientAmount()
       }
 
 
