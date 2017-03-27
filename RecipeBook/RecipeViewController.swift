@@ -149,6 +149,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         // Configure the tag view controller
         tagsViewController = TagsViewController(tags: recipe.tags, context: managedObjectContext)
         addChildViewController(tagsViewController)
+        tagsViewController.didMove(toParentViewController: self)
         addSubviewToScrollView(tagsViewController.view)
 
         // Configure the layout bindings for the text field

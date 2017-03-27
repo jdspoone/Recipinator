@@ -99,6 +99,7 @@ class ImagePreviewPageViewController: UIViewController, UIPageViewControllerDele
 
         // Configure the page view controller
         addChildViewController(pageViewController)
+        pageViewController.didMove(toParentViewController: self)
         let pageView = pageViewController.view!
         pageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pageView)
