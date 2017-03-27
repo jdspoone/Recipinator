@@ -22,6 +22,7 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
     var initialIndex: Int
 
     var pageViewController: UIPageViewController!
+    var pageControl: UIPageControl!
 
 
     init(images: Set<Image>, index: Int)
@@ -53,7 +54,7 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         let height = window.frame.height - offset
 
         view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        view.backgroundColor = UIColor.white
+        view.backgroundColor = .white
         view.isOpaque = true
 
         // Configure the page view controller
@@ -61,15 +62,33 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         pageViewController.delegate = self
         pageViewController.dataSource = self
         addChildViewController(pageViewController)
+        pageViewController.didMove(toParentViewController: self)
         let pageView = pageViewController.view!
         pageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pageView)
+
+        // Configure the page control
+        pageControl = UIPageControl(frame: .zero)
+        pageControl.hidesForSinglePage = true
+        pageControl.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pageControl)
 
         // Configure the layout bindings for the page view controller's view
         pageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         pageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         pageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+
+        // Configure the layout bindings for the page control
+        pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+
+        // Get the size of the page control
+        let size = pageControl.size(forNumberOfPages: images.count)
+
+        // Configure the dynamic layout bindings for the page control
+        pageControl.heightAnchor.constraint(equalToConstant: size.height).isActive = true
+        pageControl.widthAnchor.constraint(equalToConstant: size.width).isActive = true
       }
 
 
@@ -77,9 +96,30 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
       {
         super.viewDidLoad()
 
+        // Configure an empty double tap gesture recognizer on the scroll view
+        let doubleTap = UITapGestureRecognizer(target: self, action: nil)
+        doubleTap.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTap)
+
+        // Configure a single tap gesture recognizer
+        let singleTap = UITapGestureRecognizer(target: self, action: #selector(self.singleTap(_:)))
+        singleTap.numberOfTapsRequired = 1
+        singleTap.require(toFail: doubleTap)
+        view.addGestureRecognizer(singleTap)
+      }
+
+
+    override func viewWillAppear(_ animated: Bool)
+      {
+        super.viewWillAppear(animated)
+
         // Set the page view controller's initial view controller
         let viewController = ImageViewController(image: sortedImages[initialIndex])
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
+
+        // Update the page control
+        pageControl.numberOfPages = images.count
+        pageControl.currentPage = initialIndex
       }
 
 
@@ -89,9 +129,20 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
       {
         // Iterate over the pending view controllers
         for viewController in (pendingViewControllers as! [ImageViewController]) {
-          // Update the view controller's image view layout constraints prior to transitioning
-          viewController.updateImageViewLayoutConstraints()
+
+          // Update the view controller's scroll view's zoom scale      
+          viewController.scrollView.zoomScale = 1.0
         }
+      }
+
+
+    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool)
+      {
+        // Get the current image preview view controller
+        let controller = pageViewController.viewControllers!.first! as! ImageViewController
+
+        // Update the page control's current page
+        pageControl.currentPage = Int(controller.image.index)
       }
 
 
@@ -128,4 +179,12 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         return nil
       }
 
+
+    // MARK; - Actions
+
+    func singleTap(_ recognizer: UITapGestureRecognizer)
+      {
+        // Toggle the background color of the scroll view
+        view.backgroundColor = view.backgroundColor == .white ? .black : .white
+      }
   }

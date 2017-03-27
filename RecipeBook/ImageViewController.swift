@@ -5,15 +5,19 @@
   UIViewController subclass for displaying a single image.
   Intended to be presented by a UIPageViewController.
 
+  Credit to Apple for code in zoomRectWithScale() - https://developer.apple.com/library/content/documentation/WindowsViews/Conceptual/UIScrollView_pg/ZoomZoom/ZoomZoom.html
 */
 
 import UIKit
 
 
-class ImageViewController: UIViewController
+class ImageViewController: UIViewController, UIScrollViewDelegate
   {
 
     var image: Image
+
+    var scrollView: UIScrollView!
+
     var imageView: UIImageView!
 
     var imageViewWidthConstraint: NSLayoutConstraint!
@@ -26,7 +30,9 @@ class ImageViewController: UIViewController
         }
         // Activate the new constraint
         didSet {
-          NSLayoutConstraint.activate([imageViewWidthConstraint])
+          if imageViewWidthConstraint != nil {
+            NSLayoutConstraint.activate([imageViewWidthConstraint])
+          }
         }
       }
 
@@ -40,7 +46,9 @@ class ImageViewController: UIViewController
         }
         // Activate the new constraint
         didSet {
-          NSLayoutConstraint.activate([imageViewHeightConstraint])
+          if imageViewHeightConstraint != nil {
+            NSLayoutConstraint.activate([imageViewHeightConstraint])
+          }
         }
       }
 
@@ -53,46 +61,57 @@ class ImageViewController: UIViewController
       }
 
 
-    func updateImageViewLayoutConstraints()
+    func getImageViewSize() -> CGSize
       {
-        // We're using the parent's view throughout this method instead of our own view because 
-        // there are cases where this method will be called and our own view will be empty
-        let parentView = parent!.view!
+        let window = UIApplication.shared.windows.first!
+        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
+        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
+
+        // We're assuming the parent view controller's view is the size of the visible portion of the window
+        let parentWidth = window.frame.width
+        let parentHeight = window.frame.height - offset
 
         // Determine if we're in portrait or landscape mode
         // NOTE: - We're doing this because when querying the current device for its orientation,
         //         it's possible that isPortrait == isLandscape
-        let isPortrait = parentView.frame.width < parentView.frame.height
+        let isPortrait = parentWidth < parentHeight
 
+        // Get the aspect ratio of the image
         let size = image.image!.size
         let aspectRatio = size.width / size.height
 
-        // Animate
-        UIView.animate(withDuration: 0.5, animations: {
+        // Define variables for the width and height of the image view
+        var width: CGFloat
+        var height: CGFloat
 
-          // Get the width and height of the parent view
-          let viewWidth = self.parent!.view.frame.width
-          let viewHeight = self.parent!.view.frame.height
+        // If the device is in portrait orientation, update the height
+        if isPortrait {
+          width = parentWidth
+          height = parentWidth / aspectRatio
+        }
+        // Otherwise the device is in landscape orientation, update the width
+        else {
+          width = parentHeight * aspectRatio
+          height = parentHeight
+        }
 
-          // Define variables for the width and height of the image view
-          var width: CGFloat
-          var height: CGFloat
+        return CGSize(width: width, height: height)
+      }
 
-          // If the device is in portrait orientation, update the height
-          if isPortrait {
-            width = viewWidth
-            height = viewWidth / aspectRatio
-          }
-          // Otherwise the device is in landscape orientation, update the width
-          else {
-            width = viewHeight * aspectRatio
-            height = viewHeight
-          }
 
-          // Update the width and height constraints of the image view
-          self.imageViewWidthConstraint = self.imageView.widthAnchor.constraint(equalToConstant: width)
-          self.imageViewHeightConstraint = self.imageView.heightAnchor.constraint(equalToConstant: height)
-        })
+    func zoomRectWithScale(_ scale: CGFloat, andCenter center: CGPoint) -> CGRect
+      {
+        var zoomRect = CGRect()
+
+        // Get the width and height of the zoom rect
+        zoomRect.size.height = scrollView.frame.size.height / scale;
+        zoomRect.size.width  = scrollView.frame.size.width  / scale;
+
+        // Get the origin of the zoom rect
+        zoomRect.origin.x = center.x - (zoomRect.size.width  / 2.0);
+        zoomRect.origin.y = center.y - (zoomRect.size.height / 2.0);
+
+        return zoomRect
       }
 
 
@@ -107,16 +126,29 @@ class ImageViewController: UIViewController
         // Configure the root view
         view = UIView(frame: .zero)
 
+        // Configure the scroll view
+        scrollView = UIScrollView(frame: .zero)
+        scrollView.bounces = false
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 3.0
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.delegate = self
+        view.addSubview(scrollView)
+
         // Configure the image view
         imageView = UIImageView(frame: .zero)
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(imageView)
+        scrollView.addSubview(imageView)
 
-        // Configure the constant layout bindings for the image view
-        imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        imageView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        // Configure the layout bindings for the scroll view
+        scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        scrollView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        scrollView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        scrollView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
       }
 
 
@@ -126,6 +158,11 @@ class ImageViewController: UIViewController
 
         // Set the image view's image
         imageView.image = image.image
+
+        // Configure a double tap gesture recognizer on the scroll view
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(self.doubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTap)
       }
 
 
@@ -135,15 +172,43 @@ class ImageViewController: UIViewController
 
         // Register to observe changes to the device's orientation
         NotificationCenter.default.addObserver(self, selector: #selector(self.deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+
+        // Update the view's layout constraints
+        view.setNeedsUpdateConstraints()
       }
 
 
-    override func viewDidAppear(_ animated: Bool)
+    override func updateViewConstraints()
       {
-        super.viewDidAppear(animated)
+        // Determine the size of the image view
+        let size = self.getImageViewSize()
 
-        // Configure the dynamic layout bindings for the image view
-        updateImageViewLayoutConstraints()
+        // Get the zoom scale of the scroll view
+        let scale = self.scrollView.zoomScale
+
+        // Update the scroll view's content size
+        scrollView.contentSize = CGSize(width: size.width * scale, height: size.height * scale)
+
+        // Get the size of the parent view controller's view
+        // Note: we're assuming the parent view controller's view is the size of the visible portion of the window
+        let window = UIApplication.shared.windows.first!
+        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
+        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
+
+        let parentWidth = window.frame.width
+        let parentHeight = window.frame.height - offset
+
+        // Update the scroll view's content insets
+        let vertical = max(parentHeight - size.height * scale, 0)
+        let horizontal = max(parentWidth - size.width * scale, 0)
+        let contentInset = UIEdgeInsets(top: vertical / 2, left: horizontal / 2, bottom: vertical / 2, right: horizontal / 2)
+        scrollView.contentInset = contentInset
+
+        // Update the image view's width and height constraints
+        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: size.width)
+        imageViewHeightConstraint = imageView.heightAnchor.constraint(equalToConstant: size.height)
+
+        super.updateViewConstraints()
       }
 
 
@@ -156,12 +221,60 @@ class ImageViewController: UIViewController
       }
 
 
+    // MARK: - UIScrollViewDelegate
+
+    func viewForZooming(in scrollView: UIScrollView) -> UIView?
+      {
+        return imageView
+      }
+
+
+    func scrollViewDidZoom(_ scrollView: UIScrollView)
+      {
+        // Get the size of the image view
+        let size = getImageViewSize()
+
+        // Get the zoom scale of the scroll view
+        let scale = scrollView.zoomScale
+
+        // Update the scroll view's content size
+        scrollView.contentSize = CGSize(width: size.width * scale, height: size.height * scale)
+
+        // Update the scroll view's content insets
+        let vertical = max(scrollView.frame.height - size.height * scale, 0)
+        let horizontal = max(scrollView.frame.width - size.width * scale, 0)
+        scrollView.contentInset = UIEdgeInsets(top: vertical / 2, left: horizontal / 2, bottom: vertical / 2, right: horizontal / 2)
+      }
+
+
+    // MARK: - Actions
+
+    func doubleTap(_ recognizer: UITapGestureRecognizer)
+      {
+        // Either want to zoom out
+        if scrollView.zoomScale > scrollView.minimumZoomScale {
+          scrollView.setZoomScale(scrollView.minimumZoomScale, animated: true)
+        }
+        // Or we want to zoom in
+        else {
+          // Get the center of the tap gesture
+          let center = recognizer.location(in: imageView)
+
+          // Get the zoomed rect centered on that location
+          let zoomRect = zoomRectWithScale(scrollView.maximumZoomScale, andCenter: center)
+
+          // Zoom in on that location
+          scrollView.zoom(to: zoomRect, animated: true)
+        }
+      }
+
+
     // MARK: - NSNotificationCenter
 
     func deviceOrientationDidChange(_ notification: Notification)
       {
         // Re-configure the dynamic layout bindings for the image view
-        updateImageViewLayoutConstraints()
+        view.setNeedsUpdateConstraints()
       }
 
   }
