@@ -28,9 +28,6 @@
 		1F918AD01C6E5FF200C5B2D0 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F918ACF1C6E5FF200C5B2D0 /* Tag.swift */; };
 		1F9D416A1E5BE4E5008CB900 /* v1.1-tov1.2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 1F9D41691E5BE4E5008CB900 /* v1.1-tov1.2.xcmappingmodel */; };
 		1F9D416C1E5BE931008CB900 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9D416B1E5BE931008CB900 /* CoreDataController.swift */; };
-		1FAE47EE1E54DEC2005E29ED /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 1FAE47EB1E54DEC2005E29ED /* LICENSE */; };
-		1FAE47EF1E54DEC2005E29ED /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 1FAE47EC1E54DEC2005E29ED /* README.md */; };
-		1FAE47F01E54DEC2005E29ED /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 1FAE47ED1E54DEC2005E29ED /* TODO */; };
 		1FB57F131E47B168003E9CFF /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1FB57F111E47B168003E9CFF /* Localizable.strings */; };
 		1FC1911F1E7331070064F144 /* IngredientAmountToIngredientAmountPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FC1911E1E7331070064F144 /* IngredientAmountToIngredientAmountPolicy.swift */; };
 		1FCFEE761E7357F400ADDAC7 /* v1.2-to-v1.3.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 1FCFEE751E7357F400ADDAC7 /* v1.2-to-v1.3.xcmappingmodel */; };
@@ -267,9 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FB57F131E47B168003E9CFF /* Localizable.strings in Resources */,
-				1FAE47F01E54DEC2005E29ED /* TODO in Resources */,
 				1FFF52281C3319D5006A99C2 /* Assets.xcassets in Resources */,
-				1FAE47EE1E54DEC2005E29ED /* LICENSE in Resources */,
 				1FFF52351C331AB5006A99C2 /* Launch.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,7 +286,6 @@
 				1FD951041E7B025900DB8B8C /* ImagePreviewPageViewController.swift in Sources */,
 				1F8A80F81C51637B00971E9D /* RecipeViewController.swift in Sources */,
 				1FD2DC871E5D1511000D0ED4 /* ImageViewController.swift in Sources */,
-				1FAE47EF1E54DEC2005E29ED /* README.md in Sources */,
 				1F9D416A1E5BE4E5008CB900 /* v1.1-tov1.2.xcmappingmodel in Sources */,
 				1F918ACE1C6E5FB100C5B2D0 /* TagsViewController.swift in Sources */,
 				1F18EBC11E5B9985005C85EF /* Image.swift in Sources */,
