@@ -3,7 +3,6 @@ SearchViewController:
 
 ImageViewController:
   -add ability to show/hide navigation bar with tap
-  -use 3D touch somehow
 
 ImageCollectionViewController:
   -standardize size and layout of cells

@@ -8,10 +8,12 @@ import UIKit
 import CoreData
 
 
-class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource
+class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelegate, UIViewControllerPreviewingDelegate, UITableViewDelegate, UITableViewDataSource
   {
 
     var recipe: Recipe
+
+    var previewingContext: UIViewControllerPreviewing?
 
     let imageSortingBlock: (Image, Image) -> Bool = { $0.index < $1.index }
     let ingredientAmountsSortingBlock: (IngredientAmount, IngredientAmount) -> Bool = { $0.number < $1.number }
@@ -91,6 +93,26 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
     func restoreState()
       {
         nameTextField.text = recipe.name
+      }
+
+
+    func togglePreviewing()
+      {
+        // Either force touch is available
+        if traitCollection.forceTouchCapability == .available {
+
+          // Register for previewing recipes from the table view
+          previewingContext = registerForPreviewing(with: self, sourceView: view)
+        }
+        // Or it's not
+        else {
+          // As long as we have a previewing context
+          if let context = previewingContext {
+
+            // Unregister for previewing
+            unregisterForPreviewing(withContext: context)
+          }
+        }
       }
 
 
@@ -210,6 +232,9 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.selectImage(_:)))
         imagePreviewPageViewController.view!.addGestureRecognizer(gestureRecognizer)
 
+        // Enable previewing if applicable
+        togglePreviewing()
+
         restoreState()
       }
 
@@ -296,6 +321,45 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
           default:
             fatalError("unexpected fetched results controller")
         }
+      }
+
+
+    // MARK: - UIViewControllerPreviewingDelegate
+
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController?
+      {
+        // Get the location of the press
+        let position = stepsTableView.convert(location, from: self.view)
+
+        // If there is a table view cell at the given location
+        if let path = stepsTableView.indexPathForRow(at: position) {
+
+          // Create a steps view controller for the selected recipe
+          let steps = recipe.steps.sorted(by: stepsSortingBlock)
+          let stepsViewController = StepsViewController(steps: steps, index: path.row, editing: isEditing, context: managedObjectContext, completion:
+            { (step: Step) in
+              // Update the label of the tableView cell
+              let cell = self.stepsTableView.cellForRow(at: IndexPath(row: Int(step.number), section: 0))!
+              cell.textLabel!.text = step.summary != "" ? step.summary : NSLocalizedString("STEP", comment: "") + " \(step.number + 1)"
+            })
+
+          // Set the source rect of the previewing context to be the frame of the selected cell
+          let cell = stepsTableView.cellForRow(at: path)!
+          previewingContext.sourceRect = view.convert(cell.frame, from: stepsTableView)
+
+          // Return the steps view controller
+          return stepsViewController
+        }
+
+        // Otherwise return nil
+        return nil
+      }
+
+
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController)
+      {
+        // Show the given view controller
+        show(viewControllerToCommit, sender: self)
       }
 
 

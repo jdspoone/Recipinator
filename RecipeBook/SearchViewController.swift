@@ -8,7 +8,7 @@ import UIKit
 import CoreData
 
 
-class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
+class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate, UIViewControllerPreviewingDelegate, UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate
   {
     enum SearchCategory: Int {
       case recipe = 0
@@ -24,6 +24,8 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
     var fetchedResultsController: NSFetchedResultsController<Recipe>!
 
     var managedObjectContext: NSManagedObjectContext
+
+    var previewingContext: UIViewControllerPreviewing?
 
     var searching: Bool = false
 
@@ -165,6 +167,26 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
       }
 
 
+    func togglePreviewing()
+      {
+        // Either force touch is available
+        if traitCollection.forceTouchCapability == .available {
+
+          // Register for previewing recipes from the table view
+          previewingContext = registerForPreviewing(with: self, sourceView: view)
+        }
+        // Or it's not
+        else {
+          // As long as we have a previewing context
+          if let context = previewingContext {
+
+            // Unregister for previewing
+            unregisterForPreviewing(withContext: context)
+          }
+        }
+      }
+
+
     // MARK: - UIViewController
 
     required init?(coder aDecoder: NSCoder)
@@ -275,6 +297,9 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         // Configure the items of the toolbar
         toolbar.setItems([flexibleSpace, searchButton, flexibleSpace, addButton, flexibleSpace], animated: false)
 
+        // Enable previewing if applicable
+        togglePreviewing()
+
         // Set the initial searching state to false
         setSearching(false, animated: false)
       }
@@ -332,6 +357,15 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
       }
 
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?)
+      {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        // Toggle previewing
+        togglePreviewing()
+      }
+
+
     // MARK: - NSFetchedResultsControllerDelegate
 
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>)
@@ -382,6 +416,40 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
       {
         // End the animation block
         recipeTableView.endUpdates()
+      }
+
+
+    // MARK: - UIViewControllerPreviewingDelegate
+
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController?
+      {
+        // Get the location of the press
+        let position = recipeTableView.convert(location, from: self.view)
+
+        // If there is a table view cell at the given location
+        if let path = recipeTableView.indexPathForRow(at: position) {
+
+          // Create a recipe view controller for the selected recipe
+          let recipe = fetchedResultsController.object(at: path)
+          let recipeViewController = RecipeViewController(recipe: recipe, editing: false, context: managedObjectContext)
+
+          // Set the source rect of the previewing context to be the frame of the selected cell
+          let cell = recipeTableView.cellForRow(at: path)!
+          previewingContext.sourceRect = view.convert(cell.frame, from: recipeTableView)
+
+          // Return the recipe view controller
+          return recipeViewController
+        }
+
+        // Otherwise return nil
+        return nil
+      }
+
+
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController)
+      {
+        // Show the given view controller
+        show(viewControllerToCommit, sender: self)
       }
 
 
