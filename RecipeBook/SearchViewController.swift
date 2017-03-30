@@ -31,13 +31,73 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
     var searchButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
 
-    var searchSegmentedControl: UISegmentedControl!
-    var searchTextField: UITextField!
-    var recipeTableView: UITableView!
+    var toolbar: UIToolbar!
+    var toolbarHeightConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet {
+          if toolbarHeightConstraint != nil {
+            NSLayoutConstraint.deactivate([toolbarHeightConstraint])
+          }
+        }
+        // Activate the new constraint if applicable
+        didSet {
+          if toolbarHeightConstraint != nil {
+            NSLayoutConstraint.activate([toolbarHeightConstraint])
+          }
+        }
+      }
 
+    var searchSegmentedControl: UISegmentedControl!
     var searchSegmentedControlHeightConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet {
+          if searchSegmentedControlHeightConstraint != nil {
+            NSLayoutConstraint.deactivate([searchSegmentedControlHeightConstraint])
+          }
+        }
+        // Activate the new constraint if applicable
+        didSet {
+          if searchSegmentedControlHeightConstraint != nil {
+            NSLayoutConstraint.activate([searchSegmentedControlHeightConstraint])
+          }
+        }
+      }
+
+    var searchTextField: UITextField!
     var searchTextFieldHeightConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet {
+          if searchTextFieldHeightConstraint != nil {
+            NSLayoutConstraint.deactivate([searchTextFieldHeightConstraint])
+          }
+        }
+        // Activate the new constraint if applicable
+        didSet {
+          if searchTextFieldHeightConstraint != nil {
+            NSLayoutConstraint.activate([searchTextFieldHeightConstraint])
+          }
+        }
+      }
+
+    var recipeTableView: UITableView!
     var recipeTableViewTopConstraint: NSLayoutConstraint!
+      {
+        // Deactivate the old constraint if applicable
+        willSet {
+          if recipeTableViewTopConstraint != nil {
+            NSLayoutConstraint.deactivate([recipeTableViewTopConstraint])
+          }
+        }
+        // Activate the new constraint if applicable
+        didSet {
+          if recipeTableViewTopConstraint != nil {
+            NSLayoutConstraint.activate([recipeTableViewTopConstraint])
+          }
+        }
+      }
 
 
     init(context: NSManagedObjectContext)
@@ -63,22 +123,23 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
       {
         self.searching = searching
 
-        // Set the buttons of the navigationItem
-        navigationItem.setLeftBarButton(searching ? cancelButton : nil, animated: animated)
-        navigationItem.setRightBarButtonItems(searching ? nil : [addButton, searchButton], animated: animated)
+        // Set the navigation item's title
+        navigationItem.title = NSLocalizedString(searching ? "SEARCH RECIPES" : "RECIPES", comment: "")
 
-        // Deactivate the various layout constraints
-        NSLayoutConstraint.deactivate([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
+        // Set the navigation item's buttons
+        navigationItem.setRightBarButton(searching ? cancelButton : nil, animated: animated)
 
+        // Update the various layout constraints
         searchSegmentedControlHeightConstraint = searchSegmentedControl.heightAnchor.constraint(equalToConstant: searching ? 40.0 : 0.0)
         searchTextFieldHeightConstraint = searchTextField.heightAnchor.constraint(equalToConstant: searching ? 40.0 : 0.0)
-        searchTextField.isHidden = searching ? false : true
         recipeTableViewTopConstraint = recipeTableView.topAnchor.constraint(equalTo: searching ? searchTextField.bottomAnchor : view.topAnchor, constant: 0.0)
+        toolbarHeightConstraint = toolbar.heightAnchor.constraint(equalToConstant: searching ? 0.0 : 40.0)
 
-        // Activate the various layout constraints
-        NSLayoutConstraint.activate([searchSegmentedControlHeightConstraint, searchTextFieldHeightConstraint, recipeTableViewTopConstraint])
+        // Toggle visibility of the search text field and the toolbar
+        searchTextField.isHidden = searching ? false : true
+        toolbar.isHidden = searching
 
-        // Set the search text field's text to the empty string
+        // Clear the search text field's text
         searchTextField.text = ""
 
         // If we're searching
@@ -155,6 +216,11 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         recipeTableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(recipeTableView)
 
+        // Configure the toolbar
+        toolbar = UIToolbar(frame: .zero)
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(toolbar)
+
         // Configure the layout bindings for the search segmented control
         searchSegmentedControl.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8.0).isActive = true
         searchSegmentedControl.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8.0).isActive = true
@@ -172,14 +238,15 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         // Configure the layout bindings for the recipe table view
         recipeTableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 8.0).isActive = true
         recipeTableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -8.0).isActive = true
-        recipeTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        recipeTableView.bottomAnchor.constraint(equalTo: toolbar.topAnchor).isActive = true
         recipeTableViewTopConstraint = recipeTableView.topAnchor.constraint(equalTo: view.topAnchor)
         recipeTableViewTopConstraint.isActive = true
 
-        // Create the required bar buttons
-        addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(SearchViewController.addRecipe(_:)))
-        searchButton =  UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(SearchViewController.search(_:)))
-        cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(SearchViewController.cancelSearch(_:)))
+        // Configure the layout bindings for the toolbar
+        toolbar.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        toolbar.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        toolbar.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        toolbarHeightConstraint = toolbar.heightAnchor.constraint(equalToConstant: 40)
       }
 
 
@@ -199,9 +266,16 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
         do { try fetchedResultsController.performFetch() }
         catch let e { fatalError("error: \(e)") }
 
-        // Configure the navigation item
-        navigationItem.title = NSLocalizedString("RECIPES", comment: "")
+        // Create the various bar button items
+        addButton = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(SearchViewController.addRecipe(_:)))
+        searchButton =  UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(SearchViewController.search(_:)))
+        cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(SearchViewController.cancelSearch(_:)))
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
+        // Configure the items of the toolbar
+        toolbar.setItems([flexibleSpace, searchButton, flexibleSpace, addButton, flexibleSpace], animated: false)
+
+        // Set the initial searching state to false
         setSearching(false, animated: false)
       }
 

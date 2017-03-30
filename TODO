@@ -1,7 +1,5 @@
 SearchViewController:
   -extend search functionality so search criteria can include any number of ingredients and tags
-  -add toolbar at bottom of view
-    -contains add recipes and search buttons
 
 ImageViewController:
   -add ability to show/hide navigation bar with tap
