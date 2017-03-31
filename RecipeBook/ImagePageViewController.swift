@@ -21,6 +21,11 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
 
     var initialIndex: Int
 
+    override var prefersStatusBarHidden: Bool
+      {
+        return navigationController!.navigationBar.isHidden
+      }
+
     var pageViewController: UIPageViewController!
     var pageControl: UIPageControl!
 
@@ -60,12 +65,14 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
 
         // Configure the page control
         pageControl = UIPageControl(frame: .zero)
+        pageControl.pageIndicatorTintColor = .lightGray
+        pageControl.currentPageIndicatorTintColor = .black
         pageControl.hidesForSinglePage = true
         pageControl.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(pageControl)
 
         // Configure the layout bindings for the page view controller's view
-        pageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        pageView.heightAnchor.constraint(equalToConstant: parent!.view.frame.height).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         pageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         pageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -173,9 +180,20 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
 
     // MARK; - Actions
 
-    func singleTap(_ recognizer: UITapGestureRecognizer)
+    func singleTap(_ recognizer: UITapGestureRecognizer? = nil)
       {
-        // Toggle the background color of the scroll view
-        view.backgroundColor = view.backgroundColor == .white ? .black : .white
+        let whiteBackground = view.backgroundColor == .white
+
+        // Toggle visibilty of the navigation bar
+        navigationController!.navigationBar.isHidden = whiteBackground
+
+        // Toggle visibility of the status bar
+        setNeedsStatusBarAppearanceUpdate()
+
+        // Toggle visibility of the page control
+        pageControl.isHidden = whiteBackground
+
+        // Toggle the background color of view
+        view.backgroundColor = whiteBackground ? .black : .white
       }
   }

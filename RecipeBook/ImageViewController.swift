@@ -192,11 +192,8 @@ class ImageViewController: UIViewController, UIScrollViewDelegate
         // Get the size of the parent view controller's view
         // Note: we're assuming the parent view controller's view is the size of the visible portion of the window
         let window = UIApplication.shared.windows.first!
-        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
-        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
-
         let parentWidth = window.frame.width
-        let parentHeight = window.frame.height - offset
+        let parentHeight = window.frame.height
 
         // Update the scroll view's content insets
         let vertical = max(parentHeight - size.height * scale, 0)
@@ -231,6 +228,11 @@ class ImageViewController: UIViewController, UIScrollViewDelegate
 
     func scrollViewDidZoom(_ scrollView: UIScrollView)
       {
+        // If the navigation bar is currently visible, hide it
+        if navigationController!.navigationBar.isHidden == false {
+          (parent!.parent as! ImagePageViewController).singleTap(nil)
+        }
+
         // Get the size of the image view
         let size = getImageViewSize()
 

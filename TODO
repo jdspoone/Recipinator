@@ -1,9 +1,6 @@
 SearchViewController:
   -extend search functionality so search criteria can include any number of ingredients and tags
 
-ImageViewController:
-  -add ability to show/hide navigation bar with tap
-
 RecipeViewController:
   -as ingredients table view shrinks, steps table view should smoothly follow it up..
     -will require unbinding some layout constraints and animating the frame of the steps table view
