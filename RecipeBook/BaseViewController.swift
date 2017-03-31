@@ -116,16 +116,10 @@ class BaseViewController: UIViewController, UITextFieldDelegate, UITextViewDeleg
 
     override func loadView()
       {
-        // Create the root view
-        let window = UIApplication.shared.windows.first!
-        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
-
-        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
-
-        let width = window.frame.width
-        let height = window.frame.height - offset
-
-        view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        // Configure the root view
+        view = UIView(frame: .zero)
+        view.backgroundColor = .white
+        view.isOpaque = true
 
         // Create the scroll view
         scrollView = UIScrollView(frame: CGRect.zero)

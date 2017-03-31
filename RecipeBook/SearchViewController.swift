@@ -197,15 +197,9 @@ class SearchViewController: UIViewController, NSFetchedResultsControllerDelegate
 
     override func loadView()
       {
-        let windowFrame = (UIApplication.shared.windows.first?.frame)!
-        let navigationBarFrame = navigationController!.navigationBar.frame
-
-        let width = windowFrame.width
-        let height = windowFrame.height - (navigationBarFrame.origin.y + navigationBarFrame.height)
-
         // Configure the root view
-        view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
-        view.backgroundColor = UIColor.white
+        view = UIView(frame: .zero)
+        view.backgroundColor = .white
         view.isOpaque = true
 
         // Configure the search segmented control

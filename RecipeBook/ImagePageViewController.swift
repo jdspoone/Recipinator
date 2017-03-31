@@ -44,16 +44,7 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
 
     override func loadView()
       {
-        // Create and configure the root view
-        let window = UIApplication.shared.windows.first!
-        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
-
-        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
-
-        let width = window.frame.width
-        let height = window.frame.height - offset
-
-        view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
+        view = UIView(frame: .zero)
         view.backgroundColor = .white
         view.isOpaque = true
 
