@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 
 
-class ImageCollectionViewController: UICollectionViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate
+class ImageCollectionViewController: UICollectionViewController, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate, UINavigationControllerDelegate
   {
 
     var observations = Set<Observation>()
@@ -23,6 +23,8 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
     var images: Set<Image>
     var sortedImages: [Image]
       { return images.sorted(by: { $0.index < $1.index }) }
+
+    let itemSpacing: CGFloat = 10
 
     var initialEditing: Bool
 
@@ -50,12 +52,7 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
         self.initialEditing = editing
         self.managedObjectContext = context
 
-        // Configure the flow layout
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: 100, height: 100)
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-
-        super.init(collectionViewLayout: layout)
+        super.init(collectionViewLayout: UICollectionViewFlowLayout())
       }
 
 
@@ -264,6 +261,37 @@ class ImageCollectionViewController: UICollectionViewController, UIImagePickerCo
           image.index += sourceIndex < destinationIndex ? -1 : 1
         }
       }
+
+
+    // MARK: - UICollectionViewDelegateFlowLayout
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
+      {
+        // Determine the width of the view
+        let viewWidth = view.frame.width
+
+        // Determine the number of items per row, assuming the device is in porttrait mode
+        var itemsPerRow: CGFloat
+        switch UIDevice.current.userInterfaceIdiom {
+          case .phone:
+            itemsPerRow = 2
+          case .pad:
+            itemsPerRow = 3
+          default:
+            fatalError("unexpected case")
+        }
+
+        // Return the calculated square size
+        let width = (viewWidth - (itemSpacing * (itemsPerRow + 1))) / itemsPerRow
+        return CGSize(width: width, height: width)
+      }
+
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets
+      {
+        return UIEdgeInsets(top: itemSpacing, left: itemSpacing, bottom: itemSpacing, right: itemSpacing)
+      }
+
 
 
     // MARK: - UIImagePickerControllerDelegate
