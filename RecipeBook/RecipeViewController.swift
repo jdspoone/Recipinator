@@ -374,23 +374,19 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
 
     override func textFieldDidEndEditing(_ textField: UITextField)
       {
-        // As along as the textField is the activeSubview
-        if activeSubview === textField {
+        // Switch on the textField
+        switch textField {
 
-          // Switch on the textField
-          switch textField {
+          // If it's the nameTextField, update the recipe's name
+          case nameTextField:
+            if let text = textField.text {
+              recipe.name = text
+            }
+            break;
 
-            // If it's the nameTextField, update the recipe's name
-            case nameTextField:
-              if let text = textField.text {
-                recipe.name = text
-              }
-              break;
-
-            // Otherwise, break
-            default:
-              break;
-          }
+          // Otherwise, break
+          default:
+            break;
         }
 
         super.textFieldDidEndEditing(textField)
