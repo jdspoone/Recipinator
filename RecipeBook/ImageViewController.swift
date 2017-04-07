@@ -63,13 +63,10 @@ class ImageViewController: UIViewController, UIScrollViewDelegate
 
     func getImageViewSize() -> CGSize
       {
+        // We're assuming the parent view controller's view is the size of the window
         let window = UIApplication.shared.windows.first!
-        let navigationBar = (window.rootViewController! as! UINavigationController).navigationBar
-        let offset = navigationBar.frame.origin.y + navigationBar.frame.height
-
-        // We're assuming the parent view controller's view is the size of the visible portion of the window
         let parentWidth = window.frame.width
-        let parentHeight = window.frame.height - offset
+        let parentHeight = window.frame.height
 
         // Determine if we're in portrait or landscape mode
         // NOTE: - We're doing this because when querying the current device for its orientation,
@@ -77,22 +74,51 @@ class ImageViewController: UIViewController, UIScrollViewDelegate
         let isPortrait = parentWidth < parentHeight
 
         // Get the aspect ratio of the image
-        let size = image.image!.size
-        let aspectRatio = size.width / size.height
+        let imageSize = image.image!.size
+        let imageAspectRatio = imageSize.width / imageSize.height
+
+        // Get the aspect ratio of the window
+        let windowAspectRatio = window.frame.width / window.frame.height
 
         // Define variables for the width and height of the image view
         var width: CGFloat
         var height: CGFloat
 
-        // If the device is in portrait orientation, update the height
+        // If the device is in portrait orientation
         if isPortrait {
-          width = parentWidth
-          height = parentWidth / aspectRatio
+
+          // If the aspect ratio of the image is less than that of the window
+          if imageAspectRatio <= windowAspectRatio {
+
+            // Set the height to be that of the parent and update the width
+            width = parentHeight * imageAspectRatio
+            height = parentHeight
+          }
+          // Otherwise the aspect ratio of the window is larger
+          else {
+
+            // Set the width to be that of the parent and update the height
+            width = parentWidth
+            height = parentWidth / imageAspectRatio
+          }
         }
         // Otherwise the device is in landscape orientation, update the width
         else {
-          width = parentHeight * aspectRatio
-          height = parentHeight
+
+          // If the aspect ratio of the image is less than that of the window
+          if imageAspectRatio <= windowAspectRatio {
+
+            // Set the height to be that of the parent and update the width
+            width = parentHeight * imageAspectRatio
+            height = parentHeight
+          }
+          // Otherwise the aspect ratio of the window is larger
+          else {
+
+            // Set the width to be that of the parent and update the height
+            width = parentWidth
+            height = parentWidth / imageAspectRatio
+          }
         }
 
         return CGSize(width: width, height: height)
@@ -198,8 +224,7 @@ class ImageViewController: UIViewController, UIScrollViewDelegate
         // Update the scroll view's content insets
         let vertical = max(parentHeight - size.height * scale, 0)
         let horizontal = max(parentWidth - size.width * scale, 0)
-        let contentInset = UIEdgeInsets(top: vertical / 2, left: horizontal / 2, bottom: vertical / 2, right: horizontal / 2)
-        scrollView.contentInset = contentInset
+        scrollView.contentInset = UIEdgeInsets(top: vertical / 2, left: horizontal / 2, bottom: vertical / 2, right: horizontal / 2)
 
         // Update the image view's width and height constraints
         imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: size.width)
