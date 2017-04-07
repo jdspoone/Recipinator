@@ -27,6 +27,21 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
       }
 
     var pageViewController: UIPageViewController!
+
+    var pageViewHeightConstraint: NSLayoutConstraint?
+      {
+        willSet {
+          if let constraint = pageViewHeightConstraint {
+            NSLayoutConstraint.deactivate([constraint])
+          }
+        }
+        didSet {
+          if let constraint = pageViewHeightConstraint {
+            NSLayoutConstraint.activate([constraint])
+          }
+        }
+      }
+
     var pageControl: UIPageControl!
 
 
@@ -72,7 +87,6 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         view.addSubview(pageControl)
 
         // Configure the layout bindings for the page view controller's view
-        pageView.heightAnchor.constraint(equalToConstant: parent!.view.frame.height).isActive = true
         pageView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         pageView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         pageView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
@@ -84,7 +98,7 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         // Get the size of the page control
         let size = pageControl.size(forNumberOfPages: images.count)
 
-        // Configure the dynamic layout bindings for the page control
+        // Configure the layout bindings for the page control
         pageControl.heightAnchor.constraint(equalToConstant: size.height).isActive = true
         pageControl.widthAnchor.constraint(equalToConstant: size.width).isActive = true
       }
@@ -111,6 +125,9 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
       {
         super.viewWillAppear(animated)
 
+        // Register to observe changes to the device's orientation
+        NotificationCenter.default.addObserver(self, selector: #selector(self.deviceOrientationDidChange(_:)), name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+
         // Set the page view controller's initial view controller
         let viewController = ImageViewController(image: sortedImages[initialIndex])
         pageViewController.setViewControllers([viewController], direction: .forward, animated: true, completion: nil)
@@ -120,6 +137,23 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         pageControl.currentPage = initialIndex
       }
 
+
+      override func updateViewConstraints()
+        {
+          // Update the page view controller's view's height constraint
+          pageViewHeightConstraint = pageViewController.view.heightAnchor.constraint(equalToConstant: parent!.view.frame.height)
+
+          super.updateViewConstraints()
+        }
+
+
+    override func viewWillDisappear(_ animated: Bool)
+      {
+        super.viewWillDisappear(animated)
+
+        // De-register to observe changes to the device's orientation
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIDeviceOrientationDidChange, object: nil)
+      }
 
     // UIPageViewControllerDelegate
 
@@ -185,7 +219,7 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         let whiteBackground = view.backgroundColor == .white
 
         // Toggle visibilty of the navigation bar
-        navigationController!.navigationBar.isHidden = whiteBackground
+        navigationController?.navigationBar.isHidden = whiteBackground
 
         // Toggle visibility of the status bar
         setNeedsStatusBarAppearanceUpdate()
@@ -196,4 +230,14 @@ class ImagePageViewController: UIViewController, UIPageViewControllerDelegate, U
         // Toggle the background color of view
         view.backgroundColor = whiteBackground ? .black : .white
       }
+
+
+    // MARK: - NSNotificationCenter
+
+    func deviceOrientationDidChange(_ notification: Notification)
+      {
+        // Update our layout constraints
+        view.setNeedsUpdateConstraints()
+      }
+
   }
