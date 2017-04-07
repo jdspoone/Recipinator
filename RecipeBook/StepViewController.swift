@@ -90,9 +90,10 @@ class StepViewController: BaseViewController, NSFetchedResultsControllerDelegate
         detailTextView.topAnchor.constraint(equalTo: summaryTextField.bottomAnchor, constant: 8.0).isActive = true
 
         // Configure the layout bindings for the image view
-        imagePreview.widthAnchor.constraint(equalToConstant: 320.0).isActive = true
+        let sideLength: CGFloat = UIDevice.current.userInterfaceIdiom == .phone ? 320.0 : 640.0
+        imagePreview.widthAnchor.constraint(equalToConstant: sideLength).isActive = true
         imagePreview.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        imagePreview.heightAnchor.constraint(equalToConstant: 320.0).isActive = true
+        imagePreview.heightAnchor.constraint(equalToConstant: sideLength).isActive = true
         imagePreview.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 8.0).isActive = true
       }
 
