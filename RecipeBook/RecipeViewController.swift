@@ -849,7 +849,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseIngredientsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
+              self.collapseIngredientsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2))
               // Collapse the tableview
               ingredients?.frame = CGRect(x: (ingredients?.frame.origin.x)!, y: (ingredients?.frame.origin.y)!, width: (ingredients?.frame.width)!, height: self.collapseIngredientsButton.frame.height)
               ingredients?.isScrollEnabled = false
@@ -906,7 +906,7 @@ class RecipeViewController: BaseViewController, NSFetchedResultsControllerDelega
         UIView.animate(withDuration: 0.5, animations:
             { () -> Void in
               // Rotate the button
-              self.collapseStepsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-M_PI_2))
+              self.collapseStepsButton.imageView!.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi / 2))
               // Collapse the table view
               tableView?.frame = CGRect(x: (tableView?.frame.origin.x)!, y: (tableView?.frame.origin.y)!, width: (tableView?.frame.width)!, height: self.collapseStepsButton.frame.height)
               tableView?.isScrollEnabled = false

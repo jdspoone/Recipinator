@@ -152,7 +152,7 @@ class ImagePreviewPageViewController: UIViewController, UIPageViewControllerDele
 
           // Ensure we're not displaying the very first image
           if index > 0 {
-            return ImagePreviewViewController(image: sortedImages[index - 1])
+            return ImagePreviewViewController(image: sortedImages[Int(index) - 1])
           }
         }
 
